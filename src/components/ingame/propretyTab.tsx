@@ -110,7 +110,7 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
     useEffect(searchResults, [searchString]);
     return (
         <>
-            <h3 style={{ textAlign: "center" }}>Propreties</h3>
+            <h3 style={{ textAlign: "center" }}>Properties</h3>
             <input type="text" onChange={(e) => SetSearch(e.currentTarget.value)} placeholder="Search for global cards..." />
 
             <div
