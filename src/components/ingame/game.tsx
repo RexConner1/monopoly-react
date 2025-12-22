@@ -15,6 +15,8 @@ import TradePlayerPanel from "./trade/tradePlayerPanel.tsx";
 import TradeBalanceSlider from "./trade/tradeBalanceSlider.tsx";
 import TradeAvailableProperties from "./trade/tradeAvailableProperties.tsx";
 import TradeCraftButtons from "./trade/tradeCraftButtons.tsx";
+import TradeOpponentSelect from "./trade/tradeOpponentSelect.tsx";
+import TradeRoleIndicator from "./trade/tradeRoleIndicator.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -828,53 +830,23 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     <div className="middle">
                         <h3>Trade</h3>
                         {typeof prop.tradeObj !== "object" ? (
-                            <>
-                                <h2>Select your opponent</h2>
-                                <center>
-                                    <div className="select-players">
-                                        {prop.players
-                                            .filter((v) => v.id !== prop.socket.id)
-                                            .map((v, i) => (
-                                                <button
-                                                    style={{ animation: "tradepopout .3s cubic-bezier(0.21, 1.57, 0.55, 1)" }}
-                                                    data-selectable={prop.myTurn}
-                                                    key={i}
-                                                    onClick={() => {
-                                                        if (prop.myTurn) {
-                                                            prop.tradeApi.onSelectPlayer(v.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    {v.username}
-                                                </button>
-                                            ))}
-                                        <button
-                                            data-selectable={prop.myTurn}
-                                            onClick={() => {
-                                                if (prop.myTurn) {
-                                                    prop.socket.emit("cancel-trade");
-                                                    SetSended(false);
-                                                }
-                                            }}
-                                        >
-                                            {" "}
-                                            CANCEL TRADE
-                                        </button>
-                                    </div>
-                                </center>
-                            </>
+                            <TradeOpponentSelect
+                                players={prop.players}
+                                socket={prop.socket}
+                                myTurn={prop.myTurn}
+                                tradeApi={prop.tradeApi}
+                                setSended={SetSended}
+                            />
                         ) : (
                             <>
                                 <div className="trade-mission">
                                     <div className="flexchild">
                                         {prop.socket.id === prop.tradeObj.againstPlayer.id || prop.socket.id === prop.tradeObj.turnPlayer.id ? (
                                             <div className="trade-craft">
-                                                <p>
-                                                    {" "}
-                                                    {prop.socket.id === prop.tradeObj.againstPlayer.id
-                                                        ? "You are the Opponent"
-                                                        : "You are the Current Player"}
-                                                </p>
+                                                <TradeRoleIndicator
+                                                    socket={prop.socket}
+                                                    tradeObj={prop.tradeObj as GameTrading}
+                                                />
                                                 <TradeBalanceSlider
                                                     socket={prop.socket}
                                                     tradeObj={prop.tradeObj as GameTrading}
