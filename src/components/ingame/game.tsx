@@ -4,9 +4,9 @@ import HouseIcon from "../../../public/h.png";
 import HotelIcon from "../../../public/ho.png";
 import { Player } from "./../../assets/player.ts";
 import { Socket } from "../../assets/sockets.ts";
-import StreetCard, { StreetDisplayInfo, UtilitiesDisplayInfo, RailroadDisplayInfo, translateGroup } from "./streetCard.tsx";
+import { UtilitiesDisplayInfo, translateGroup } from "./streetCard.tsx";
 import monopolyJSON from "../../assets/monopoly.json";
-import ChanceCard, { ChanceDisplayInfo } from "./specialCards.tsx";
+import { ChanceDisplayInfo } from "./specialCards.tsx";
 import { MonopolyCookie, MonopolySettings, GameTrading, MonopolyMode } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import DisplayHouses from "./displayHouses.tsx";
@@ -23,6 +23,9 @@ import { handleStreetSquare } from "./landing/handleStreetSquare.ts";
 import { handleRailroadSquare } from "./landing/handleRailroadSquare.ts";
 import { handleUtilitySquare } from "./landing/handleUtilitySquare.ts";
 import { handleSpecialSquare } from "./landing/handleSpecialSquare.ts";
+import { StreetDisplayContainer } from "./streetDisplay/streetDisplayContainer.tsx";
+
+
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -661,51 +664,12 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                             <></>
                         )}
                     </div>
-                    <div
-                        className={streetType === "Chance" || streetType === "CommunityChest" ? "chance-display-actions" : "card-display-actions"}
-                        style={
-                            !showStreet
-                                ? {
-                                      transform: "translateY(-50%) translateX(-70vw)",
-                                  }
-                                : {}
-                        }
-                    >
-                        {streetType === "Chance" || streetType === "CommunityChest" ? (
-                            <>
-                                {streetType === "Chance" ? (
-                                    <ChanceCard chance={streetDisplay as ChanceDisplayInfo} />
-                                ) : streetType === "CommunityChest" ? (
-                                    <ChanceCard chance={streetDisplay as ChanceDisplayInfo} />
-                                ) : (
-                                    <></>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <h3>{advnacedStreet ? "would you like to buy this card?" : "you can buy houses and hotels"}</h3>
-                                {streetType === "Railroad" ? (
-                                    <StreetCard railroad={streetDisplay as RailroadDisplayInfo} />
-                                ) : streetType === "Utilities" ? (
-                                    <StreetCard utility={streetDisplay as UtilitiesDisplayInfo} />
-                                ) : (
-                                    <StreetCard street={streetDisplay as StreetDisplayInfo} />
-                                )}
-                                <div>
-                                    <center>
-                                        {advnacedStreet ? (
-                                            <div id="advanced-responses"></div>
-                                        ) : (
-                                            <>
-                                                <button id="card-response-yes">YES</button>
-                                                <button id="card-response-no">NO</button>
-                                            </>
-                                        )}
-                                    </center>
-                                </div>
-                            </>
-                        )}
-                    </div>
+                    <StreetDisplayContainer
+                        streetType={streetType}
+                        streetDisplay={streetDisplay}
+                        showStreet={showStreet}
+                        advancedStreet={advnacedStreet}
+                    />
                     <img data-anim="0" id="moneyAnimations" alt="" />
                 </div>
                 <div className="trade-table">
