@@ -22,8 +22,9 @@ import { handleStreetSquare } from "./landing/handleStreetSquare.ts";
 import { handleRailroadSquare } from "./landing/handleRailroadSquare.ts";
 import { handleUtilitySquare } from "./landing/handleUtilitySquare.ts";
 import { handleSpecialSquare } from "./landing/handleSpecialSquare.ts";
-import { StreetDisplayContainer } from "./streetDisplay/streetDisplayContainer.tsx";
+import { StreetDisplayContainer } from "./squareInteraction/streetDisplayContainer.tsx";
 import { ActionBar } from "./actionBar/actionBar.tsx";
+import { propertiesDisplay } from "./propertyDisplay/propertiesDisplay.ts";
 
 
 interface MonopolyGameProps {
@@ -471,99 +472,12 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                 }
             }
 
-            function propertiesDisplay() {
-                const folder = document.getElementById("display-houses") as HTMLDivElement;
-                // remove all older proprerties!
-                const allStreets = Array.from(folder.querySelectorAll("div.street-houses"));
-                for (const _st of allStreets) {
-                    const st = _st as HTMLDivElement;
-                    while (st.firstChild) {
-                        st.removeChild(st.firstChild);
-                    }
-                    st.onclick = () => {};
-                    st.style.cursor = "unset";
-                    st.style.backgroundColor = "rgba(0,0,0,0%)";
-                    st.style.padding = "0px";
-                    st.innerHTML = "";
-                    st.setAttribute("data-tooltip-hover", "");
-                    st.style.zIndex = "unset";
-                    st.style.boxShadow = "";
-                }
-                for (const _player of prop.players) {
-                    for (const _prp of _player.properties) {
-                        const location = _prp.posistion;
-                        const state = _prp.count;
+            function propertiesDisplayWrapper() {
+                const container = document.getElementById("display-houses") as HTMLDivElement;
 
-                        const queryElement = folder.querySelector(`div.street-houses[data-position="${location}"`);
-                        if (queryElement != null) {
-                            // add new propertie
-                            const st = queryElement as HTMLDivElement;
-                            st.setAttribute("data-tooltip-hover", _player.username);
-
-                            st.onclick = () => {
-                                const element = document.querySelector(`div.player[player-id="${_player.id}"]`) as HTMLDivElement;
-                                element.style.animation = "spin2 1s cubic-bezier(.21, 1.57, .55, 1) infinite";
-                                setTimeout(() => {
-                                    element.style.animation = "";
-                                }, 1 * 1000);
-                            };
-
-                            st.style.cursor = "pointer";
-
-                            st.style.zIndex = "5";
-                            switch (state) {
-                                case 0:
-                                    st.style.backgroundColor = "rgba(0,0,0,25%)";
-                                    if (settings !== undefined && settings?.accessibility[4]) {
-                                        st.style.backgroundColor = _player.color;
-                                        st.style.boxShadow = "0px 0px 5px black";
-                                    }
-                                    var payment_ammount = 0;
-                                    if (_prp.group === "Railroad") {
-                                        const count = _player.properties
-                                            .filter((v) => v.group === "Railroad")
-                                            .filter((v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)).length;
-                                        const rents = [0, 25, 50, 100, 200];
-                                        var payment_ammount = rents[count];
-                                    } else if (_prp.group === "Utilities" && _prp.rent) {
-                                        const multy_ = _player.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                        payment_ammount = _prp.rent * multy_;
-                                    }
-
-                                    if (payment_ammount !== 0) {
-                                        st.innerHTML = `<p>${payment_ammount}M</p>`;
-                                        st.style.backgroundColor = "rgba(0,0,0,75%)";
-                                        if (settings !== undefined && settings?.accessibility[4]) {
-                                            st.style.backgroundColor = `${_player.color}`;
-                                            st.style.boxShadow = "0px 0px 5px black";
-                                        }
-                                    }
-                                    break;
-
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 4:
-                                    for (let index = 0; index < state; index++) {
-                                        const image = document.createElement("img");
-                                        image.src = HouseIcon.replace("public/", "");
-                                        st.appendChild(image);
-                                    }
-                                    break;
-                                case "h":
-                                    const image = document.createElement("img");
-                                    image.src = HotelIcon.replace("public/", "");
-                                    st.appendChild(image);
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
+                propertiesDisplay(container, prop.players, settings);
             }
-            propertiesDisplay();
+            propertiesDisplayWrapper();
 
             if (continue_to_animate) requestAnimationFrame(animate);
         };
