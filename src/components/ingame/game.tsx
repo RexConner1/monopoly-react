@@ -26,6 +26,7 @@ import { StreetDisplayContainer } from "./squareInteraction/streetDisplayContain
 import { ActionBar } from "./actionBar/actionBar.tsx";
 import { propertiesDisplay } from "./propertyDisplay/propertiesDisplay.ts";
 import { animatePlayers } from "./animation/animatePlayers.ts";
+import { showJailButtons } from "./jailActions/showJailButtons.ts";
 
 
 interface MonopolyGameProps {
@@ -309,63 +310,13 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
             applyAnimation(type);
         },
         showJailsButtons: (is_card: boolean) => {
-            const payElement = document.querySelector(`button[data-button-type="pay"]`) as HTMLButtonElement;
-            const cardElement = document.querySelector(`button[data-button-type="card"]`) as HTMLButtonElement;
-            const rollElement = document.querySelector(`button[data-button-type="roll"]`) as HTMLButtonElement;
-
-            function returnToNormal() {
-                rollElement.onclick = () => {
-                    SetSended(true);
-                    prop.socket.emit("roll_dice");
-                    console.warn("roll after return to normal");
-                    SetTimer(0);
-                };
-                SetTimer(0);
-                SetSended(true);
-                cardElement.onclick = () => {};
-                cardElement.setAttribute("aria-disabled", "true");
-                setTimeout(() => {
-                    cardElement.setAttribute("aria-disabled", "true");
-                }, 300);
-
-                payElement.style.translate = "0px 0px";
-                payElement.onclick = () => {};
-                payElement.setAttribute("aria-disabled", "true");
-                setTimeout(() => {
-                    payElement.setAttribute("aria-disabled", "true");
-                }, 300);
-            }
-
-            payElement.setAttribute("aria-disabled", "false");
-            payElement.onclick = () => {
-                // handle paying
-                applyAnimation(1);
-
-                prop.socket.emit("unjail", "pay");
-                prop.socket.emit("roll_dice");
-                console.warn("pay");
-
-                returnToNormal();
-            };
-
-            if (is_card) {
-                const cardButton = cardElement as HTMLButtonElement;
-                cardButton.setAttribute("aria-disabled", "false");
-                cardButton.onclick = () => {
-                    // take 1 card
-                    prop.socket.emit("unjail", "card");
-                    prop.socket.emit("roll_dice");
-                    console.warn("card");
-                    returnToNormal();
-                };
-            }
-            rollElement.onclick = () => {
-                prop.socket.emit("roll_dice");
-                console.warn("roll when in jail");
-                returnToNormal();
-                SetSended(true);
-                SetTimer(0);
-            };
+            showJailButtons({
+                isCardAvailable: is_card,
+                socket: prop.socket,
+                applyAnimation,
+                SetSended,
+                SetTimer
+            });
         },
     }));
 
