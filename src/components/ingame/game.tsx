@@ -19,6 +19,10 @@ import TradeOpponentSelect from "./trade/tradeOpponentSelect.tsx";
 import TradeRoleIndicator from "./trade/tradeRoleIndicator.tsx";
 import { handleAdvancedPurchase } from "./purchase/advancedPurchase.ts";
 import { handleSimplePurchase } from "./purchase/simplePurchase.ts";
+import { handleStreetSquare } from "./landing/handleStreetSquare.ts";
+import { handleRailroadSquare } from "./landing/handleRailroadSquare.ts";
+import { handleUtilitySquare } from "./landing/handleUtilitySquare.ts";
+import { handleSpecialSquare } from "./landing/handleSpecialSquare.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -228,112 +232,57 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     }
                 }
 
-                if (x.group === "Special") {
-                    args.onResponse("nothing", {});
-                    ShowStreet(false);
-                } else if (x.group === "Utilities") {
-                    if (!belong_to_me) {
-                        if (belong_to_others) {
-                            args.onResponse("someones", {});
-                            ShowStreet(false);
-                            return;
-                        } else {
-                            if (localPlayer.balance - (x?.price ?? 0) < 0) {
-                                ShowStreet(false);
-                                args.onResponse("nothing", {});
-                                return;
-                            } else {
-                                SetStreetType("Utilities");
-                                const streetInfo = {
-                                    cardCost: x.price ?? -1,
-                                    title: x.name ?? "error",
-                                    type: x.id.includes("water") ? "water" : "electricity",
-                                } as UtilitiesDisplayInfo;
-                                SetStreetDisplay(streetInfo);
-                                SetAdvancedStreet(false);
+                switch (x.group) {
+                    case "Special":
+                        handleSpecialSquare(args, ShowStreet);
+                        break;
 
-                                swipeSound();
-                                ShowStreet(true);
-                                requestAnimationFrame(
-                                    searchForButtons(false, args.location, {
-                                        rolls: args.rolls,
-                                    })
-                                );
-                            }
-                        }
-                    } else {
-                        args.onResponse("nothing", {});
-                    }
-                } else if (x.group === "Railroad") {
-                    if (!belong_to_me) {
-                        if (belong_to_others) {
-                            args.onResponse("someones", {});
-                            ShowStreet(false);
-                            return;
-                        } else {
-                            if (localPlayer.balance - (x?.price ?? 0) < 0) {
-                                ShowStreet(false);
-                                args.onResponse("nothing", {});
-                                return;
-                            } else {
-                                SetStreetType("Railroad");
-                                const streetInfo = {
-                                    cardCost: x.price ?? -1,
-                                    title: x.name ?? "error",
-                                } as UtilitiesDisplayInfo;
-                                SetStreetDisplay(streetInfo);
-                                swipeSound();
-                                ShowStreet(true);
-                                requestAnimationFrame(searchForButtons(false, args.location));
-                            }
-                        }
-                    } else {
-                        args.onResponse("nothing", {});
-                    }
-                } else {
-                    if (!belong_to_me && localPlayer.balance - (x?.price ?? 0) < 0) {
-                        ShowStreet(false);
-                        args.onResponse("nothing", {});
-                        return;
-                    }
+                    case "Utilities":
+                        handleUtilitySquare({
+                            x,
+                            belongToMe: belong_to_me,
+                            belongToOthers: belong_to_others,
+                            localPlayer,
+                            args,
+                            ShowStreet,
+                            SetStreetType,
+                            SetStreetDisplay,
+                            SetAdvancedStreet,
+                            swipeSound,
+                            searchForButtons
+                        });
+                        break;
 
-                    if (belong_to_me) {
-                    } else {
-                        if (belong_to_others) {
-                            args.onResponse("someones", {});
-                            ShowStreet(false);
-                            return;
-                        }
-                    }
-                    if (belong_to_me && count === "h") {
-                        ShowStreet(false);
-                        args.onResponse("nothing", {});
-                        return;
-                    }
-                    SetStreetType("Street");
-                    const streetInfo = {
-                        cardCost: x.price ?? -1,
-                        hotelsCost: x.ohousecost ?? -1,
-                        housesCost: x.housecost ?? -1,
-                        rent: x.rent ?? -1,
-                        multpliedrent: x.multpliedrent
-                            ? [
-                                  x.multpliedrent[0] ?? -1,
-                                  x.multpliedrent[1] ?? -1,
-                                  x.multpliedrent[2] ?? -1,
-                                  x.multpliedrent[3] ?? -1,
-                                  x.multpliedrent[4] ?? -1,
-                              ]
-                            : [-1, -1, -1, -1, -1],
-                        rentWithColorSet: x.rent ? x.rent * 2 : -1,
-                        title: x.name ?? "error",
-                        group: x.group,
-                    } as StreetDisplayInfo;
-                    SetStreetDisplay(streetInfo);
-                    belong_to_me ? SetAdvancedStreet(true) : SetAdvancedStreet(false);
-                    swipeSound();
-                    ShowStreet(true);
-                    requestAnimationFrame(searchForButtons(belong_to_me, args.location));
+                    case "Railroad":
+                        handleRailroadSquare({
+                            x,
+                            belongToMe: belong_to_me,
+                            belongToOthers: belong_to_others,
+                            localPlayer,
+                            args,
+                            ShowStreet,
+                            SetStreetType,
+                            SetStreetDisplay,
+                            swipeSound,
+                            searchForButtons
+                        });
+                        break;
+
+                    default:
+                        handleStreetSquare({
+                            x,
+                            belongToMe: belong_to_me,
+                            belongToOthers: belong_to_others,
+                            count,
+                            localPlayer,
+                            args,
+                            ShowStreet,
+                            SetStreetType,
+                            SetStreetDisplay,
+                            SetAdvancedStreet,
+                            swipeSound,
+                            searchForButtons
+                        });
                 }
             } else {
                 args.onResponse("nothing", {});
