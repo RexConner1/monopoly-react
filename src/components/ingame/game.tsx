@@ -25,6 +25,7 @@ import { handleSpecialSquare } from "./landing/handleSpecialSquare.ts";
 import { StreetDisplayContainer } from "./squareInteraction/streetDisplayContainer.tsx";
 import { ActionBar } from "./actionBar/actionBar.tsx";
 import { propertiesDisplay } from "./propertyDisplay/propertiesDisplay.ts";
+import { animatePlayers } from "./animation/animatePlayers.ts";
 
 
 interface MonopolyGameProps {
@@ -402,84 +403,17 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
 
     useEffect(() => {
         var continue_to_animate = true;
-        var animate = () => {
-            for (const x of prop.players.filter((v) => v.balance >= 0)) {
-                const location = x.position;
-                const icon = x.icon + 1;
-                const injail = x.isInJail;
-
-                const elementSearch = document.querySelector(`div.player[player-id="${x.id}"]`);
-                if (elementSearch !== null) {
-                    const _img = elementSearch.querySelector("div") as HTMLDivElement;
-                    _img.style.rotate = `${-rotation}deg`;
-                    _img.style.aspectRatio = "1";
-                    if (settings !== undefined && settings.accessibility[4] === true) {
-                        _img.setAttribute("data-tooltip-color", x.color);
-                    } else if (_img.hasAttribute("data-tooltip-color")) {
-                        (_img.querySelector("img") as HTMLImageElement).style.filter = ``;
-                        _img.removeAttribute("data-tooltip-color");
-                    }
-
-                    // check if loaction is the same
-                    const pos = elementSearch.parentElement?.getAttribute("data-position") as string;
-                    if (parseInt(pos) !== x.position) {
-                        elementSearch.parentElement?.removeChild(elementSearch);
-                        document.querySelector(`div.street[data-position="${location}"]`)?.appendChild(elementSearch);
-                    }
-                    if (!injail && elementSearch.querySelector("img.jailIcon") != null) {
-                        const div = elementSearch.querySelector("div") as HTMLDivElement;
-                        const jailIcon = div.querySelector("img.jailIcon") as HTMLImageElement;
-                        div.removeChild(jailIcon);
-                    }
-
-                    if (injail && elementSearch.querySelector("img.jailIcon") == null) {
-                        while (elementSearch.firstChild) {
-                            elementSearch.removeChild(elementSearch.firstChild);
-                        }
-
-                        const secondDiv = document.createElement("div");
-                        secondDiv.setAttribute("data-tooltip-hover", x.username);
-                        const image = document.createElement("img");
-                        image.src = `./p${icon}.png`;
-                        secondDiv.appendChild(image);
-
-                        const jimage = document.createElement("img");
-                        jimage.src = `./jail.png`;
-                        jimage.className = "jailIcon";
-                        secondDiv.appendChild(jimage);
-                        elementSearch.appendChild(secondDiv);
-                    }
-                } else {
-                    // Create
-                    const element = document.createElement("div");
-                    element.className = "player";
-                    element.setAttribute("player-id", x.id);
-                    element.setAttribute("player-position", x.position.toString());
-                    const secondDiv = document.createElement("div");
-                    secondDiv.setAttribute("data-tooltip-hover", x.username);
-                    const image = document.createElement("img");
-                    image.src = `./p${icon}.png`;
-                    secondDiv.appendChild(image);
-                    element.appendChild(secondDiv);
-                    if (injail) {
-                        const jimage = document.createElement("img");
-                        jimage.src = `./jail.png`;
-                        jimage.className = "jailIcon";
-                        element.appendChild(jimage);
-                    }
-
-                    document.querySelector(`div.street[data-position="${location}"]`)?.appendChild(element);
+        const animate = () => {
+            animatePlayers({
+                players: prop.players,
+                rotation,
+                settings,
+                continueAnimation: () => continue_to_animate,
+                onFrameComplete: () => {
+                    const container = document.getElementById("display-houses") as HTMLDivElement;
+                    propertiesDisplay(container, prop.players, settings);
                 }
-            }
-
-            function propertiesDisplayWrapper() {
-                const container = document.getElementById("display-houses") as HTMLDivElement;
-
-                propertiesDisplay(container, prop.players, settings);
-            }
-            propertiesDisplayWrapper();
-
-            if (continue_to_animate) requestAnimationFrame(animate);
+            });
         };
         requestAnimationFrame(animate);
 
