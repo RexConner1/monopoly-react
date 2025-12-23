@@ -17,6 +17,8 @@ import TradeAvailableProperties from "./trade/tradeAvailableProperties.tsx";
 import TradeCraftButtons from "./trade/tradeCraftButtons.tsx";
 import TradeOpponentSelect from "./trade/tradeOpponentSelect.tsx";
 import TradeRoleIndicator from "./trade/tradeRoleIndicator.tsx";
+import { handleAdvancedPurchase } from "./purchase/advancedPurchase.ts";
+import { handleSimplePurchase } from "./purchase/simplePurchase.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -189,91 +191,22 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     }
                     function func() {
                         if (advanced) {
-                            const b = document.querySelector("div#advanced-responses");
-
-                            if (b) {
-                                const _property = propretyMap.get(location);
-                                if (!_property) return;
-                                const divB = b as HTMLDivElement;
-                                while (divB.firstChild) {
-                                    divB.removeChild(divB.firstChild);
-                                }
-                                const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                    (v) => v[1].posistion === args.location
-                                )[0][0];
-
-                                function transformCount(v: 0 | 2 | 1 | 3 | 4 | "h") {
-                                    switch (v) {
-                                        case "h":
-                                            return 5;
-
-                                        default:
-                                            return v;
-                                    }
-                                }
-                                const count: number = transformCount(localPlayer.properties[propId].count);
-                                for (let index = count + 1; index < 6; index++) {
-                                    const myButton = document.createElement("button");
-                                    if (index === 5) {
-                                        myButton.innerHTML = `buy hotel`;
-                                        // dont let someone buy hotel of not have a set of 4 houses
-                                        myButton.disabled =
-                                            index !== count + 1 ||
-                                            (_property.ohousecost ?? 0) > (prop.players.filter((v) => v.id === prop.socket.id)[0].balance ?? 0);
-                                        myButton.onclick = () => {
-                                            args.onResponse("advance-buy", {
-                                                state: index,
-                                                money: 1,
-                                            });
-                                            ShowStreet(false);
-                                        };
-                                    } else {
-                                        myButton.innerHTML = `buy ${index} house${index > 1 ? "s" : ""}`;
-                                        myButton.onclick = () => {
-                                            args.onResponse("advance-buy", {
-                                                state: index,
-                                                money: index - count,
-                                            });
-                                            ShowStreet(false);
-                                        };
-                                        myButton.disabled =
-                                            (index - count) * (_property.housecost ?? 0) >
-                                            (prop.players.filter((v) => v.id === prop.socket.id)[0].balance ?? 0);
-                                    }
-                                    divB.appendChild(myButton);
-                                }
-                                // last button of cancel
-                                const continueButtons = document.createElement("button");
-                                continueButtons.innerHTML = "CONTINUE";
-                                continueButtons.onclick = () => {
-                                    clickSound();
-                                    args.onResponse("nothing", {});
-                                    ShowStreet(false);
-                                };
-                                divB.appendChild(continueButtons);
-                            } else {
-                                requestAnimationFrame(func);
-                            }
+                            handleAdvancedPurchase({
+                                propretyMap,
+                                location,
+                                localPlayer,
+                                args,
+                                prop,
+                                ShowStreet,
+                                clickSound
+                            });
                         } else {
-                            const b = document.querySelector("button#card-response-yes");
-
-                            if (b) {
-                                (b as HTMLButtonElement).onclick = () => {
-                                    if (fartherInfo !== undefined)
-                                        args.onResponse("special_action", {
-                                            rolls: fartherInfo.rolls,
-                                        });
-                                    else args.onResponse("buy", {});
-                                    ShowStreet(false);
-                                };
-                                (document.querySelector("button#card-response-no") as HTMLButtonElement).onclick = () => {
-                                    clickSound();
-                                    args.onResponse("nothing", {});
-                                    ShowStreet(false);
-                                };
-                            } else {
-                                requestAnimationFrame(func);
-                            }
+                            handleSimplePurchase({
+                                args,
+                                fartherInfo,
+                                ShowStreet,
+                                clickSound
+                            });
                         }
                     }
                     return func;
