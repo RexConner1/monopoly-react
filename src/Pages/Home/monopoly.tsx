@@ -8,6 +8,7 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
+import { playerMoveGenerator } from "./game/movement/playerMoveGenerator.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -127,96 +128,25 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
         function playerMoveGENERATOR(
             final_position: number,
             _xplayer: Player,
-            get200whengo: boolean = true,
+            get200whengo = true,
             afterFinished?: () => void,
-            adding: boolean = true
+            adding = true
         ) {
-            var sum_moves = (final_position - _xplayer.position) % 40;
-            if ((final_position < _xplayer.position || sum_moves < 0) && adding) {
-                sum_moves = 40 - _xplayer.position + final_position;
-            }
-
-            if (!adding) {
-                sum_moves = _xplayer.position - final_position;
-                if (sum_moves < 0) {
-                    sum_moves += 40;
-                }
-            }
-
-            const time = 0.35 * 1000 * sum_moves;
-
-            console.log(`${new Date().toTimeString()} generator ${Math.random()} target ${final_position} time ${time} current ${_xplayer.position}`);
-            function _playerMoveFunc() {
-                var firstPosition = 0;
-                var addedMoney = false;
-                var i = 0;
-                const element = document.querySelector(`div.player[player-id="${_xplayer.id}"]`) as HTMLDivElement;
-
-                firstPosition = _xplayer.position;
-                _xplayer.position += 1;
-                var audio = new Audio("./step2.mp3");
-                audio.volume = 0.1 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
-                audio.loop = false;
-                audio.play();
-                element.style.animation = "jumpstreet 0.35s cubic-bezier(.26,1.5,.65,1.02)";
-                const movingAnim = () => {
-                    if (i < sum_moves) {
-                        i += 1;
-                        var audio = new Audio("./step2.mp3");
-                        audio.volume = 1 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
-                        audio.loop = false;
-                        audio.play();
-                        _xplayer.position = (_xplayer.position + (adding ? 1 : -1)) % 40;
-                        if (_xplayer.position == 0 && get200whengo) {
-                            _xplayer.balance += 200;
-                            var audio = new Audio("./moneyplus.mp3");
-                            audio.volume = 1 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
-                            audio.loop = false;
-                            audio.play();
-                            if (_xplayer.id === socket.id) {
-                                if (settings !== undefined && settings.notifications === true)
-                                    notifyRef.current?.message(`${200} of money is added to the account`, "info", 2, () => {}, false);
-                                engineRef.current?.applyAnimation(2);
-                            }
-                            addedMoney = true;
-                            SetClients(new Map(clients.set(_xplayer.id, _xplayer)));
-                        }
-                        if (i == sum_moves - 1) {
-                            _xplayer.position = final_position;
-                            element.style.animation = "part 0.9s cubic-bezier(0,.7,.57,1)";
-                            setTimeout(() => {
-                                element.style.animation = "";
-                            }, 900);
-
-                            if (!addedMoney && firstPosition > _xplayer.position && get200whengo) {
-                                var audio = new Audio("./moneyplus.mp3");
-                                audio.volume = 1 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
-                                audio.loop = false;
-                                audio.play();
-                                _xplayer.balance += 200;
-                                if (_xplayer.id === socket.id) {
-                                    if (settings !== undefined && settings.notifications === true)
-                                        notifyRef.current?.message(`${200} of money is added to the account`, "info", 2, () => {}, false);
-                                    engineRef.current?.applyAnimation(2);
-                                }
-                                addedMoney = true;
-
-                                SetClients(new Map(clients.set(_xplayer.id, _xplayer)));
-                            }
-                            if (afterFinished) afterFinished();
-                        } else {
-                            element.style.animation = "jumpstreet 0.35s cubic-bezier(.26,1.5,.65,1.02)";
-                            setTimeout(movingAnim, 0.35 * 1000);
-                        }
-                    }
-                };
-                setTimeout(movingAnim, 0.35 * 1000);
-            }
-
-            return {
-                func: _playerMoveFunc,
-                time,
-            };
+            return playerMoveGenerator(
+                final_position,
+                _xplayer,
+                {
+                    settings,
+                    socket,
+                    notifyRef,
+                    engineRef,
+                    updateClients: () =>
+                        SetClients(new Map(clients.set(_xplayer.id, _xplayer)))
+                },
+                get200whengo,
+                afterFinished,
+                adding
+            );
         }
 
         //#region socket handeling
