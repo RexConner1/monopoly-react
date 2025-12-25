@@ -1,4 +1,4 @@
-import { PlayerJSON } from "../../../assets/player";
+import { PlayerJSON } from "../assets/player";
 import { applyTurnUpdate } from "../game/turn/applyTurnUpdate";
 import { handleBankruptcy } from "../game/rules/bankruptcy";
 import { checkMonopolyWin } from "../game/rules/monopolyWin";

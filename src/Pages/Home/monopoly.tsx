@@ -8,9 +8,9 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
-import { playerMoveGenerator } from "./game/movement/playerMoveGenerator.ts";
-import { GameContext } from "./types.ts";
-import { onTurnFinished } from "./sockets/onTurnFinished.ts";
+import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
+import { GameContext } from "../../types.ts";
+import { onTurnFinished } from "../../sockets/onTurnFinished.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());

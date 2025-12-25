@@ -1,4 +1,4 @@
-import monopolyJSON from "../../../../assets/monopoly.json";
+import monopolyJSON from "../../assets/monopoly.json";
 import { unique } from "../utils/unique";
 import { showWinDialog } from "../../ui/dialogs/showWinDialog";
 

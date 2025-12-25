@@ -1,4 +1,4 @@
-import { Player } from "../../../../assets/player";
+import { Player } from "../../assets/player";
 
 export function applyGoRule(
     player: Player,

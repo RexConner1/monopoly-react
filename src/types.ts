@@ -1,4 +1,4 @@
-import { Player } from "../../assets/player.ts";
+import { Player } from "./assets/player.ts";
 
 /**
  * Centralized UI + Game Context

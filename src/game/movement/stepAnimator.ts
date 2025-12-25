@@ -1,4 +1,4 @@
-import { Player } from "../../../../assets/player";
+import { Player } from "../../assets/player";
 import { playSound } from "../audio/soundPlayer";
 import { getPlayerElement } from "../../ui/playerElement";
 

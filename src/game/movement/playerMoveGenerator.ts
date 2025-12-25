@@ -1,4 +1,4 @@
-import { Player } from "../../../../assets/player";
+import { Player } from "../../assets/player";
 import { calculateMoves } from "./calculateMoves";
 import { calculateMoveTime } from "./moveTiming";
 import { animatePlayerSteps } from "./stepAnimator";
