@@ -1,6 +1,6 @@
 import monopolyJSON from "../../assets/monopoly.json";
 import { unique } from "../utils/unique";
-import { showWinDialog } from "../../ui/dialogs/showWinDialog";
+import { showWinDialog } from "../../services/notifications/showWinDialog";
 
 export function checkMonopolyWin(context: any): boolean {
     const { clients, socket, mainTheme } = context;

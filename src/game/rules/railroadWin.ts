@@ -1,4 +1,4 @@
-import { showWinDialog } from "../../ui/dialogs/showWinDialog";
+import { showWinDialog } from "../../services/notifications/showWinDialog";
 
 export function checkRailroadWin(context: any): boolean {
     const { clients, socket, mainTheme } = context;

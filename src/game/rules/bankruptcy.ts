@@ -1,5 +1,5 @@
-import { showLossDialog } from "../../ui/dialogs/showLossDialog";
-import { showSpectatorWinDialog } from "../../ui/dialogs/showSpectatorWinDialog";
+import { showLossDialog } from "../../services/notifications/showLossDialog";
+import { showSpectatorWinDialog } from "../../services/notifications/showSpectatorWinDialog";
 
 export function handleBankruptcy(args: any, context: any): boolean {
     const { clients, socket, destroyPlayer, mainTheme, notifyRef } = context;
