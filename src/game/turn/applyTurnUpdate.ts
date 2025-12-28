@@ -1,10 +1,10 @@
-import { playPropertyPurchaseSound } from "../audio/playPropertyPurchaseSound";
+import { playPurchaseSfx } from "../audio/audio.ts";
 
 export function applyTurnUpdate(args: any, context: any) {
     const { clients, settings, socket, SetClients } = context;
     const player = clients.get(args.from);
 
-    playPropertyPurchaseSound(player, args, settings);
+    playPurchaseSfx(settings);
 
     if (args.from !== socket.id && player) {
         player.recieveJson(args.pJson);

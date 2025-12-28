@@ -3,7 +3,7 @@ import type { PlayerJSON } from "../../assets/player.ts";
 import type { MonopolySettings, historyAction } from "../../assets/types.ts";
 import { history } from "../../assets/types.ts";
 import type React from "react";
-import { playRollSfx, playPurchaseSfx, playMoneyMinusSfx } from "../../game/audio/audio.ts";
+import { playRollSfx, playPurchaseSfx, playMoneyMinusSfx, playJailSfx } from "../../game/audio/audio.ts";
 
 export type DiceRollArgs = { listOfNums: [number, number, number]; turnId: string };
 
@@ -51,21 +51,13 @@ export function handleDiceRollResult(args: DiceRollArgs, deps: HandleDiceRollDep
                 const generatorResults = playerMove(10, xplayer, false, () => {
                     xplayer.position = 10;
                     xplayer.isInJail = true;
-                    playSfxJail();
+                    playJailSfx(settings);
                     xplayer.jailTurnsRemaining = 3;
                 });
                 generatorResults.func();
             }, 800);
         }
     });
-
-    function playSfxJail() {
-        // kept inline to avoid circular deps with other handlers
-        const audio = new Audio("./jail.mp3");
-        audio.volume = 0.5 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
-        audio.loop = false;
-        audio.play();
-    }
 
     engineRef.current?.diceResults({
         l: [args.listOfNums[0], args.listOfNums[1]],
