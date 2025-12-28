@@ -62,7 +62,7 @@ export interface MonopolyMode {
     turnTimer: undefined | number;
 }
 
-export interface PlayerProprety {
+export interface PlayerProperty {
     posistion: number;
     count: 0 | 1 | 2 | 3 | 4 | "h";
     group: string;
@@ -86,12 +86,12 @@ export type GameTrading = {
     turnPlayer: {
         id: string;
         balance: number;
-        prop: PlayerProprety[];
+        prop: PlayerProperty[];
     };
     againstPlayer: {
         id: string;
         balance: number;
-        prop: PlayerProprety[];
+        prop: PlayerProperty[];
     };
 };
 export type botInitial = { name: string; diff: string };

@@ -1,6 +1,6 @@
 import HouseIcon from "../../../../public/h.png";
 import HotelIcon from "../../../../public/ho.png";
-import { calculateDisplayedRent } from "../../../game/rules/rentCalculator";
+import { calculateDisplayedRent } from "../../../game/rules/calculateRent";
 
 export function renderPropertySlot({
     slot,
