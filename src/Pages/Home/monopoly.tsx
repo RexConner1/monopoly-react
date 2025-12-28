@@ -285,10 +285,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (socket.id !== args.turnId) return;
 
                     const location = clients.get(socket.id)?.position ?? -1;
-                    const proprety = propretyMap.get(location);
-                    if (proprety != undefined) {
-                        if (proprety.id === "communitychest" || proprety.id === "chance") {
-                            socket.emit("chorch_roll", { is_chance: proprety.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
+                    const property = propretyMap.get(location);
+                    if (property != undefined) {
+                        if (property.id === "communitychest" || property.id === "chance") {
+                            socket.emit("chorch_roll", { is_chance: property.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
                         } else {
                             engineRef.current?.setStreet({
                                 location,
@@ -298,13 +298,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     if (b === "buy") {
                                         if (settings !== undefined && settings.notifications === true)
                                             notifyRef.current?.message(
-                                                `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
+                                                `${(property?.price ?? 0) * 1} of money is deducted from the account`,
                                                 "info",
                                                 2,
                                                 () => {},
                                                 false
                                             );
-                                        localPlayer.balance -= (proprety?.price ?? 0) * 1;
+                                        localPlayer.balance -= (property?.price ?? 0) * 1;
                                         engineRef.current?.applyAnimation(1);
                                         localPlayer.properties.push({
                                             posistion: localPlayer.position,
@@ -318,7 +318,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                         socket.emit(
                                             "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${proprety.name}`)
+                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${property.name}`)
                                         );
                                     } else if (b === "advance-buy") {
                                         var audio = new Audio("./buying1.mp3");
@@ -339,59 +339,59 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         if (_info.state === 5) {
                                             if (settings !== undefined && settings.notifications === true)
                                                 notifyRef.current?.message(
-                                                    `${proprety.ohousecost ?? 0} of money is deducted from the account`,
+                                                    `${property.ohousecost ?? 0} of money is deducted from the account`,
                                                     "info",
                                                     2,
                                                     () => {},
                                                     false
                                                 );
-                                            localPlayer.balance -= proprety.ohousecost ?? 0;
+                                            localPlayer.balance -= property.ohousecost ?? 0;
                                             engineRef.current?.applyAnimation(1);
                                         } else {
                                             if (settings !== undefined && settings.notifications === true)
                                                 notifyRef.current?.message(
-                                                    `${proprety.housecost ?? 0} of money is deducted from the account`,
+                                                    `${property.housecost ?? 0} of money is deducted from the account`,
                                                     "info",
                                                     2,
                                                     () => {},
                                                     false
                                                 );
-                                            localPlayer.balance -= (proprety.housecost ?? 0) * _info.money;
+                                            localPlayer.balance -= (property.housecost ?? 0) * _info.money;
                                             engineRef.current?.applyAnimation(1);
                                         }
 
                                         socket.emit(
                                             "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${proprety.name}`)
+                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
                                         );
                                     } else if (b === "someones") {
                                         const players = Array.from(clients.values());
                                         for (const p of players) {
                                             for (const prp of p.properties) {
                                                 if (prp.posistion === location) {
-                                                    var payment_ammount = 0;
+                                                    var payment_amount = 0;
 
-                                                    if (proprety.group === "Utilities" && prp.rent) {
+                                                    if (property.group === "Utilities" && prp.rent) {
                                                         const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                        payment_ammount = prp.rent * multy_;
-                                                    } else if (proprety.group === "Railroad") {
+                                                        payment_amount = prp.rent * multy_;
+                                                    } else if (property.group === "Railroad") {
                                                         const count = p.properties
                                                             .filter((v) => v.group === "Railroad")
                                                             .filter(
                                                                 (v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)
                                                             ).length;
                                                         const rents = [0, 25, 50, 100, 200];
-                                                        payment_ammount = rents[count];
+                                                        payment_amount = rents[count];
                                                     } else if (prp.count === 0) {
-                                                        payment_ammount = proprety?.rent ?? 0;
+                                                        payment_amount = property?.rent ?? 0;
                                                     } else if (typeof prp.count === "number" && prp.count > 0) {
-                                                        payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
+                                                        payment_amount = (property?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
                                                     } else if (prp.count === "h") {
-                                                        payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
+                                                        payment_amount = (property?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
                                                     }
                                                     if (settings !== undefined && settings.notifications === true)
                                                         notifyRef.current?.message(
-                                                            `${payment_ammount} of money is deducted from the account`,
+                                                            `${payment_amount} of money is deducted from the account`,
                                                             "info",
                                                             2,
                                                             () => {},
@@ -402,10 +402,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                     audio.loop = false;
                                                     audio.play();
                                                     if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
-                                                        localPlayer.balance -= payment_ammount;
+                                                        localPlayer.balance -= payment_amount;
                                                     engineRef.current?.applyAnimation(1);
                                                     socket.emit("pay", {
-                                                        balance: payment_ammount,
+                                                        balance: payment_amount,
                                                         from: socket.id,
                                                         to: p.id,
                                                     });
@@ -414,7 +414,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                     socket.emit(
                                                         "history",
                                                         history(`
-                                                    ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_ammount} to ${
+                                                    ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_amount} to ${
                                                             clients.get(p.id)?.username ?? "unknown user"
                                                         }
                                                     `)
@@ -423,7 +423,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             }
                                         }
                                     } else if (b === "nothing") {
-                                        if ((proprety?.id ?? "") == "gotojail") {
+                                        if ((property?.id ?? "") == "gotojail") {
                                             const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
                                                 xplayer.position = 10;
                                                 xplayer.isInJail = true;
@@ -434,7 +434,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             generatorResults.func();
                                         }
 
-                                        if (proprety?.id === "incometax") {
+                                        if (property?.id === "incometax") {
                                             localPlayer.balance -= 200;
                                             if (settings !== undefined && settings.notifications === true)
                                                 notifyRef.current?.message(
@@ -454,7 +454,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 history(`${clients.get(socket.id)?.username ?? "unknown player"} payed income taxes`)
                                             );
                                         }
-                                        if (proprety?.id === "luxerytax") {
+                                        if (property?.id === "luxerytax") {
                                             localPlayer.balance -= 100;
                                             if (settings !== undefined && settings.notifications === true)
                                                 notifyRef.current?.message(
@@ -477,7 +477,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     } else if (b === "special_action") {
                                         if (settings !== undefined && settings.notifications === true)
                                             notifyRef.current?.message(
-                                                `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
+                                                `${(property?.price ?? 0) * 1} of money is deducted from the account`,
                                                 "info",
                                                 2,
                                                 () => {},
@@ -487,7 +487,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         audio.volume = 0.5 * ((settings?.audio[1] ?? 100) / 100) * ((settings?.audio[0] ?? 100) / 100);
                                         audio.loop = false;
                                         audio.play();
-                                        localPlayer.balance -= (proprety?.price ?? 0) * 1;
+                                        localPlayer.balance -= (property?.price ?? 0) * 1;
                                         engineRef.current?.applyAnimation(1);
 
                                         const _info = info as {
