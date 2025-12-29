@@ -9,8 +9,6 @@ import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
-import { GameContext } from "../../types.ts";
-import { onTurnFinished } from "../../services/sockets/onTurnFinished.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../game/audio/audio.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
@@ -200,7 +198,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 mainTheme.pause();
                 notifyRef.current?.dialog(
                     (close_func, createButton) => ({
-                        innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
+                        innerHTML: `<h3> YOU WON! </h3> <p> You're the only left player with the balance of ${
                             clients.get(socket.id)?.balance ?? 0
                         } </p>`,
                         buttons: [
@@ -216,30 +214,195 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             destroyPlayer(args.id);
         };
 
-        const socket_TurnFinished = (args: {
-            from: string;
-            turnId: string;
-            pJson: PlayerJSON;
-            WinningMode: string;
-        }) => {
-            const context: GameContext = {
-                socket,
-                clients,
-                SetClients,
-                SetCurrent,
+        const socket_TurnFinished = (args: { from: string; turnId: string; pJson: PlayerJSON; WinningMode: string }) => {
+            const x = clients.get(args.from);
 
-                settings,
-                monopolyJSON,
+            if (x !== undefined && JSON.stringify(x.properties) != JSON.stringify(args.pJson.properties)) {
+                playPurchaseSfx(settings);
+            }
 
-                notifyRef,
-                engineRef,
-                navRef,
+            if (args.from !== socket.id && x) {
+                x.recieveJson(args.pJson);
+                SetClients(new Map(clients.set(args.from, x)));
+            }
 
-                mainTheme,
-                destroyPlayer,
-            };
+            if (args.pJson.balance < 0) {
+                if (args.pJson.id !== socket.id) {
+                    if (clients.size > 2) {
+                        const name = args.pJson.username;
+                        notifyRef.current?.message(`${name} lost`, "info");
+                    } else {
+                        if (clients.has(socket.id)) {
+                            mainTheme.pause();
+                            notifyRef.current?.dialog(
+                                (close_func, createButton) => ({
+                                    innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
+                                        clients.get(socket.id)?.balance ?? 0
+                                    } </p>`,
+                                    buttons: [
+                                        createButton("PLAY ANOTHER GAME", () => {
+                                            close_func();
+                                            document.location.reload();
+                                        }),
+                                    ],
+                                }),
+                                "winning"
+                            );
+                        } else {
+                            const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
+                            const name = xclient.username ?? 0;
+                            mainTheme.pause();
+                            notifyRef.current?.dialog(
+                                (close_func, createButton) => ({
+                                    innerHTML: `<h3> ${name} WON! </h3> <p> ${name} won with the balance of ${
+                                        clients.get(socket.id)?.balance ?? 0
+                                    } </p>`,
+                                    buttons: [
+                                        createButton("PLAY ANOTHER GAME", () => {
+                                            close_func();
+                                            document.location.reload();
+                                        }),
+                                    ],
+                                }),
+                                "winning"
+                            );
+                        }
+                    }
+                } else {
+                    mainTheme.pause();
+                    notifyRef.current?.dialog(
+                        (close_func, createButton) => ({
+                            innerHTML: `<h3> YOU LOST! </h3> <p> you lost your money and lost the monopol with a wanted balance of ${-(
+                                clients.get(socket.id)?.balance ?? 0
+                            )} </p>`,
+                            buttons: [
+                                createButton("CONTINUE WATCHING", () => {
+                                    close_func();
+                                }),
+                                createButton("PLAY ANOTHER GAME", () => {
+                                    close_func();
+                                    document.location.reload();
+                                }),
+                            ],
+                        }),
+                        "loosing"
+                    );
+                }
 
-            onTurnFinished(args, context);
+                destroyPlayer(args.pJson.id);
+            }
+            if (args.WinningMode === "monopols" || args.WinningMode === "monopols & trains") {
+                function removeDuplicates(originalList: Array<any>) {
+                    // Create an empty array to store unique values
+                    const uniqueList: Array<any> = [];
+
+                    // Use the filter method to iterate through the original list
+                    originalList.filter(function (item) {
+                        // If the item is not already in the uniqueList, add it
+                        if (!uniqueList.includes(item)) {
+                            uniqueList.push(item);
+                        }
+                        // Always return false in the filter function to skip duplicates
+                        return false;
+                    });
+
+                    // Return the uniqueList
+                    return uniqueList;
+                }
+                for (const p of Array.from(clients.values())) {
+                    const prpGrups = [];
+                    for (const prp of p.properties) {
+                        if (!["Special", "Railroad", "Utilities"].includes(prp.group)) prpGrups.push(prp.group);
+                    }
+                    let x: number = 0;
+
+                    for (const g of removeDuplicates(prpGrups)) {
+                        const c = prpGrups.filter((v) => v === g).length;
+                        const cc = monopolyJSON.properties.filter((v) => v.group === g).length;
+                        if (c === cc) {
+                            x += 1;
+                        }
+                    }
+                    if (x === 3) {
+                        mainTheme.pause();
+                        if (p.id === socket.id) {
+                            notifyRef.current?.dialog(
+                                (close_func, createButton) => ({
+                                    innerHTML: `<h3> YOU WON! </h3> <p> you have 3 sets! </p>`,
+                                    buttons: [
+                                        createButton("PLAY ANOTHER GAME", () => {
+                                            close_func();
+                                            document.location.reload();
+                                        }),
+                                    ],
+                                }),
+                                "winning"
+                            );
+                        } else {
+                            notifyRef.current?.dialog(
+                                (close_func, createButton) => ({
+                                    innerHTML: `<h3> ${p.username} WON! </h3> <p> got 3 sets! </p>`,
+                                    buttons: [
+                                        createButton("PLAY ANOTHER GAME", () => {
+                                            close_func();
+                                            document.location.reload();
+                                        }),
+                                    ],
+                                }),
+                                "winning"
+                            );
+                        }
+                        return;
+                    }
+                }
+                if (args.WinningMode === "monopols & trains") {
+                    // continue with trains winning state!
+                    for (const p of Array.from(clients.values())) {
+                        const c = p.properties.filter((v) => v.group === "Railroad").length;
+                        if (c === 4) {
+                            mainTheme.pause();
+                            if (p.id === socket.id) {
+                                notifyRef.current?.dialog(
+                                    (close_func, createButton) => ({
+                                        innerHTML: `<h3> YOU WON! </h3> <p> you have 4 railroads! </p>`,
+                                        buttons: [
+                                            createButton("PLAY ANOTHER GAME", () => {
+                                                close_func();
+                                                document.location.reload();
+                                            }),
+                                        ],
+                                    }),
+                                    "winning"
+                                );
+                            } else {
+                                notifyRef.current?.dialog(
+                                    (close_func, createButton) => ({
+                                        innerHTML: `<h3> ${p.username} WON! </h3> <p> got 4 railroads! </p>`,
+                                        buttons: [
+                                            createButton("PLAY ANOTHER GAME", () => {
+                                                close_func();
+                                                document.location.reload();
+                                            }),
+                                        ],
+                                    }),
+                                    "winning"
+                                );
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
+            SetCurrent(args.turnId);
+            if (args.turnId === socket.id) {
+                const x = clients.get(args.turnId);
+                if (x && x.isInJail) {
+                    engineRef.current?.showJailsButtons((x?.getoutCards ?? -1) > 0);
+                } else {
+                }
+            }
+            navRef.current?.reRenderPlayerList();
         };
 
         const socket_Message = (message: { from: string; message: string }) => {
