@@ -285,7 +285,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 }),
                             ],
                         }),
-                        "loosing"
+                        "losing"
                     );
                 }
 
@@ -766,18 +766,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 const c = args.element;
                 const xplayer = clients.get(args.turnId);
                 if (xplayer === undefined) return;
-                function addBalanceToOthers(amnout: number) {
+                function addBalanceToOthers(amount: number) {
                     if (xplayer === undefined) return 0;
 
                     const other_players = Array.from(clients.values()).filter((v) => v.id !== xplayer.id);
 
                     if (xplayer.id === socket.id) {
-                        if (amnout > 0) {
+                        if (amount > 0) {
                             // give money
                             socket.emit(
                                 "history",
                                 history(
-                                    `${xplayer.username ?? "unknown user"} gave ${amnout} money to [${other_players
+                                    `${xplayer.username ?? "unknown user"} gave ${amount} money to [${other_players
                                         .map((v) => v.username)
                                         .join(", ")}]`
                                 )
@@ -787,7 +787,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             socket.emit(
                                 "history",
                                 history(
-                                    `${xplayer.username ?? "unknown user"} recieve ${-amnout} money from [${other_players
+                                    `${xplayer.username ?? "unknown user"} recieve ${-amount} money from [${other_players
                                         .map((v) => v.username)
                                         .join(", ")}]`
                                 )
@@ -796,25 +796,25 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     }
 
                     for (const p of other_players) {
-                        p.balance += amnout;
+                        p.balance += amount;
                         if (p.id === socket.id && settings !== undefined && settings.notifications === true) {
-                            notifyRef.current?.message(`${amnout} of money is added to the account`, "info", 2, () => {}, false);
+                            notifyRef.current?.message(`${amount} of money is added to the account`, "info", 2, () => {}, false);
                             
                             playMoneyPlusSfx(settings);
                         }
                         SetClients(new Map(clients.set(p.id, p)));
 
                         if (xplayer.id === socket.id) {
-                            if (amnout > 0) {
+                            if (amount > 0) {
                                 socket.emit("pay", {
-                                    balance: amnout,
+                                    balance: amount,
                                     from: socket.id,
                                     to: p.id,
                                 });
                             } else {
                                 // recieve money
                                 socket.emit("pay", {
-                                    balance: amnout,
+                                    balance: amount,
                                     from: p.id,
                                     to: socket.id,
                                 });
@@ -1207,7 +1207,7 @@ which is ${payment_ammount}
                         }),
                     ],
                 }),
-                "loosing"
+                "losing"
             );
         }
 
