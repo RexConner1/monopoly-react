@@ -24,8 +24,8 @@ import { handleUtilitySquare } from "../actions/landing/handleUtilitySquare.ts";
 import { handleSpecialSquare } from "../actions/landing/handleSpecialSquare.ts";
 import { StreetDisplayContainer } from "./squareInteraction/streetDisplayContainer.tsx";
 import { ActionBar } from "./actionBar/actionBar.tsx";
-import { propertiesDisplay } from "../services/dom/property/propertiesDisplay.ts";
-import { animatePlayers } from "../services/animation/animatePlayers.ts";
+import { propertiesDisplay } from "../ui/dom/property/propertiesDisplay.ts";
+import { animatePlayers } from "../ui/animation/animatePlayers.ts";
 import { showJailButtons } from "../actions/jail/showJailButtons.ts";
 
 

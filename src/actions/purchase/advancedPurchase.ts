@@ -1,5 +1,5 @@
-import { waitForElement } from "../../services/dom/waitForElement";
-import { clearElement } from "../../services/dom/clearElement";
+import { waitForElement } from "../../ui/dom/waitForElement";
+import { clearElement } from "../../ui/dom/clearElement";
 import { normalizeHouseCount, findPropertyIndex } from "../../game/rules/purchase/propertyLogic";
 import { renderPurchaseButtons } from "./renderPurchaseButtons";
 import { createContinueButton } from "./commonButtons";

@@ -1,4 +1,4 @@
-import { waitForElement } from "../../services/dom/waitForElement";
+import { waitForElement } from "../../ui/dom/waitForElement";
 
 export function handleSimplePurchase({
     args,

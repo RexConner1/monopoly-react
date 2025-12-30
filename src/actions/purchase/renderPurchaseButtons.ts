@@ -1,4 +1,4 @@
-import { createButton } from "../../services/dom/buttonFactory";
+import { createButton } from "../../ui/dom/buttonFactory";
 import { canAfford, housePurchaseCost } from "../../game/rules/purchase/purchaseRules";
 
 export function renderPurchaseButtons(

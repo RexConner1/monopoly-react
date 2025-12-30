@@ -10,7 +10,7 @@ import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, M
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../game/audio/audio.ts";
-import { showDialog } from "../../services/dialogs/dialogFactory.ts";
+import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());

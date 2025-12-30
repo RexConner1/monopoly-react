@@ -1,4 +1,4 @@
-import { createButton } from "../../services/dom/buttonFactory";
+import { createButton } from "../../ui/dom/buttonFactory";
 
 export function createContinueButton(
     onContinue: () => void

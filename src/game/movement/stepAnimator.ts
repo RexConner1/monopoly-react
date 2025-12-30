@@ -1,6 +1,6 @@
 import { Player } from "../../assets/player";
 import { playSound } from "../audio/soundPlayer";
-import { getPlayerElement } from "../../services/dom/playerElement";
+import { getPlayerElement } from "../../ui/dom/playerElement";
 
 interface StepAnimatorOptions {
     moves: number;
