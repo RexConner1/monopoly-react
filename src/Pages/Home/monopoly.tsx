@@ -10,6 +10,7 @@ import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, M
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../game/audio/audio.ts";
+import { showDialog } from "../../services/dialogs/dialogFactory.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -196,20 +197,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 notifyRef.current?.message(`${name} disconected`, "error");
             } else if (clients.has(args.id)) {
                 mainTheme.pause();
-                notifyRef.current?.dialog(
-                    (close_func, createButton) => ({
-                        innerHTML: `<h3> YOU WON! </h3> <p> You're the only left player with the balance of ${
-                            clients.get(socket.id)?.balance ?? 0
-                        } </p>`,
-                        buttons: [
-                            createButton("PLAY ANOTHER GAME", () => {
-                                close_func();
-                                document.location.reload();
-                            }),
-                        ],
-                    }),
-                    "winning"
-                );
+                showDialog(notifyRef, "YOU_WIN", {
+                    balance: clients.get(socket.id)?.balance
+                });
+
             }
             destroyPlayer(args.id);
         };
@@ -234,59 +225,24 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     } else {
                         if (clients.has(socket.id)) {
                             mainTheme.pause();
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
-                                        clients.get(socket.id)?.balance ?? 0
-                                    } </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "YOU_WIN", {
+                                balance: clients.get(socket.id)?.balance
+                            });
                         } else {
                             const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
                             const name = xclient.username ?? 0;
                             mainTheme.pause();
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> ${name} WON! </h3> <p> ${name} won with the balance of ${
-                                        clients.get(socket.id)?.balance ?? 0
-                                    } </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "PLAYER_WON", {
+                                playerName: name,
+                                balance: clients.get(socket.id)?.balance
+                            });
                         }
                     }
                 } else {
                     mainTheme.pause();
-                    notifyRef.current?.dialog(
-                        (close_func, createButton) => ({
-                            innerHTML: `<h3> YOU LOST! </h3> <p> you lost your money and lost the monopol with a wanted balance of ${-(
-                                clients.get(socket.id)?.balance ?? 0
-                            )} </p>`,
-                            buttons: [
-                                createButton("CONTINUE WATCHING", () => {
-                                    close_func();
-                                }),
-                                createButton("PLAY ANOTHER GAME", () => {
-                                    close_func();
-                                    document.location.reload();
-                                }),
-                            ],
-                        }),
-                        "losing"
-                    );
+                    showDialog(notifyRef, "YOU_LOST", {
+                        balance: clients.get(socket.id)?.balance
+                    }, "losing");
                 }
 
                 destroyPlayer(args.pJson.id);
@@ -326,31 +282,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (x === 3) {
                         mainTheme.pause();
                         if (p.id === socket.id) {
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> YOU WON! </h3> <p> you have 3 sets! </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "THREE_SETS");
                         } else {
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> ${p.username} WON! </h3> <p> got 3 sets! </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "THREE_SETS", {
+                                playerName: p.username
+                            });
                         }
                         return;
                     }
@@ -362,31 +298,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         if (c === 4) {
                             mainTheme.pause();
                             if (p.id === socket.id) {
-                                notifyRef.current?.dialog(
-                                    (close_func, createButton) => ({
-                                        innerHTML: `<h3> YOU WON! </h3> <p> you have 4 railroads! </p>`,
-                                        buttons: [
-                                            createButton("PLAY ANOTHER GAME", () => {
-                                                close_func();
-                                                document.location.reload();
-                                            }),
-                                        ],
-                                    }),
-                                    "winning"
-                                );
+                                showDialog(notifyRef, "FOUR_RAILROADS");
                             } else {
-                                notifyRef.current?.dialog(
-                                    (close_func, createButton) => ({
-                                        innerHTML: `<h3> ${p.username} WON! </h3> <p> got 4 railroads! </p>`,
-                                        buttons: [
-                                            createButton("PLAY ANOTHER GAME", () => {
-                                                close_func();
-                                                document.location.reload();
-                                            }),
-                                        ],
-                                    }),
-                                    "winning"
-                                );
+                                showDialog(notifyRef, "FOUR_RAILROADS", {
+                                    playerName: p.username
+                                });
                             }
                             return;
                         }
@@ -1197,18 +1113,7 @@ which is ${payment_ammount}
         }
         function socket_networkDisconnect() {
             mainTheme.pause();
-            notifyRef.current?.dialog(
-                (close_func, createButton) => ({
-                    innerHTML: `<h3> LOST CONNECTION </h3> <p> you were disconnected from the game </p>`,
-                    buttons: [
-                        createButton("PLAY ANOTHER GAME", () => {
-                            close_func();
-                            document.location.reload();
-                        }),
-                    ],
-                }),
-                "losing"
-            );
+            showDialog(notifyRef, "DISCONNECTED", {}, "losing");
         }
 
         function socket_history(args: historyAction) {
