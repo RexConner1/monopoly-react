@@ -9,7 +9,7 @@ import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
-import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../game/audio/audio.ts";
+import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {

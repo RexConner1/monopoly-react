@@ -1,5 +1,5 @@
 import { Player } from "../../assets/player";
-import { playSound } from "../audio/soundPlayer";
+import { playSound } from "../../ui/audio/soundPlayer";
 import { getPlayerElement } from "../../ui/dom/playerElement";
 
 interface StepAnimatorOptions {
