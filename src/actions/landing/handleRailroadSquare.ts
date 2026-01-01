@@ -1,5 +1,5 @@
-import { canPurchase } from "../../game/rules/landing/balanceRules";
-import { buildRailroadDisplay } from "../../game/rules/landing/displayBuilders";
+import { canPurchase } from "../../game/logic/landing/balanceRules";
+import { buildRailroadDisplay } from "../../game/logic/landing/displayBuilders";
 
 export function handleRailroadSquare({
     x,

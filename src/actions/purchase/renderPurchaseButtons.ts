@@ -1,5 +1,5 @@
 import { createButton } from "../../ui/dom/buttonFactory";
-import { canAfford, housePurchaseCost } from "../../game/rules/purchase/purchaseRules";
+import { canAfford, housePurchaseCost } from "../../game/logic/purchase/purchaseRules";
 
 export function renderPurchaseButtons(
     container: HTMLDivElement,

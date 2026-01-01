@@ -1,6 +1,6 @@
 import { waitForElement } from "../../ui/dom/waitForElement";
 import { clearElement } from "../../ui/dom/clearElement";
-import { normalizeHouseCount, findPropertyIndex } from "../../game/rules/purchase/propertyLogic";
+import { normalizeHouseCount, findPropertyIndex } from "../../game/logic/purchase/propertyLogic";
 import { renderPurchaseButtons } from "./renderPurchaseButtons";
 import { createContinueButton } from "./commonButtons";
 
