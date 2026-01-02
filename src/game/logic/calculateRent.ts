@@ -1,16 +1,18 @@
+import { Player } from "../../assets/player";
+
 export function calculateDisplayedRent(
     property: any,
-    player: any
+    player: Player
 ): number {
     if (property.group === "Railroad") {
-        const owned = player.properties.filter(
+        const railroadCount = player.properties.filter(
             (p: any) =>
                 p.group === "Railroad" &&
                 (p.morgage === undefined || p.morgage === false)
         ).length;
 
         const rents = [0, 25, 50, 100, 200];
-        return rents[owned] ?? 0;
+        return rents[railroadCount] ?? 0;
     }
 
     if (property.group === "Utilities" && property.rent) {
@@ -21,6 +23,8 @@ export function calculateDisplayedRent(
         const multiplier = utilityCount === 2 ? 10 : 4;
         return property.rent * multiplier;
     }
+
+    if (property.count === 0) return property.rent ?? 0;
 
     return 0;
 }
