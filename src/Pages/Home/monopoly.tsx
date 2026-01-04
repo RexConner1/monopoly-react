@@ -12,6 +12,10 @@ import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts"
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
+import { buyProperty } from "../../game/logic/buyProperty.ts";
+import { buildOnProperty } from "../../game/logic/buildOnProperty.ts";
+import { payLuxuryTax } from "../../game/logic/payLuxuryTax.ts";
+import { payIncomeTax } from "../../game/logic/payIncomeTax.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -375,58 +379,28 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 onResponse: (b, info) => {
                                     var time_till_free = 0;
                                     if (b === "buy") {
-                                        if (settings !== undefined && settings.notifications === true)
-                                            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                amount: property?.price ?? 0
-                                            });
-                                        localPlayer.balance -= (property?.price ?? 0) * 1;
-                                        engineRef.current?.applyAnimation(1);
-                                        localPlayer.properties.push({
-                                            posistion: localPlayer.position,
-                                            count: 0,
-                                            group: propretyMap.get(localPlayer.position)?.group ?? "",
-                                        });
-                                        
-                                        playPurchaseSfx(settings);
-
-                                        socket.emit(
-                                            "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${property.name}`)
-                                        );
+                                        buyProperty({
+                                            player: localPlayer,
+                                            property,
+                                            propretyMap,
+                                            settings,
+                                            notifyRef,
+                                            engineRef,
+                                            socket,
+                                            clients
+                                        })
                                     } else if (b === "advance-buy") {
-                                        playPurchaseSfx(settings);
-
-                                        const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                            (v) => v[1].posistion === location
-                                        )[0][0];
-
-                                        const _info = info as {
-                                            state: 1 | 2 | 3 | 4 | 5;
-                                            money: number;
-                                        };
-
-                                        localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
-
-                                        if (_info.state === 5) {
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                    amount: property.ohousecost ?? 0
-                                                });
-                                            localPlayer.balance -= property.ohousecost ?? 0;
-                                            engineRef.current?.applyAnimation(1);
-                                        } else {
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                    amount: property.housecost ?? 0
-                                                });
-                                            localPlayer.balance -= (property.housecost ?? 0) * _info.money;
-                                            engineRef.current?.applyAnimation(1);
-                                        }
-
-                                        socket.emit(
-                                            "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
-                                        );
+                                        buildOnProperty({
+                                            player: localPlayer,
+                                            property,
+                                            location,
+                                            info,
+                                            settings,
+                                            notifyRef,
+                                            engineRef,
+                                            socket,
+                                            clients
+                                        })
                                     } else if (b === "someones") {
                                         const players = Array.from(clients.values());
                                         for (const p of players) {
@@ -493,34 +467,24 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         }
 
                                         if (property?.id === "incometax") {
-                                            localPlayer.balance -= 200;
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                    amount: 200
-                                                });
-
-                                            playMoneyMinusSfx(settings);
-                                            
-                                            engineRef.current?.applyAnimation(1);
-                                            socket.emit(
-                                                "history",
-                                                history(`${clients.get(socket.id)?.username ?? "unknown player"} payed income taxes`)
-                                            );
+                                            payIncomeTax({
+                                                player: localPlayer,
+                                                settings,
+                                                notifyRef,
+                                                engineRef,
+                                                socket,
+                                                clients
+                                            })
                                         }
                                         if (property?.id === "luxerytax") {
-                                            localPlayer.balance -= 100;
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                    amount: 100
-                                                });
-
-                                            playMoneyMinusSfx(settings);
-
-                                            engineRef.current?.applyAnimation(1);
-                                            socket.emit(
-                                                "history",
-                                                history(`${clients.get(socket.id)?.username ?? "unknown player"} payed luxery taxes`)
-                                            );
+                                            payLuxuryTax({
+                                                player: localPlayer,
+                                                settings,
+                                                notifyRef,
+                                                engineRef,
+                                                socket,
+                                                clients
+                                            })
                                         }
                                     } else if (b === "special_action") {
                                         if (settings !== undefined && settings.notifications === true)
