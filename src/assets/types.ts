@@ -62,6 +62,45 @@ export interface MonopolyMode {
     turnTimer: undefined | number;
 }
 
+export type PropertyGroup =
+    | "Purple"
+    | "lightgreen"
+    | "Violet"
+    | "Orange"
+    | "Red"
+    | "Yellow"
+    | "darkgreen"
+    | "darkblue"
+    | "Utilities"
+    | "Railroad"
+    | "Special";
+
+export interface Property {
+    name: string;
+    id: string;
+    posistion: number;
+    group: PropertyGroup;
+
+    price?: number;
+    rent?: number;
+    multpliedrent?: number[];
+    housecost?: number;
+    oprice?: number;
+
+    ownedby?: number;
+    buildings?: number;
+    mortgaged?: boolean;
+
+    rel?: {
+        Square: string;
+        "Probability % (Jail Short)"?: number;
+        "Probability % (Jail Long)"?: number;
+        Rank?: number;
+    };
+
+    averageProbability?: number;
+}
+
 export interface PlayerProperty {
     posistion: number;
     count: 0 | 1 | 2 | 3 | 4 | "h";

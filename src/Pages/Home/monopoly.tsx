@@ -6,7 +6,7 @@ import MonopolyNav, { MonopolyNavRef } from "../../components/nav/nav.tsx";
 import MonopolyGame, { MonopolyGameRef } from "../../components/game.tsx";
 import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx";
 import monopolyJSON from "../../assets/monopoly.json";
-import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../assets/types.ts";
+import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, Property } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
@@ -16,6 +16,7 @@ import { buyProperty } from "../../game/logic/buyProperty.ts";
 import { buildOnProperty } from "../../game/logic/buildOnProperty.ts";
 import { payLuxuryTax } from "../../game/logic/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/logic/payIncomeTax.ts";
+import { handleRentPayment } from "../../actions/rent/handleRentPayment.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -66,8 +67,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     const navRef = useRef<MonopolyNavRef>(null);
     const notifyRef = useRef<NotificatorRef>(null);
 
+    const monopolyProperties = monopolyJSON.properties as Property[];
     const propretyMap = new Map(
-        monopolyJSON.properties.map((obj) => {
+        monopolyProperties.map((obj) => {
             return [obj.posistion ?? 0, obj];
         })
     );
@@ -279,7 +281,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                     for (const g of removeDuplicates(prpGrups)) {
                         const c = prpGrups.filter((v) => v === g).length;
-                        const cc = monopolyJSON.properties.filter((v) => v.group === g).length;
+                        const cc = monopolyProperties.filter((v) => v.group === g).length;
                         if (c === cc) {
                             x += 1;
                         }
@@ -402,58 +404,16 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             clients
                                         })
                                     } else if (b === "someones") {
-                                        const players = Array.from(clients.values());
-                                        for (const p of players) {
-                                            for (const prp of p.properties) {
-                                                if (prp.posistion === location) {
-                                                    var payment_amount = 0;
-
-                                                    if (property.group === "Utilities" && prp.rent) {
-                                                        const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                        payment_amount = prp.rent * multy_;
-                                                    } else if (property.group === "Railroad") {
-                                                        const count = p.properties
-                                                            .filter((v) => v.group === "Railroad")
-                                                            .filter(
-                                                                (v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)
-                                                            ).length;
-                                                        const rents = [0, 25, 50, 100, 200];
-                                                        payment_amount = rents[count];
-                                                    } else if (prp.count === 0) {
-                                                        payment_amount = property?.rent ?? 0;
-                                                    } else if (typeof prp.count === "number" && prp.count > 0) {
-                                                        payment_amount = (property?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
-                                                    } else if (prp.count === "h") {
-                                                        payment_amount = (property?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
-                                                    }
-                                                    if (settings !== undefined && settings.notifications === true)
-                                                        notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                            amount: payment_amount
-                                                        });
-                                                    
-                                                    playMoneyMinusSfx(settings);
-                                                    
-                                                    if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
-                                                        localPlayer.balance -= payment_amount;
-                                                    engineRef.current?.applyAnimation(1);
-                                                    socket.emit("pay", {
-                                                        balance: payment_amount,
-                                                        from: socket.id,
-                                                        to: p.id,
-                                                    });
-                                                    engineRef.current?.applyAnimation(1);
-
-                                                    socket.emit(
-                                                        "history",
-                                                        history(`
-                                                    ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_amount} to ${
-                                                            clients.get(p.id)?.username ?? "unknown user"
-                                                        }
-                                                    `)
-                                                    );
-                                                }
-                                            }
-                                        }
+                                        handleRentPayment({
+                                            socket,
+                                            players: clients,
+                                            currentPlayer: localPlayer,
+                                            property,
+                                            location,
+                                            notifyRef,
+                                            settings,
+                                            engineRef,
+                                        })
                                     } else if (b === "nothing") {
                                         if ((property?.id ?? "") == "gotojail") {
                                             const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
@@ -695,7 +655,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     case "move":
                         if (c.tileid) {
                             const p = new Map(
-                                monopolyJSON.properties.map((obj) => {
+                                monopolyProperties.map((obj) => {
                                     return [obj.id, obj];
                                 })
                             );
@@ -799,7 +759,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         } else {
                             p = "Railroad";
                         }
-                        const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.posistion);
+                        const arr = monopolyProperties.filter((v) => v.group === p).map((v) => v.posistion);
                         const ongoingLocation = findNextValue(arr, xplayer.position);
                         const _generatorResults = playerMoveGENERATOR(ongoingLocation, xplayer);
                         time_till_finish = -1;

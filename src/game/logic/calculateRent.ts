@@ -1,30 +1,34 @@
 import { Player } from "../../assets/player";
+import { PlayerProperty, Property } from "../../assets/types";
+import { calculatePropertyRent } from "./calculatePropertyRent";
+import { calculateRailroadRent } from "./calculateRailroadRent";
+import { calculateUtilityRent } from "./calculateUtilityRent";
 
 export function calculateDisplayedRent(
-    property: any,
+    property: PlayerProperty,
     player: Player
 ): number {
     if (property.group === "Railroad") {
-        const railroadCount = player.properties.filter(
-            (p: any) =>
-                p.group === "Railroad" &&
-                (p.morgage === undefined || p.morgage === false)
-        ).length;
-
-        const rents = [0, 25, 50, 100, 200];
-        return rents[railroadCount] ?? 0;
+        return calculateRailroadRent(player);
     }
 
-    if (property.group === "Utilities" && property.rent) {
-        const utilityCount = player.properties.filter(
-            (p: any) => p.group === "Utilities"
-        ).length;
-
-        const multiplier = utilityCount === 2 ? 10 : 4;
-        return property.rent * multiplier;
+    if (property.group === "Utilities") {
+        return calculateUtilityRent(property, player);
     }
-
-    if (property.count === 0) return property.rent ?? 0;
 
     return 0;
+}
+
+export function calculateRent(
+    propAttributes: Property,
+    property: PlayerProperty,
+    player: Player
+): number {
+    const special = calculateDisplayedRent(property, player);
+
+    if (!special) {
+        return calculatePropertyRent(propAttributes, property);
+    }
+
+    return special;
 }

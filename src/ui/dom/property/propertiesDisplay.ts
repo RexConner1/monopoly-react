@@ -1,9 +1,10 @@
 import { resetPropertySlots } from "./resetPropertySlots";
 import { renderPropertySlot } from "./renderPropertySlot";
+import { Player } from "../../../assets/player";
 
 export function propertiesDisplay(
     container: HTMLDivElement,
-    players: any[],
+    players: Player[],
     settings: any
 ) {
     resetPropertySlots(container);
