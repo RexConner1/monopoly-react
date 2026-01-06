@@ -17,6 +17,7 @@ import { buildOnProperty } from "../../game/logic/buildOnProperty.ts";
 import { payLuxuryTax } from "../../game/logic/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/logic/payIncomeTax.ts";
 import { handleRentPayment } from "../../actions/rent/handleRentPayment.ts";
+import { buySpecialAction } from "../../game/logic/buySpecialAction.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -447,36 +448,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             })
                                         }
                                     } else if (b === "special_action") {
-                                        if (settings !== undefined && settings.notifications === true)
-                                            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                amount: property?.price ?? 0
-                                            });
-                                        
-                                        playPurchaseSfx(settings);
-
-                                        localPlayer.balance -= (property?.price ?? 0) * 1;
-                                        engineRef.current?.applyAnimation(1);
-
-                                        const _info = info as {
-                                            rolls: number;
-                                        };
-                                        const prp = propretyMap.get(localPlayer.position);
-                                        const calculateRent = _info.rolls;
-                                        localPlayer.properties.push({
-                                            posistion: localPlayer.position,
-                                            count: 0,
-                                            rent: calculateRent,
-                                            group: prp?.group ?? "",
-                                        });
-
-                                        socket.emit(
-                                            "history",
-                                            history(
-                                                `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                    prp?.name ?? "unkown place"
-                                                } with rent of ${calculateRent}`
-                                            )
-                                        );
+                                        buySpecialAction({
+                                            player: localPlayer,
+                                            property,
+                                            propretyMap,
+                                            info,
+                                            settings,
+                                            notifyRef,
+                                            engineRef,
+                                            socket,
+                                            clients
+                                        })
                                     }
 
                                     setTimeout(() => {
