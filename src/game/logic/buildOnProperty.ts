@@ -19,7 +19,7 @@ export function buildOnProperty({
     property: any;
     location?: number;
     info: object;
-    settings?: MonopolySettings;
+    settings: MonopolySettings | undefined;
     notifyRef?: React.RefObject<any>;
     engineRef?: React.RefObject<any>;
     socket: Socket

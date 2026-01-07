@@ -1,4 +1,6 @@
 import { Player } from "../../assets/player";
+import { Socket } from "../../assets/sockets";
+import { MonopolySettings } from "../../assets/types";
 import { calculateMoves } from "./calculateMoves";
 import { calculateMoveTime } from "./moveTiming";
 import { animatePlayerSteps } from "./stepAnimator";
@@ -7,8 +9,8 @@ export function playerMoveGenerator(
     finalPosition: number,
     player: Player,
     context: {
-        settings: any;
-        socket: any;
+        settings: MonopolySettings | undefined;
+        socket: Socket;
         notifyRef: any;
         engineRef: any;
         updateClients: () => void;

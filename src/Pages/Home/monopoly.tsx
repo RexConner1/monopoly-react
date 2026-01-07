@@ -374,7 +374,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     const property = propretyMap.get(location);
                     if (property != undefined) {
                         if (property.id === "communitychest" || property.id === "chance") {
-                            socket.emit("chorch_roll", { is_chance: property.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
+                            socket.emit("chorch_roll", { 
+                                is_chance: property.id === "chance", 
+                                rolls: args.listOfNums[0] + args.listOfNums[1] 
+                            });
                         } else {
                             engineRef.current?.setStreet({
                                 location,
