@@ -12,12 +12,12 @@ import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts"
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
-import { buyProperty } from "../../game/logic/buyProperty.ts";
-import { buildOnProperty } from "../../game/logic/buildOnProperty.ts";
+import { buyProperty } from "../../game/logic/buy/buyProperty.ts";
+import { buildOnProperty } from "../../game/logic/buy/buildOnProperty.ts";
 import { payLuxuryTax } from "../../game/logic/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/logic/payIncomeTax.ts";
 import { handleRentPayment } from "../../actions/rent/handleRentPayment.ts";
-import { buySpecialAction } from "../../game/logic/buySpecialAction.ts";
+import { buySpecialAction } from "../../game/logic/buy/buySpecialAction.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
