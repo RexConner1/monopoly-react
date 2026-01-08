@@ -1,5 +1,5 @@
 import { createButton } from "../../ui/dom/buttonFactory";
-import { canAfford, housePurchaseCost } from "../../game/logic/purchase/purchaseRules";
+
 
 export function renderPurchaseButtons(
     container: HTMLDivElement,
@@ -37,4 +37,18 @@ export function renderPurchaseButtons(
             )
         );
     }
+}
+
+export function canAfford(
+    cost: number,
+    balance: number
+): boolean {
+    return cost <= balance;
+}
+
+export function housePurchaseCost(
+    housesToBuy: number,
+    houseCost: number
+): number {
+    return housesToBuy * houseCost;
 }

@@ -1,5 +1,5 @@
-import { Player } from "../../assets/player";
-import { PlayerProperty } from "../../assets/types";
+import { Player } from "../../../assets/player";
+import { PlayerProperty } from "../../../assets/types";
 
 const ONE_UTILITY_MULTIPLIER = 4;
 const TWO_UTILITIES_MULTIPLIER = 10;

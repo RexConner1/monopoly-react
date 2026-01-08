@@ -1,6 +1,5 @@
 import { waitForElement } from "../../ui/dom/waitForElement";
 import { clearElement } from "../../ui/dom/clearElement";
-import { normalizeHouseCount, findPropertyIndex } from "../../game/logic/purchase/propertyLogic";
 import { renderPurchaseButtons } from "./renderPurchaseButtons";
 import { createContinueButton } from "./commonButtons";
 
@@ -55,3 +54,17 @@ export function handleAdvancedPurchase({
         );
     });
 }
+
+export function normalizeHouseCount(
+    count: 0 | 1 | 2 | 3 | 4 | "h"
+): number {
+    return count === "h" ? 5 : count;
+}
+
+export function findPropertyIndex(
+    properties: any[],
+    location: number
+): number {
+    return properties.findIndex(p => p.posistion === location);
+}
+

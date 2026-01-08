@@ -1,4 +1,4 @@
-import { PlayerProperty, Property } from "../../assets/types";
+import { PlayerProperty, Property } from "../../../assets/types";
 
 export function calculatePropertyRent(
     propAttributes: Property,

@@ -1,6 +1,6 @@
 import { Player } from "../../assets/player";
 import { MonopolySettings, Property } from "../../assets/types";
-import { calculateRent } from "../../game/logic/calculateRent";
+import { calculateRent } from "../../game/logic/rent/calculateRent";
 import { findPropertyOwner } from "../../game/logic/findPropertyOwner";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
 import { Socket } from "../../assets/sockets";
