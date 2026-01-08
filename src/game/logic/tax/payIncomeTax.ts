@@ -1,8 +1,8 @@
-import { Player } from "../../assets/player";
-import { Socket } from "../../assets/sockets";
-import { MonopolySettings, history } from "../../assets/types";
-import { playMoneyMinusSfx } from "../../ui/audio/audio";
-import { notifyMessage } from "../../ui/notifications/notificationFactory";
+import { Player } from "../../../assets/player";
+import { Socket } from "../../../assets/sockets";
+import { MonopolySettings, history } from "../../../assets/types";
+import { playMoneyMinusSfx } from "../../../ui/audio/audio";
+import { notifyMessage } from "../../../ui/notifications/notificationFactory";
 
 const INCOME_TAX = 200;
 
