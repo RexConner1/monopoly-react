@@ -8,31 +8,31 @@ export function buyProperty({
     player,
     property,
     propretyMap,
-    settings,
     notifyRef,
     engineRef,
     socket,
-    clients
+    clients,
+    settings
 }: {
     player: Player;
     property: any;
     propretyMap: Map<number, any>;
-    settings?: MonopolySettings;
-    notifyRef?: React.RefObject<any>;
-    engineRef?: React.RefObject<any>;
-    socket: Socket
-    clients: Map<string, Player>
+    notifyRef: React.RefObject<any>;
+    engineRef: React.RefObject<any>;
+    socket: Socket;
+    clients: Map<string, Player>;
+    settings?: MonopolySettings | undefined;
 }) {
     const price = property?.price ?? 0;
 
-    if (settings?.notifications === true && notifyRef)
+    if (settings?.notifications === true)
         notifyMessage(notifyRef, "MONEY_DEDUCTED", {
             amount: price
         });
 
     player.balance -= (price);
 
-    engineRef?.current?.applyAnimation(1);
+    engineRef.current?.applyAnimation(1);
 
     player.properties.push({
         posistion: player.position,

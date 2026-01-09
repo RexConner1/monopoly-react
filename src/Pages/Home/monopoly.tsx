@@ -389,11 +389,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             player: localPlayer,
                                             property,
                                             propretyMap,
-                                            settings,
                                             notifyRef,
                                             engineRef,
                                             socket,
-                                            clients
+                                            clients,
+                                            settings
                                         })
                                     } else if (b === "advance-buy") {
                                         buildOnProperty({
@@ -759,35 +759,21 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         rolls: args.rolls,
                                         onResponse: (b, info) => {
                                             if (b === "buy") {
-                                                if (settings !== undefined && settings.notifications === true)
-                                                    notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                        amount: property?.price ?? 0
-                                                    });
-                                                xplayer.balance -= (property?.price ?? 0) * 1;
-
-                                                engineRef.current?.applyAnimation(1);
-                                                const prp = propretyMap.get(xplayer.position);
-                                                xplayer.properties.push({
-                                                    posistion: xplayer.position,
-                                                    count: 0,
-                                                    group: prp?.group ?? "",
-                                                });
-
-                                                playPurchaseSfx(settings);
+                                                buyProperty({
+                                                    player: xplayer,
+                                                    property,
+                                                    propretyMap,
+                                                    notifyRef,
+                                                    engineRef,
+                                                    socket,
+                                                    clients,
+                                                    settings
+                                                })
 
                                                 SetClients(new Map(clients.set(socket.id, xplayer)));
                                                 engineRef.current?.freeDice();
                                                 const json = (clients.get(socket.id) as Player).toJson();
                                                 socket.emit("finish-turn", json);
-
-                                                socket.emit(
-                                                    "history",
-                                                    history(
-                                                        `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                            prp?.name ?? "unkown place"
-                                                        }`
-                                                    )
-                                                );
                                             } else if (b === "special_action") {
                                                 console.log(info);
                                                 if (settings !== undefined && settings.notifications === true)
