@@ -456,11 +456,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             property,
                                             propretyMap,
                                             info,
-                                            settings,
                                             notifyRef,
                                             engineRef,
                                             socket,
-                                            clients
+                                            clients,
+                                            settings
                                         })
                                     }
 
@@ -775,42 +775,22 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 const json = (clients.get(socket.id) as Player).toJson();
                                                 socket.emit("finish-turn", json);
                                             } else if (b === "special_action") {
-                                                console.log(info);
-                                                if (settings !== undefined && settings.notifications === true)
-                                                    notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                        amount: property?.price ?? 0
-                                                    });
-                                                xplayer.balance -= (property?.price ?? 0) * 1;
-
-                                                const _info = info as {
-                                                    rolls: number;
-                                                };
-
-                                                const calculateRent = _info.rolls;
-                                                engineRef.current?.applyAnimation(1);
-                                                const prp = propretyMap.get(xplayer.position);
-                                                xplayer.properties.push({
-                                                    posistion: xplayer.position,
-                                                    count: 0,
-                                                    rent: calculateRent,
-                                                    group: prp?.group ?? "",
-                                                });
-                                                
-                                                playPurchaseSfx(settings);
+                                                buySpecialAction({
+                                                    player: xplayer,
+                                                    property,
+                                                    propretyMap,
+                                                    info,
+                                                    notifyRef,
+                                                    engineRef,
+                                                    socket,
+                                                    clients,
+                                                    settings
+                                                })
 
                                                 SetClients(new Map(clients.set(socket.id, xplayer)));
                                                 engineRef.current?.freeDice();
                                                 const json = (clients.get(socket.id) as Player).toJson();
                                                 socket.emit("finish-turn", json);
-
-                                                socket.emit(
-                                                    "history",
-                                                    history(
-                                                        `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                            prp?.name ?? "unkown place"
-                                                        } with rent of ${calculateRent}`
-                                                    )
-                                                );
                                             } else if (b === "someones") {
                                                 const players = Array.from(clients.values());
 

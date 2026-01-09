@@ -9,25 +9,25 @@ export function buySpecialAction({
     property,
     propretyMap,
     info,
-    settings,
     notifyRef,
     engineRef,
     socket,
-    clients
+    clients,
+    settings
 }: {
     player: Player;
     property: any;
     propretyMap: Map<number, any>;
     info: object;
-    settings?: MonopolySettings;
-    notifyRef?: React.RefObject<any>;
-    engineRef?: React.RefObject<any>;
-    socket: Socket
-    clients: Map<string, Player>
+    notifyRef: React.RefObject<any>;
+    engineRef: React.RefObject<any>;
+    socket: Socket;
+    clients: Map<string, Player>;
+    settings?: MonopolySettings | undefined;
 }) {
     const price = property?.price ?? 0;
 
-    if (settings?.notifications === true && notifyRef)
+    if (settings?.notifications === true)
         notifyMessage(notifyRef, "MONEY_DEDUCTED", {
             amount: price
         });
@@ -36,7 +36,7 @@ export function buySpecialAction({
 
     player.balance -= price;
 
-    engineRef?.current?.applyAnimation(1);
+    engineRef.current?.applyAnimation(1);
 
     const _info = info as {
         rolls: number;
