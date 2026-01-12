@@ -334,14 +334,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         })
                                     } else if (b === "someones") {
                                         handleRentPayment({
-                                            socket,
                                             players: clients,
                                             currentPlayer: localPlayer,
                                             property,
                                             location,
-                                            notifyRef,
-                                            settings,
-                                            engineRef,
+                                            ctx: gameContext
                                         })
                                     } else if (b === "nothing") {
                                         if ((property?.id ?? "") == "gotojail") {
@@ -358,21 +355,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         if (property?.id === "incometax") {
                                             payIncomeTax({
                                                 player: localPlayer,
-                                                settings,
-                                                notifyRef,
-                                                engineRef,
-                                                socket,
-                                                clients
+                                                ctx: gameContext
                                             })
                                         }
                                         if (property?.id === "luxerytax") {
                                             payLuxuryTax({
                                                 player: localPlayer,
-                                                settings,
-                                                notifyRef,
-                                                engineRef,
-                                                socket,
-                                                clients
+                                                ctx: gameContext
                                             })
                                         }
                                     } else if (b === "special_action") {
@@ -381,11 +370,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             property,
                                             propretyMap,
                                             info,
-                                            notifyRef,
-                                            engineRef,
-                                            socket,
-                                            clients,
-                                            settings
+                                            ctx: gameContext
                                         })
                                     }
 
@@ -689,7 +674,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                     property,
                                                     propretyMap,
                                                     ctx: gameContext
-                                                })
+                                                });
 
                                                 SetClients(new Map(clients.set(socket.id, xplayer)));
                                                 engineRef.current?.freeDice();
@@ -701,11 +686,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                     property,
                                                     propretyMap,
                                                     info,
-                                                    notifyRef,
-                                                    engineRef,
-                                                    socket,
-                                                    clients,
-                                                    settings
+                                                    ctx: gameContext
                                                 })
 
                                                 SetClients(new Map(clients.set(socket.id, xplayer)));
