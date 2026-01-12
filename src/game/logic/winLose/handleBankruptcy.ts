@@ -1,49 +1,45 @@
-import { Player, PlayerJSON } from "../../../assets/player";
-import { Socket } from "../../../assets/sockets";
+import { GameContext } from "../../../assets/gameContext";
+import { PlayerJSON } from "../../../assets/player";
 import { showDialog } from "../../../ui/dialogs/dialogFactory";
 import { notifyMessage } from "../../../ui/notifications/notificationFactory";
 
 export function handlePlayerBankruptcy({
     bankruptPlayer,
-    clients,
-    socket,
-    notifyRef,
     mainTheme,
+    ctx,
     destroyPlayer
 }: {
     bankruptPlayer: PlayerJSON;
-    clients: Map<string, Player>;
-    socket: Socket;
-    notifyRef: React.RefObject<any>;
     mainTheme: HTMLAudioElement;
+    ctx: GameContext
     destroyPlayer: (id: string) => void;
 }) {
  
     if (bankruptPlayer.balance < 0) {
-        if (bankruptPlayer.id !== socket.id) {
-            if (clients.size > 2) {
+        if (bankruptPlayer.id !== ctx.socket.id) {
+            if (ctx.clients.size > 2) {
                 const name = bankruptPlayer.username;
-                notifyMessage(notifyRef, "PLAYER_LOST", { name });
+                notifyMessage(ctx.notifyRef, "PLAYER_LOST", { name });
             } else {
-                if (clients.has(socket.id)) {
+                if (ctx.clients.has(ctx.socket.id)) {
                     mainTheme.pause();
-                    showDialog(notifyRef, "YOU_WIN", {
-                        balance: clients.get(socket.id)?.balance
+                    showDialog(ctx.notifyRef, "YOU_WIN", {
+                        balance: ctx.clients.get(ctx.socket.id)?.balance
                     });
                 } else {
-                    const xclient = Array.from(clients.values()).filter((v) => v.id !== bankruptPlayer.id)[0];
+                    const xclient = Array.from(ctx.clients.values()).filter((v) => v.id !== bankruptPlayer.id)[0];
                     const name = xclient.username ?? 0;
                     mainTheme.pause();
-                    showDialog(notifyRef, "PLAYER_WON", {
+                    showDialog(ctx.notifyRef, "PLAYER_WON", {
                         playerName: name,
-                        balance: clients.get(socket.id)?.balance
+                        balance: ctx.clients.get(ctx.socket.id)?.balance
                     });
                 }
             }
         } else {
             mainTheme.pause();
-            showDialog(notifyRef, "YOU_LOST", {
-                balance: clients.get(socket.id)?.balance
+            showDialog(ctx.notifyRef, "YOU_LOST", {
+                balance: ctx.clients.get(ctx.socket.id)?.balance
             }, "losing");
         }
 

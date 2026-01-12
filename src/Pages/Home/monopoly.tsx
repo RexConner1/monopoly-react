@@ -238,10 +238,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
             handlePlayerBankruptcy({
                 bankruptPlayer: args.pJson,
-                clients,
-                socket,
-                notifyRef,
                 mainTheme,
+                ctx: gameContext,
                 destroyPlayer
             });
 
@@ -332,11 +330,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             property,
                                             location,
                                             info,
-                                            settings,
-                                            notifyRef,
-                                            engineRef,
-                                            socket,
-                                            clients
+                                            ctx: gameContext
                                         })
                                     } else if (b === "someones") {
                                         handleRentPayment({

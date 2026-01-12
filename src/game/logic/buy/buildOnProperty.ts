@@ -1,6 +1,6 @@
+import { GameContext } from "../../../assets/gameContext";
 import { Player } from "../../../assets/player";
-import { Socket } from "../../../assets/sockets";
-import { MonopolySettings, history } from "../../../assets/types";
+import { history } from "../../../assets/types";
 import { playPurchaseSfx } from "../../../ui/audio/audio";
 import { notifyMessage } from "../../../ui/notifications/notificationFactory";
 
@@ -9,23 +9,15 @@ export function buildOnProperty({
     property,
     location,
     info,
-    settings,
-    notifyRef,
-    engineRef,
-    socket,
-    clients
+    ctx
 }: {
     player: Player;
     property: any;
     location?: number;
     info: object;
-    settings: MonopolySettings | undefined;
-    notifyRef?: React.RefObject<any>;
-    engineRef?: React.RefObject<any>;
-    socket: Socket
-    clients: Map<string, Player>
+    ctx: GameContext
 }) {
-    playPurchaseSfx(settings);
+    playPurchaseSfx(ctx.settings);
 
     const propId = Array.from(new Map(player.properties.map((v, i) => [i, v])).entries()).filter(
         (v) => v[1].posistion === location
@@ -39,23 +31,23 @@ export function buildOnProperty({
     player.properties[propId].count = _info.state === 5 ? "h" : _info.state;
 
     if (_info.state === 5) {
-        if (settings?.notifications === true && notifyRef)
-            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+        if (ctx.settings?.notifications === true)
+            notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", {
                 amount: property.ohousecost ?? 0
             });
         player.balance -= property.ohousecost ?? 0;
     } else {
-        if (settings?.notifications === true && notifyRef)
-            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+        if (ctx.settings?.notifications === true)
+            notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", {
                 amount: property.housecost ?? 0
             });
         player.balance -= (property.housecost ?? 0) * _info.money;
     }
 
-    engineRef?.current?.applyAnimation(1);
+    ctx.engineRef.current?.applyAnimation(1);
 
-    socket.emit(
+    ctx.socket.emit(
         "history",
-        history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
+        history(`${ctx.clients.get(ctx.socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
     );
 }
