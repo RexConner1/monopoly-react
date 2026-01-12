@@ -1,6 +1,6 @@
+import { GameContext } from "../../../assets/gameContext";
 import { Player } from "../../../assets/player";
-import { Socket } from "../../../assets/sockets";
-import { MonopolySettings, history } from "../../../assets/types";
+import { history } from "../../../assets/types";
 import { playPurchaseSfx } from "../../../ui/audio/audio";
 import { notifyMessage } from "../../../ui/notifications/notificationFactory";
 
@@ -8,31 +8,23 @@ export function buyProperty({
     player,
     property,
     propretyMap,
-    notifyRef,
-    engineRef,
-    socket,
-    clients,
-    settings
+    ctx
 }: {
     player: Player;
     property: any;
     propretyMap: Map<number, any>;
-    notifyRef: React.RefObject<any>;
-    engineRef: React.RefObject<any>;
-    socket: Socket;
-    clients: Map<string, Player>;
-    settings?: MonopolySettings | undefined;
+    ctx: GameContext
 }) {
     const price = property?.price ?? 0;
 
-    if (settings?.notifications === true)
-        notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+    if (ctx.settings?.notifications === true)
+        notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", {
             amount: price
         });
 
     player.balance -= (price);
 
-    engineRef.current?.applyAnimation(1);
+    ctx.engineRef.current?.applyAnimation(1);
 
     player.properties.push({
         posistion: player.position,
@@ -40,10 +32,10 @@ export function buyProperty({
         group: propretyMap.get(player.position)?.group ?? "",
     });
     
-    playPurchaseSfx(settings);
+    playPurchaseSfx(ctx.settings);
 
-    socket.emit(
+    ctx.socket.emit(
         "history",
-        history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${property.name}`)
+        history(`${ctx.clients.get(ctx.socket.id)?.username ?? "unknown player"} bought ${property.name}`)
     );
 }
