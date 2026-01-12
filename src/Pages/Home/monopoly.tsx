@@ -18,6 +18,8 @@ import { payLuxuryTax } from "../../game/logic/tax/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/logic/tax/payIncomeTax.ts";
 import { handleRentPayment } from "../../actions/rent/handleRentPayment.ts";
 import { buySpecialAction } from "../../game/logic/buy/buySpecialAction.ts";
+import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
+import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -179,6 +181,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             SetClients(new Map(clients.set(x.id, x)));
             SetMode(args.selectedMode);
         };
+
         const socket_StartGame = () => {
             SetGameStarted(true);
             function A(n: number) {
@@ -225,98 +228,22 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 SetClients(new Map(clients.set(args.from, x)));
             }
 
-            if (args.pJson.balance < 0) {
-                if (args.pJson.id !== socket.id) {
-                    if (clients.size > 2) {
-                        const name = args.pJson.username;
-                        notifyMessage(notifyRef, "PLAYER_LOST", { name });
-                    } else {
-                        if (clients.has(socket.id)) {
-                            mainTheme.pause();
-                            showDialog(notifyRef, "YOU_WIN", {
-                                balance: clients.get(socket.id)?.balance
-                            });
-                        } else {
-                            const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
-                            const name = xclient.username ?? 0;
-                            mainTheme.pause();
-                            showDialog(notifyRef, "PLAYER_WON", {
-                                playerName: name,
-                                balance: clients.get(socket.id)?.balance
-                            });
-                        }
-                    }
-                } else {
-                    mainTheme.pause();
-                    showDialog(notifyRef, "YOU_LOST", {
-                        balance: clients.get(socket.id)?.balance
-                    }, "losing");
-                }
+            handlePlayerBankruptcy({
+                bankruptPlayer: args.pJson,
+                clients,
+                socket,
+                notifyRef,
+                mainTheme,
+                destroyPlayer
+            });
 
-                destroyPlayer(args.pJson.id);
-            }
-            if (args.WinningMode === "monopols" || args.WinningMode === "monopols & trains") {
-                function removeDuplicates(originalList: Array<any>) {
-                    // Create an empty array to store unique values
-                    const uniqueList: Array<any> = [];
-
-                    // Use the filter method to iterate through the original list
-                    originalList.filter(function (item) {
-                        // If the item is not already in the uniqueList, add it
-                        if (!uniqueList.includes(item)) {
-                            uniqueList.push(item);
-                        }
-                        // Always return false in the filter function to skip duplicates
-                        return false;
-                    });
-
-                    // Return the uniqueList
-                    return uniqueList;
-                }
-                for (const p of Array.from(clients.values())) {
-                    const prpGrups = [];
-                    for (const prp of p.properties) {
-                        if (!["Special", "Railroad", "Utilities"].includes(prp.group)) prpGrups.push(prp.group);
-                    }
-                    let x: number = 0;
-
-                    for (const g of removeDuplicates(prpGrups)) {
-                        const c = prpGrups.filter((v) => v === g).length;
-                        const cc = monopolyProperties.filter((v) => v.group === g).length;
-                        if (c === cc) {
-                            x += 1;
-                        }
-                    }
-                    if (x === 3) {
-                        mainTheme.pause();
-                        if (p.id === socket.id) {
-                            showDialog(notifyRef, "THREE_SETS");
-                        } else {
-                            showDialog(notifyRef, "THREE_SETS", {
-                                playerName: p.username
-                            });
-                        }
-                        return;
-                    }
-                }
-                if (args.WinningMode === "monopols & trains") {
-                    // continue with trains winning state!
-                    for (const p of Array.from(clients.values())) {
-                        const c = p.properties.filter((v) => v.group === "Railroad").length;
-                        if (c === 4) {
-                            mainTheme.pause();
-                            if (p.id === socket.id) {
-                                showDialog(notifyRef, "FOUR_RAILROADS");
-                            } else {
-                                showDialog(notifyRef, "FOUR_RAILROADS", {
-                                    playerName: p.username
-                                });
-                            }
-                            return;
-                        }
-                    }
-                }
-            }
+            handleMonopolsTrains({
+                winningMode: args.WinningMode,
+                clients,
+                notifyRef,
+                socket,
+                mainTheme
+            });
 
             SetCurrent(args.turnId);
             if (args.turnId === socket.id) {

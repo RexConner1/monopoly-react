@@ -11,8 +11,8 @@ export function playerMoveGenerator(
     context: {
         settings: MonopolySettings | undefined;
         socket: Socket;
-        notifyRef: any;
-        engineRef: any;
+        notifyRef: React.RefObject<any>;
+        engineRef: React.RefObject<any>;
         updateClients: () => void;
     },
     get200whengo = true,

@@ -1,4 +1,6 @@
 import { Player } from "../../assets/player";
+import { Socket } from "../../assets/sockets";
+import { MonopolySettings } from "../../assets/types";
 import { playSound } from "../../ui/audio/soundPlayer";
 import { getPlayerElement } from "../../ui/dom/playerElement";
 
@@ -7,10 +9,10 @@ interface StepAnimatorOptions {
     adding: boolean;
     target: number;
     get200whengo: boolean;
-    settings: any;
-    socket: any;
-    notifyRef: any;
-    engineRef: any;
+    settings: MonopolySettings | undefined;
+    socket: Socket;
+    notifyRef: React.RefObject<any>;
+    engineRef: React.RefObject<any>;
     updateClients: () => void;
     onFinish?: () => void;
 }
