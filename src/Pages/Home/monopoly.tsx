@@ -245,10 +245,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
             handleMonopolsTrains({
                 winningMode: args.WinningMode,
-                clients,
-                notifyRef,
-                socket,
-                mainTheme
+                mainTheme,
+                ctx: gameContext
             });
 
             SetCurrent(args.turnId);

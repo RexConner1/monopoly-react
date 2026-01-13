@@ -1,21 +1,16 @@
-import { Player } from "../../../assets/player";
-import { Socket } from "../../../assets/sockets";
 import { Property } from "../../../assets/types";
 import { showDialog } from "../../../ui/dialogs/dialogFactory";
 import monopolyJSON from "../../../assets/monopoly.json";
+import { GameContext } from "../../../assets/gameContext";
 
 export function handleMonopolsTrains({
     winningMode,
-    clients,
-    notifyRef,
-    socket,
-    mainTheme
+    mainTheme,
+    ctx
 }: {
     winningMode: string;
-    clients: Map<string, Player>;
-    notifyRef: React.RefObject<any>;
-    socket: Socket;
     mainTheme: HTMLAudioElement;
+    ctx: GameContext
 }) {
     if (winningMode === "monopols" || winningMode === "monopols & trains") {
         function removeDuplicates(originalList: Array<any>) {
@@ -35,7 +30,7 @@ export function handleMonopolsTrains({
             // Return the uniqueList
             return uniqueList;
         }
-        for (const p of Array.from(clients.values())) {
+        for (const p of Array.from(ctx.clients.values())) {
             const prpGrups = [];
             for (const prp of p.properties) {
                 if (!["Special", "Railroad", "Utilities"].includes(prp.group)) prpGrups.push(prp.group);
@@ -52,10 +47,10 @@ export function handleMonopolsTrains({
             }
             if (x === 3) {
                 mainTheme.pause();
-                if (p.id === socket.id) {
-                    showDialog(notifyRef, "THREE_SETS");
+                if (p.id === ctx.socket.id) {
+                    showDialog(ctx.notifyRef, "THREE_SETS");
                 } else {
-                    showDialog(notifyRef, "THREE_SETS", {
+                    showDialog(ctx.notifyRef, "THREE_SETS", {
                         playerName: p.username
                     });
                 }
@@ -64,14 +59,14 @@ export function handleMonopolsTrains({
         }
         if (winningMode === "monopols & trains") {
             // continue with trains winning state!
-            for (const p of Array.from(clients.values())) {
+            for (const p of Array.from(ctx.clients.values())) {
                 const c = p.properties.filter((v) => v.group === "Railroad").length;
                 if (c === 4) {
                     mainTheme.pause();
-                    if (p.id === socket.id) {
-                        showDialog(notifyRef, "FOUR_RAILROADS");
+                    if (p.id === ctx.socket.id) {
+                        showDialog(ctx.notifyRef, "FOUR_RAILROADS");
                     } else {
-                        showDialog(notifyRef, "FOUR_RAILROADS", {
+                        showDialog(ctx.notifyRef, "FOUR_RAILROADS", {
                             playerName: p.username
                         });
                     }
