@@ -10,7 +10,7 @@ import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, Property } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { movePlayer } from "../../game/movement/movePlayer.ts";
-import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
+import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { buyProperty } from "../../game/logic/buy/buyProperty.ts";
@@ -21,6 +21,7 @@ import { handleRentPayment } from "../../actions/rent/handleRentPayment.ts";
 import { buySpecialAction } from "../../game/logic/buy/buySpecialAction.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
+import { sendPlayerToJail } from "../../game/logic/jail/sendPlayerToJail.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -262,15 +263,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 if (args.turnId != socket.id && args.listOfNums[2] === 30) {
                     setTimeout(() => {
                         SetHistories((old) => [...old, history(`${clients.get(args.turnId)?.username ?? "unknown player"} goes to jail`)]);
-                        const generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
-                            xplayer.position = 10;
-                            xplayer.isInJail = true;
-                            
-                            playJailSfx(settings);
-                            
-                            xplayer.jailTurnsRemaining = 3;
-                        });
-                        generatorResults.func();
+                        sendPlayerToJail(xplayer, gameContext);
                     }, 800);
                 }
             });
@@ -320,14 +313,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         })
                                     } else if (b === "nothing") {
                                         if ((property?.id ?? "") == "gotojail") {
-                                            const generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
-                                                xplayer.position = 10;
-                                                xplayer.isInJail = true;
-                                                xplayer.jailTurnsRemaining = 3;
-                                            });
-
-                                            time_till_free = generatorResults.time;
-                                            generatorResults.func();
+                                            time_till_free = sendPlayerToJail(xplayer, gameContext);
                                         }
 
                                         if (property?.id === "incometax") {
@@ -568,16 +554,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     xplayer.getoutCards += 1;
                                     break;
                                 case "goto":
-                                    const _generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
-                                        xplayer.position = 10;
-                                        xplayer.isInJail = true;
-
-                                        playJailSfx(settings);
-                                        
-                                        xplayer.jailTurnsRemaining = 3;
-                                    });
-                                    time_till_finish = _generatorResults.time;
-                                    _generatorResults.func();
+                                    time_till_finish = sendPlayerToJail(xplayer, gameContext);
                                     break;
                             }
                             SetClients(new Map(clients.set(xplayer.id, xplayer)));
