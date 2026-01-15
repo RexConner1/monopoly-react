@@ -22,6 +22,7 @@ import { buySpecialAction } from "../../game/logic/buy/buySpecialAction.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 import { sendPlayerToJail } from "../../game/logic/jail/sendPlayerToJail.ts";
+import { deductMoney } from "../../game/logic/deductMoney.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -562,16 +563,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "removefunds":
-                        xplayer.balance -= c.amount ?? 0;
-                        if (xplayer.id === socket.id) {
-                            engineRef.current?.applyAnimation(1);
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                    amount: c.amount ?? 0
-                                });
-                            
-                            playMoneyMinusSfx(settings);
-                        }
+                        deductMoney(
+                            xplayer,
+                            c.amount ?? 0,
+                            gameContext
+                        );
                         break;
                     // amount
                     case "removefundstoplayers":
@@ -780,22 +776,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         var payment_amount =
                             (c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number)) +
                             (c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length;
-                        console.log(`
-${(c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number))} + 
-${(c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length} 
-which is ${payment_amount}
-                        `);
-                        if (xplayer.id === socket.id && payment_amount > 0) {
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                    amount: payment_amount
-                                });
+                        
+                        deductMoney(
+                            xplayer,
+                            payment_amount,
+                            gameContext
+                        );
 
-                            playMoneyMinusSfx(settings);
-
-                            engineRef.current?.applyAnimation(1);
-                        }
-                        xplayer.balance -= payment_amount;
                         SetClients(new Map(clients.set(xplayer.id, xplayer)));
                         break;
                     default:
