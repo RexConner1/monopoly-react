@@ -23,6 +23,7 @@ import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptc
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 import { sendPlayerToJail } from "../../game/logic/jail/sendPlayerToJail.ts";
 import { deductMoney } from "../../game/logic/deductMoney.ts";
+import { addMoney } from "../../game/logic/addMoney.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -529,24 +530,19 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             time_till_finish = _generatorResults.time;
                             _generatorResults.func();
                         } else if (c.count) {
-                            const _generatorResults = movePlayer((xplayer.position + c.count) % 40, xplayer, gameContext, true, () => {}, c.count >= 0);
+                            const newPosition = (xplayer.position + c.count) % 40;
+                            const _generatorResults = movePlayer(newPosition, xplayer, gameContext, true, () => {}, c.count >= 0);
                             time_till_finish = _generatorResults.time;
                             _generatorResults.func();
                         }
                         break;
 
                     case "addfunds":
-                        xplayer.balance += c.amount ?? 0;
-                        if (xplayer.id === socket.id) {
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyMessage(notifyRef, "MONEY_ADDED", {
-                                    amount: c.amount ?? 0
-                                });
-                            
-                            playMoneyPlusSfx(settings);
-
-                            engineRef.current?.applyAnimation(2);
-                        }
+                        addMoney(
+                            xplayer,
+                            c.amount ?? 0,
+                            gameContext
+                        );
                         break;
                     case "jail":
                         if (c.subaction !== undefined) {
