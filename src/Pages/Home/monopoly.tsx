@@ -9,7 +9,7 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, Property } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
-import { playerMoveGenerator } from "../../game/movement/playerMoveGenerator.ts";
+import { movePlayer } from "../../game/movement/movePlayer.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
@@ -100,7 +100,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             socket,
             engineRef,
             notifyRef,
-            clients
+            clients,
+            SetClients
         };
 
         function mouseMove(e: MouseEvent) {
@@ -146,28 +147,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             removeChild();
         }
 
-        function movePlayer(
-            final_position: number,
-            _xplayer: Player,
-            get200whengo = true,
-            afterFinished?: () => void,
-            adding = true
-        ) {
-            return playerMoveGenerator(
-                final_position,
-                _xplayer,
-                {
-                    settings,
-                    socket,
-                    notifyRef,
-                    engineRef,
-                    updateClients: () => SetClients(new Map(clients.set(_xplayer.id, _xplayer)))
-                },
-                get200whengo,
-                afterFinished,
-                adding
-            );
-        }
 
         //#region socket handeling
         const socket_Initials = (args: { turn_id: string; other_players: Array<PlayerJSON>; selectedMode: MonopolyMode }) => {
@@ -263,6 +242,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
         const socket_Message = (message: { from: string; message: string }) => {
             navRef.current?.addMessage(message);
         };
+
         const socket_DiceRollResult = (args: { listOfNums: [number, number, number]; turnId: string }) => {
             SetHistories((old) => [
                 ...old,
@@ -278,11 +258,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             // const sumTimes = args.listOfNums[0] + args.listOfNums[1];
             const localPlayer = clients.get(socket.id) as Player;
             const xplayer = clients.get(args.turnId) as Player;
-            const dice_generatorResults = movePlayer(args.listOfNums[2], xplayer, true, () => {
+            const dice_generatorResults = movePlayer(args.listOfNums[2], xplayer, gameContext, true, () => {
                 if (args.turnId != socket.id && args.listOfNums[2] === 30) {
                     setTimeout(() => {
                         SetHistories((old) => [...old, history(`${clients.get(args.turnId)?.username ?? "unknown player"} goes to jail`)]);
-                        const generatorResults = movePlayer(10, xplayer, false, () => {
+                        const generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
                             xplayer.position = 10;
                             xplayer.isInJail = true;
                             
@@ -340,7 +320,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         })
                                     } else if (b === "nothing") {
                                         if ((property?.id ?? "") == "gotojail") {
-                                            const generatorResults = movePlayer(10, xplayer, false, () => {
+                                            const generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
                                                 xplayer.position = 10;
                                                 xplayer.isInJail = true;
                                                 xplayer.jailTurnsRemaining = 3;
@@ -406,6 +386,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 }, 2000);
             }
         };
+
         const socket_Unjail = (args: { to: string; option: "card" | "pay" }) => {
             const x = clients.get(args.to);
             if (x) {
@@ -426,6 +407,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 SetClients(new Map(clients.set(args.to, x)));
             }
         };
+
         const socket_MemberUpdating = (args: {
             playerId: string;
             animation: "recieveMoney";
@@ -442,6 +424,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 engineRef.current?.applyAnimation(2);
             }
         };
+
         const socket_ChorchResult = (args: {
             element: {
                 title: string;
@@ -555,11 +538,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             const targetPos = p.get(c.tileid)?.posistion;
                             if (targetPos === undefined) break;
 
-                            const _generatorResults = movePlayer(targetPos, xplayer);
+                            const _generatorResults = movePlayer(targetPos, xplayer, gameContext);
                             time_till_finish = _generatorResults.time;
                             _generatorResults.func();
                         } else if (c.count) {
-                            const _generatorResults = movePlayer((xplayer.position + c.count) % 40, xplayer, true, () => {}, c.count >= 0);
+                            const _generatorResults = movePlayer((xplayer.position + c.count) % 40, xplayer, gameContext, true, () => {}, c.count >= 0);
                             time_till_finish = _generatorResults.time;
                             _generatorResults.func();
                         }
@@ -585,7 +568,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     xplayer.getoutCards += 1;
                                     break;
                                 case "goto":
-                                    const _generatorResults = movePlayer(10, xplayer, false, () => {
+                                    const _generatorResults = movePlayer(10, xplayer, gameContext, false, () => {
                                         xplayer.position = 10;
                                         xplayer.isInJail = true;
 
@@ -654,7 +637,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         }
                         const arr = monopolyProperties.filter((v) => v.group === p).map((v) => v.posistion);
                         const ongoingLocation = findNextValue(arr, xplayer.position);
-                        const _generatorResults = movePlayer(ongoingLocation, xplayer);
+                        const _generatorResults = movePlayer(ongoingLocation, xplayer, gameContext);
                         time_till_finish = -1;
                         _generatorResults.func();
                         setTimeout(() => {
@@ -723,7 +706,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                         playMoneyMinusSfx(settings);
 
                                                                         xplayer.balance -= payment_amount;
+
                                                                         engineRef.current?.applyAnimation(1);
+                                                                        
                                                                         socket.emit("pay", {
                                                                             balance: payment_amount,
                                                                             from: socket.id,
@@ -767,12 +752,15 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                 
                                                                 if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
                                                                     xplayer.balance -= payment_amount;
+
                                                                 engineRef.current?.applyAnimation(1);
+
                                                                 socket.emit("pay", {
                                                                     balance: payment_amount,
                                                                     from: socket.id,
                                                                     to: p.id,
                                                                 });
+
                                                                 socket.emit(
                                                                     "history",
                                                                     history(
@@ -783,6 +771,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                         }`
                                                                     )
                                                                 );
+
                                                                 SetClients(new Map(clients.set(socket.id, xplayer)));
                                                                 engineRef.current?.freeDice();
                                                                 const json = (clients.get(socket.id) as Player).toJson();

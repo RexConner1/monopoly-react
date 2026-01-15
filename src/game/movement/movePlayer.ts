@@ -1,20 +1,13 @@
+import { GameContext } from "../../assets/gameContext";
 import { Player } from "../../assets/player";
-import { Socket } from "../../assets/sockets";
-import { MonopolySettings } from "../../assets/types";
 import { calculateMoves } from "./calculateMoves";
 import { calculateMoveTime } from "./moveTiming";
 import { animatePlayerSteps } from "./stepAnimator";
 
-export function playerMoveGenerator(
+export function movePlayer(
     finalPosition: number,
     player: Player,
-    context: {
-        settings: MonopolySettings | undefined;
-        socket: Socket;
-        notifyRef: React.RefObject<any>;
-        engineRef: React.RefObject<any>;
-        updateClients: () => void;
-    },
+    ctx: GameContext,
     get200whengo = true,
     afterFinished?: () => void,
     adding = true
@@ -30,7 +23,7 @@ export function playerMoveGenerator(
                 adding,
                 target: finalPosition,
                 get200whengo,
-                ...context,
+                ctx,
                 onFinish: afterFinished
             })
     };

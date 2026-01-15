@@ -13,4 +13,5 @@ export interface GameContext {
     notifyRef: React.RefObject<NotificatorRef>;
 
     clients: Map<string, Player>;
+    SetClients: React.Dispatch<React.SetStateAction<Map<string, Player>>>;
 }

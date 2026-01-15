@@ -1,6 +1,5 @@
+import { GameContext } from "../../assets/gameContext";
 import { Player } from "../../assets/player";
-import { Socket } from "../../assets/sockets";
-import { MonopolySettings } from "../../assets/types";
 import { playSound } from "../../ui/audio/soundPlayer";
 import { getPlayerElement } from "../../ui/dom/playerElement";
 
@@ -9,11 +8,7 @@ interface StepAnimatorOptions {
     adding: boolean;
     target: number;
     get200whengo: boolean;
-    settings: MonopolySettings | undefined;
-    socket: Socket;
-    notifyRef: React.RefObject<any>;
-    engineRef: React.RefObject<any>;
-    updateClients: () => void;
+    ctx: GameContext;
     onFinish?: () => void;
 }
 
@@ -25,12 +20,8 @@ export function animatePlayerSteps(
         moves,
         adding,
         target,
-        settings,
         get200whengo,
-        socket,
-        notifyRef,
-        engineRef,
-        updateClients,
+        ctx,
         onFinish
     } = options;
 
@@ -39,8 +30,8 @@ export function animatePlayerSteps(
     const element = getPlayerElement(player.id);
 
     const stepVolume =
-        ((settings?.audio[1] ?? 100) / 100) *
-        ((settings?.audio[0] ?? 100) / 100);
+        ((ctx.settings?.audio[1] ?? 100) / 100) *
+        ((ctx.settings?.audio[0] ?? 100) / 100);
 
     function nextStep() {
         if (step >= moves) return;
@@ -55,18 +46,18 @@ export function animatePlayerSteps(
             player.balance += 200;
             playSound("./moneyplus.mp3", stepVolume);
 
-            if (player.id === socket.id && settings?.notifications) {
-                notifyRef.current?.message(
+            if (player.id === ctx.socket.id && ctx.settings?.notifications) {
+                ctx.notifyRef.current?.message(
                     "200 of money is added to the account",
                     "info",
                     2,
                     () => {},
                     false
                 );
-                engineRef.current?.applyAnimation(2);
+                ctx.engineRef.current?.applyAnimation(2);
             }
 
-            updateClients();
+            ctx.SetClients(new Map(ctx.clients.set(player.id, player)))
         }
 
         if (step === moves) {

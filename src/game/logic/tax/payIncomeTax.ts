@@ -15,7 +15,7 @@ export function payIncomeTax({
 }) {
     player.balance -= INCOME_TAX;
 
-    if (ctx.settings?.notifications === true && ctx.notifyRef)
+    if (ctx.settings?.notifications === true)
         notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", {
             amount: INCOME_TAX
         });
