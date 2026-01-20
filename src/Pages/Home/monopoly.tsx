@@ -24,6 +24,7 @@ import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTra
 import { sendPlayerToJail } from "../../game/logic/jail/sendPlayerToJail.ts";
 import { deductMoney } from "../../game/logic/deductMoney.ts";
 import { addMoney } from "../../game/logic/addMoney.ts";
+import { rollDice } from "../../game/logic/roll/rollDice.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -652,21 +653,14 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                             var payment_amount = 0;
 
                                                             if (property.group === "Utilities" && prp.rent) {
-                                                                const l = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
-                                                                socket.emit(
-                                                                    "history",
-                                                                    history(
-                                                                        `${clients.get(socket.id)?.username ?? "unknown player"} rolled [${l[0]}, ${
-                                                                            l[1]
-                                                                        }]`
-                                                                    )
-                                                                );
+                                                                const l = rollDice(gameContext);
 
                                                                 engineRef.current?.diceResults({
                                                                     l: [l[0], l[1]],
                                                                     time: 2000,
                                                                     onDone: () => {
                                                                         payment_amount = (l[0] + l[1]) * (c.rentmultiplier ?? 1);
+
                                                                         if (settings !== undefined && settings.notifications === true)
                                                                             notifyMessage(notifyRef, "MONEY_DEDUCTED", {
                                                                                 amount: payment_amount
