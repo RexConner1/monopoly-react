@@ -25,6 +25,8 @@ import { sendPlayerToJail } from "../../game/logic/jail/sendPlayerToJail.ts";
 import { deductMoney } from "../../game/logic/deductMoney.ts";
 import { addMoney } from "../../game/logic/addMoney.ts";
 import { rollDice } from "../../game/logic/roll/rollDice.ts";
+import { movePlayerToTileId } from "../../actions/movement/movePlayerToTileId.ts";
+import { movePlayerBySpaces } from "../../actions/movement/movePlayerBySpaces.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -519,22 +521,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 switch (c.action) {
                     case "move":
                         if (c.tileid) {
-                            const p = new Map(
-                                monopolyProperties.map((obj) => {
-                                    return [obj.id, obj];
-                                })
+                            time_till_finish = movePlayerToTileId(
+                                c.tileid,
+                                xplayer,
+                                gameContext
                             );
-                            const targetPos = p.get(c.tileid)?.posistion;
-                            if (targetPos === undefined) break;
-
-                            const _generatorResults = movePlayer(targetPos, xplayer, gameContext);
-                            time_till_finish = _generatorResults.time;
-                            _generatorResults.func();
                         } else if (c.count) {
-                            const newPosition = (xplayer.position + c.count) % 40;
-                            const _generatorResults = movePlayer(newPosition, xplayer, gameContext, true, () => {}, c.count >= 0);
-                            time_till_finish = _generatorResults.time;
-                            _generatorResults.func();
+                            time_till_finish = movePlayerBySpaces(
+                                c.count,
+                                xplayer,
+                                gameContext
+                            );
                         }
                         break;
 
