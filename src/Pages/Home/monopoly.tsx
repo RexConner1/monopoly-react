@@ -6,8 +6,7 @@ import "../../monopoly.css";
 import MonopolyNav, { MonopolyNavRef } from "../../components/nav/nav.tsx";
 import MonopolyGame, { MonopolyGameRef } from "../../components/game.tsx";
 import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx";
-import monopolyJSON from "../../assets/monopoly.json";
-import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, Property } from "../../assets/types.ts";
+import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode} from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { movePlayer } from "../../game/movement/movePlayer.ts";
 import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
@@ -27,6 +26,7 @@ import { addMoney } from "../../game/logic/addMoney.ts";
 import { rollDice } from "../../game/logic/roll/rollDice.ts";
 import { movePlayerToTileId } from "../../actions/movement/movePlayerToTileId.ts";
 import { movePlayerBySpaces } from "../../actions/movement/movePlayerBySpaces.ts";
+import { getPropertyByPosition, properties } from "../../assets/property.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -77,12 +77,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     const navRef = useRef<MonopolyNavRef>(null);
     const notifyRef = useRef<NotificatorRef>(null);
 
-    const monopolyProperties = monopolyJSON.properties as Property[];
-    const propretyMap = new Map(
-        monopolyProperties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
-        })
-    );
     if (server !== undefined) {
         server.RenderLogs((array) => {
             try {
@@ -254,7 +248,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 ...old,
                 history(
                     `${clients.get(args.turnId)?.username ?? "unknown player"} rolled [${args.listOfNums[0]}, ${args.listOfNums[1]}] moving to "${
-                        propretyMap.get(args.listOfNums[2])?.name ?? ""
+                        getPropertyByPosition(args.listOfNums[2])?.name ?? ""
                     }"`
                 ),
             ]);
@@ -280,7 +274,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (socket.id !== args.turnId) return;
 
                     const location = clients.get(socket.id)?.position ?? -1;
-                    const property = propretyMap.get(location);
+                    const property = getPropertyByPosition(location);
                     if (property != undefined) {
                         if (property.id === "communitychest" || property.id === "chance") {
                             socket.emit("chorch_roll", { 
@@ -297,7 +291,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         buyProperty({
                                             player: localPlayer,
                                             property,
-                                            propretyMap,
                                             ctx: gameContext
                                         })
                                     } else if (b === "advance-buy") {
@@ -337,7 +330,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         buySpecialAction({
                                             player: localPlayer,
                                             property,
-                                            propretyMap,
                                             info,
                                             ctx: gameContext
                                         })
@@ -602,7 +594,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         } else {
                             p = "Railroad";
                         }
-                        const arr = monopolyProperties.filter((v) => v.group === p).map((v) => v.posistion);
+                        const arr = properties.filter((v) => v.group === p).map((v) => v.posistion);
                         const ongoingLocation = findNextValue(arr, xplayer.position);
                         const _generatorResults = movePlayer(ongoingLocation, xplayer, gameContext);
                         time_till_finish = -1;
@@ -610,7 +602,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         setTimeout(() => {
                             if (xplayer.id === socket.id) {
                                 const location = xplayer?.position ?? -1;
-                                const property = propretyMap.get(location);
+                                const property = getPropertyByPosition(location);
                                 if (property !== undefined) {
                                     engineRef.current?.setStreet({
                                         location,
@@ -620,7 +612,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 buyProperty({
                                                     player: xplayer,
                                                     property,
-                                                    propretyMap,
                                                     ctx: gameContext
                                                 });
 
@@ -632,7 +623,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 buySpecialAction({
                                                     player: xplayer,
                                                     property,
-                                                    propretyMap,
                                                     info,
                                                     ctx: gameContext
                                                 })

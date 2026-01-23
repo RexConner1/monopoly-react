@@ -1,5 +1,6 @@
 import { GameContext } from "../../../assets/gameContext";
 import { Player } from "../../../assets/player";
+import { getPropertyByPosition } from "../../../assets/property";
 import { history } from "../../../assets/types";
 import { playPurchaseSfx } from "../../../ui/audio/audio";
 import { notifyMessage } from "../../../ui/notifications/notificationFactory";
@@ -7,13 +8,11 @@ import { notifyMessage } from "../../../ui/notifications/notificationFactory";
 export function buySpecialAction({
     player,
     property,
-    propretyMap,
     info,
     ctx
 }: {
     player: Player;
     property: any;
-    propretyMap: Map<number, any>;
     info: object;
     ctx: GameContext
 }) {
@@ -33,7 +32,7 @@ export function buySpecialAction({
     const _info = info as {
         rolls: number;
     };
-    const prp = propretyMap.get(player.position);
+    const prp = getPropertyByPosition(player.position);
     const calculateRent = _info.rolls;
 
     player.properties.push({
