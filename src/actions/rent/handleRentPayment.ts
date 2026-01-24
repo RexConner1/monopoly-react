@@ -30,26 +30,31 @@ export function handleRentPayment({
         owner
     );
 
-    if (ctx.settings?.notifications) {
-        notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", { amount: rent });
-    }
-
-    playMoneyMinusSfx(ctx.settings);
+    executePayment(rent);
     
-    if (!ownedProperty.morgage) {
-        currentPlayer.balance -= rent;
+    function executePayment(rent: number) {
+
+        if (ctx.settings?.notifications) {
+            notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", { amount: rent });
+        }
+
+        playMoneyMinusSfx(ctx.settings);
+
+        if (!ownedProperty.morgage) {
+            currentPlayer.balance -= rent;
+        }
+
+        ctx.engineRef.current?.applyAnimation(1);
+
+        ctx.socket.emit("pay", {
+            balance: rent,
+            from: currentPlayer.id,
+            to: owner.id,
+        });
+
+        ctx.socket.emit(
+            "history",
+            `${currentPlayer.id} paid ${rent} to ${owner.id}`
+        );
     }
-
-    ctx.engineRef.current?.applyAnimation(1);
-
-    ctx.socket.emit("pay", {
-        balance: rent,
-        from: currentPlayer.id,
-        to: owner.id,
-    });
-
-    ctx.socket.emit(
-        "history",
-        `${currentPlayer.id} paid ${rent} to ${owner.id}`
-    );
 }
