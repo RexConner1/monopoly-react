@@ -12,6 +12,8 @@ import Slider from "../utils/slider.tsx";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import DisplayHouses from "./displayHouses.tsx";
 import DisplayStreets from "./displayStreets.tsx";
+import { createBuyHotelButton } from "../../ui/buttons/createBuyHotelButton.ts";
+import { createBuyHouseButton } from "../../ui/buttons/createBuyHouseButton.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -210,30 +212,29 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                 for (let index = count + 1; index < 6; index++) {
                                     const myButton = document.createElement("button");
                                     if (index === 5) {
-                                        myButton.innerHTML = `buy hotel`;
-                                        // dont let someone buy hotel of not have a set of 4 houses
-                                        myButton.disabled =
-                                            index !== count + 1 ||
-                                            (_property.ohousecost ?? 0) > (prop.players.filter((v) => v.id === prop.socket.id)[0].balance ?? 0);
-                                        myButton.onclick = () => {
-                                            args.onResponse("advance-buy", {
-                                                state: index,
-                                                money: 1,
-                                            });
-                                            ShowStreet(false);
-                                        };
-                                    } else {
-                                        myButton.innerHTML = `buy ${index} house${index > 1 ? "s" : ""}`;
-                                        myButton.onclick = () => {
-                                            args.onResponse("advance-buy", {
-                                                state: index,
-                                                money: index - count,
-                                            });
-                                            ShowStreet(false);
-                                        };
-                                        myButton.disabled =
-                                            (index - count) * (_property.housecost ?? 0) >
-                                            (prop.players.filter((v) => v.id === prop.socket.id)[0].balance ?? 0);
+                                        createBuyHotelButton({
+                                            button: myButton,
+                                            index,
+                                            count,
+                                            houseCost: _property.ohousecost ?? 0,
+                                            playerBalance:
+                                                prop.players.find(v => v.id === prop.socket.id)?.balance ?? 0,
+                                            onAdvanceBuy: (payload) =>
+                                                args.onResponse("advance-buy", payload),
+                                            closeStreet: () => ShowStreet(false),
+                                        });
+                                    } else {                                        
+                                        createBuyHouseButton({
+                                            button: myButton,
+                                            index,
+                                            count,
+                                            houseCost: _property.housecost ?? 0,
+                                            playerBalance:
+                                                prop.players.find(v => v.id === prop.socket.id)?.balance ?? 0,
+                                            onAdvanceBuy: (payload) =>
+                                                args.onResponse("advance-buy", payload),
+                                            closeStreet: () => ShowStreet(false),
+                                        });
                                     }
                                     divB.appendChild(myButton);
                                 }
