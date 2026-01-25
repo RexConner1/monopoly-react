@@ -1,5 +1,7 @@
 import HouseIcon from "../../../../public/h.png";
 import HotelIcon from "../../../../public/ho.png";
+import { Player } from "../../../assets/player";
+import { PlayerProperty } from "../../../assets/types";
 import { calculateDisplayedRent } from "../../../game/logic/rent/calculateRent";
 
 export function renderPropertySlot({
@@ -45,8 +47,8 @@ export function renderPropertySlot({
 
 function renderEmptyProperty(
     slot: HTMLDivElement,
-    property: any,
-    player: any,
+    property: PlayerProperty,
+    player: Player,
     settings: any
 ) {
     let rent = calculateDisplayedRent(property, player);

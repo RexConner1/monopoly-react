@@ -46,7 +46,7 @@ export function buySpecialAction({
         "history",
         history(
             `${ctx.clients.get(ctx.socket.id)?.username ?? "unknown player"} bought ${
-                prp?.name ?? "unkown place"
+                prp?.name ?? "unknown place"
             } with rent of ${calculateRent}`
         )
     );
