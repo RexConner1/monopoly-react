@@ -9,6 +9,7 @@ import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx, playStepSfx } from "../../ui/audio/audio.ts";
+import { getPropertyByPosition } from "../../assets/property.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -59,11 +60,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     const navRef = useRef<MonopolyNavRef>(null);
     const notifyRef = useRef<NotificatorRef>(null);
 
-    const propretyMap = new Map(
-        monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
-        })
-    );
     if (server !== undefined) {
         server.RenderLogs((array) => {
             try {
@@ -472,7 +468,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 ...old,
                 history(
                     `${clients.get(args.turnId)?.username ?? "unknown player"} rolled [${args.listOfNums[0]}, ${args.listOfNums[1]}] moving to "${
-                        propretyMap.get(args.listOfNums[2])?.name ?? ""
+                        getPropertyByPosition(args.listOfNums[2])?.name ?? ""
                     }"`
                 ),
             ]);
@@ -502,7 +498,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (socket.id !== args.turnId) return;
 
                     const location = clients.get(socket.id)?.position ?? -1;
-                    const proprety = propretyMap.get(location);
+                    const proprety = getPropertyByPosition(location);
                     if (proprety != undefined) {
                         if (proprety.id === "communitychest" || proprety.id === "chance") {
                             socket.emit("chorch_roll", { is_chance: proprety.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
@@ -526,7 +522,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         localPlayer.properties.push({
                                             posistion: localPlayer.position,
                                             count: 0,
-                                            group: propretyMap.get(localPlayer.position)?.group ?? "",
+                                            group: getPropertyByPosition(localPlayer.position)?.group ?? "",
                                         });
                                         playPurchaseSfx(settings);
 
@@ -692,7 +688,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         const _info = info as {
                                             rolls: number;
                                         };
-                                        const prp = propretyMap.get(localPlayer.position);
+                                        const prp = getPropertyByPosition(localPlayer.position);
                                         const calculateRent = _info.rolls;
                                         localPlayer.properties.push({
                                             posistion: localPlayer.position,
@@ -983,7 +979,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         setTimeout(() => {
                             if (xplayer.id === socket.id) {
                                 const location = xplayer?.position ?? -1;
-                                const proprety = propretyMap.get(location);
+                                const proprety = getPropertyByPosition(location);
                                 if (proprety !== undefined) {
                                     engineRef.current?.setStreet({
                                         location,
@@ -1001,7 +997,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 xplayer.balance -= (proprety?.price ?? 0) * 1;
 
                                                 engineRef.current?.applyAnimation(1);
-                                                const prp = propretyMap.get(xplayer.position);
+                                                const prp = getPropertyByPosition(xplayer.position);
                                                 xplayer.properties.push({
                                                     posistion: xplayer.position,
                                                     count: 0,
@@ -1041,7 +1037,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                                 const calculateRent = _info.rolls;
                                                 engineRef.current?.applyAnimation(1);
-                                                const prp = propretyMap.get(xplayer.position);
+                                                const prp = getPropertyByPosition(xplayer.position);
                                                 xplayer.properties.push({
                                                     posistion: xplayer.position,
                                                     count: 0,
