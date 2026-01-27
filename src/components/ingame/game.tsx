@@ -14,6 +14,7 @@ import DisplayHouses from "./displayHouses.tsx";
 import DisplayStreets from "./displayStreets.tsx";
 import { createBuyHotelButton } from "../../ui/buttons/createBuyHotelButton.ts";
 import { createBuyHouseButton } from "../../ui/buttons/createBuyHouseButton.ts";
+import { playCardSfx, playClickSfx } from "../../ui/audio/audio.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -144,10 +145,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
     }
     function swipeSound() {
         const _settings = (JSON.parse(decodeURIComponent(CookieManager.get("monopolySettings") as string)) as MonopolyCookie).settings;
-        let audio = new Audio("./card.mp3");
-        audio.volume = ((_settings?.audio[1] ?? 100) / 100) * ((_settings?.audio[0] ?? 100) / 100);
-        audio.loop = false;
-        audio.play();
+        playCardSfx(_settings);
     }
 
     useImperativeHandle(ref, () => ({
@@ -179,10 +177,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                 ) {
                     function clickSound() {
                         const _settings = (JSON.parse(decodeURIComponent(CookieManager.get("monopolySettings") as string)) as MonopolyCookie).settings;
-                        let audio = new Audio("./click.mp3");
-                        audio.volume = ((_settings?.audio[1] ?? 100) / 100) * ((_settings?.audio[0] ?? 100) / 100);
-                        audio.loop = false;
-                        audio.play();
+                        playClickSfx(_settings);
                     }
                     function func() {
                         if (advanced) {
