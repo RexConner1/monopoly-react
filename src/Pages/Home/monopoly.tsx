@@ -10,6 +10,8 @@ import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, M
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx, playStepSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition } from "../../assets/property.ts";
+import { GameContext } from "../../assets/gameContext.ts";
+import { buyProperty } from "../../game/actions/buyProperty.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -77,6 +79,15 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
         const settings_interval = setInterval(() => {
             settings = (JSON.parse(decodeURIComponent(CookieManager.get("monopolySettings") as string)) as MonopolyCookie).settings;
         }, 1000);
+
+        const gameContext: GameContext = {
+            settings,
+            socket,
+            engineRef,
+            notifyRef,
+            clients,
+            SetClients
+        };
 
         function mouseMove(e: MouseEvent) {
             const _pos = { x: e.clientX, y: e.clientY };
@@ -509,27 +520,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 onResponse: (b, info) => {
                                     var time_till_free = 0;
                                     if (b === "buy") {
-                                        if (settings !== undefined && settings.notifications === true)
-                                            notifyRef.current?.message(
-                                                `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
-                                                "info",
-                                                2,
-                                                () => {},
-                                                false
-                                            );
-                                        localPlayer.balance -= (proprety?.price ?? 0) * 1;
-                                        engineRef.current?.applyAnimation(1);
-                                        localPlayer.properties.push({
-                                            posistion: localPlayer.position,
-                                            count: 0,
-                                            group: getPropertyByPosition(localPlayer.position)?.group ?? "",
+                                        buyProperty({
+                                            player: localPlayer,
+                                            property: proprety,
+                                            ctx: gameContext
                                         });
-                                        playPurchaseSfx(settings);
-
-                                        socket.emit(
-                                            "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${proprety.name}`)
-                                        );
                                     } else if (b === "advance-buy") {
                                         playPurchaseSfx(settings);
                                         const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
