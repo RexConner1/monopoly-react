@@ -29,6 +29,8 @@ export interface Property {
     multpliedrent?: number[];
     housecost?: number;
     hotelcost?: number;
+
+    // houses
     buildings?: number;
 
     // probability stats

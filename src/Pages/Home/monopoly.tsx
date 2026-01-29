@@ -12,6 +12,7 @@ import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, play
 import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
+import { handlePassGo } from "../../game/actions/handlePassGo.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -170,15 +171,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         playStepSfx(settings);
                         _xplayer.position = (_xplayer.position + (adding ? 1 : -1)) % 40;
                         if (_xplayer.position == 0 && get200whengo) {
-                            _xplayer.balance += 200;
-                            playMoneyPlusSfx(settings);
-                            if (_xplayer.id === socket.id) {
-                                if (settings !== undefined && settings.notifications === true)
-                                    notifyRef.current?.message(`${200} of money is added to the account`, "info", 2, () => {}, false);
-                                engineRef.current?.applyAnimation(2);
-                            }
+                            handlePassGo({
+                                player: _xplayer,
+                                ctx: gameContext
+                            });
                             addedMoney = true;
-                            SetClients(new Map(clients.set(_xplayer.id, _xplayer)));
                         }
                         if (i == sum_moves - 1) {
                             _xplayer.position = final_position;
@@ -188,16 +185,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             }, 900);
 
                             if (!addedMoney && firstPosition > _xplayer.position && get200whengo) {
-                                playMoneyPlusSfx(settings);
-                                _xplayer.balance += 200;
-                                if (_xplayer.id === socket.id) {
-                                    if (settings !== undefined && settings.notifications === true)
-                                        notifyRef.current?.message(`${200} of money is added to the account`, "info", 2, () => {}, false);
-                                    engineRef.current?.applyAnimation(2);
-                                }
+                                handlePassGo({
+                                    player: _xplayer,
+                                    ctx: gameContext
+                                });
                                 addedMoney = true;
-
-                                SetClients(new Map(clients.set(_xplayer.id, _xplayer)));
                             }
                             if (afterFinished) afterFinished();
                         } else {
