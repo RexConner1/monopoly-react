@@ -28,11 +28,8 @@ export interface Property {
     rent?: number;
     multpliedrent?: number[];
     housecost?: number;
+    hotelcost?: number;
     buildings?: number;
-
-    // original values
-    oprice?: number;
-    ohousecost?: number;
 
     // probability stats
     averageProbability?: number;

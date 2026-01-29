@@ -19,7 +19,7 @@
                 "Rank": 36,
                 "Probability % (Jail Long)": 2.0073
             },
-            "ohousecost": 50,
+            "hotelcost": 50,
             "oprice": 60,
             "averageProbability": 2.06935
         },
@@ -42,7 +42,7 @@
                 "Rank": 35,
                 "Probability % (Jail Long)": 2.0369
             },
-            "ohousecost": 50,
+            "hotelcost": 50,
             "oprice": 60,
             "averageProbability": 2.09965
         },
@@ -64,7 +64,7 @@
                 "Rank": 32,
                 "Probability % (Jail Long)": 2.1317
             },
-            "ohousecost": 50,
+            "hotelcost": 50,
             "oprice": 100,
             "averageProbability": 2.1969000000000003
         },
@@ -86,7 +86,7 @@
                 "Rank": 28,
                 "Probability % (Jail Long)": 2.1874
             },
-            "ohousecost": 50,
+            "hotelcost": 50,
             "oprice": 100,
             "averageProbability": 2.2542
         },
@@ -108,7 +108,7 @@
                 "Rank": 30,
                 "Probability % (Jail Long)": 2.168
             },
-            "ohousecost": 50,
+            "hotelcost": 50,
             "oprice": 120,
             "averageProbability": 2.23415
         },
@@ -130,7 +130,7 @@
                 "Rank": 15,
                 "Probability % (Jail Long)": 2.556
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 140,
             "averageProbability": 2.62885
         },
@@ -152,7 +152,7 @@
                 "Rank": 29,
                 "Probability % (Jail Long)": 2.1741
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 140,
             "averageProbability": 2.2731000000000003
         },
@@ -174,7 +174,7 @@
                 "Rank": 22,
                 "Probability % (Jail Long)": 2.4255
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 160,
             "averageProbability": 2.4452
         },
@@ -196,7 +196,7 @@
                 "Rank": 9,
                 "Probability % (Jail Long)": 2.6802
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 180,
             "averageProbability": 2.7363
         },
@@ -218,7 +218,7 @@
                 "Rank": 6,
                 "Probability % (Jail Long)": 2.821
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 180,
             "averageProbability": 2.8783000000000003
         },
@@ -240,7 +240,7 @@
                 "Rank": 7,
                 "Probability % (Jail Long)": 2.8118
             },
-            "ohousecost": 100,
+            "hotelcost": 100,
             "oprice": 200,
             "averageProbability": 2.9485
         },
@@ -262,7 +262,7 @@
                 "Rank": 12,
                 "Probability % (Jail Long)": 2.6143
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 220,
             "averageProbability": 2.72505
         },
@@ -284,7 +284,7 @@
                 "Rank": 14,
                 "Probability % (Jail Long)": 2.5671
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 220,
             "averageProbability": 2.6513999999999998
         },
@@ -306,7 +306,7 @@
                 "Rank": 2,
                 "Probability % (Jail Long)": 2.9929
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 240,
             "averageProbability": 3.08935
         },
@@ -328,7 +328,7 @@
                 "Rank": 16,
                 "Probability % (Jail Long)": 2.537
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 260,
             "averageProbability": 2.6220999999999997
         },
@@ -350,7 +350,7 @@
                 "Rank": 18,
                 "Probability % (Jail Long)": 2.5191
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 260,
             "averageProbability": 2.599
         },
@@ -372,7 +372,7 @@
                 "Rank": 21,
                 "Probability % (Jail Long)": 2.4381
             },
-            "ohousecost": 150,
+            "hotelcost": 150,
             "oprice": 280,
             "averageProbability": 2.5121
         },
@@ -394,7 +394,7 @@
                 "Rank": 17,
                 "Probability % (Jail Long)": 2.5236
             },
-            "ohousecost": 200,
+            "hotelcost": 200,
             "oprice": 300,
             "averageProbability": 2.6005000000000003
         },
@@ -416,7 +416,7 @@
                 "Rank": 20,
                 "Probability % (Jail Long)": 2.4721
             },
-            "ohousecost": 200,
+            "hotelcost": 200,
             "oprice": 300,
             "averageProbability": 2.5486500000000003
         },
@@ -438,7 +438,7 @@
                 "Rank": 23,
                 "Probability % (Jail Long)": 2.3531
             },
-            "ohousecost": 200,
+            "hotelcost": 200,
             "oprice": 320,
             "averageProbability": 2.42685
         },
@@ -460,7 +460,7 @@
                 "Rank": 33,
                 "Probability % (Jail Long)": 2.0595
             },
-            "ohousecost": 200,
+            "hotelcost": 200,
             "oprice": 350,
             "averageProbability": 2.12295
         },
@@ -482,7 +482,7 @@
                 "Rank": 19,
                 "Probability % (Jail Long)": 2.4832
             },
-            "ohousecost": 200,
+            "hotelcost": 200,
             "oprice": 400,
             "averageProbability": 2.5545999999999998
         },

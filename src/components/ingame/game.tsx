@@ -211,7 +211,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                             button: myButton,
                                             index,
                                             count,
-                                            houseCost: _property.ohousecost ?? 0,
+                                            houseCost: _property.hotelcost ?? 0,
                                             playerBalance:
                                                 prop.players.find(v => v.id === prop.socket.id)?.balance ?? 0,
                                             onAdvanceBuy: (payload) =>
@@ -371,7 +371,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     SetStreetType("Street");
                     const streetInfo = {
                         cardCost: x.price ?? -1,
-                        hotelsCost: x.ohousecost ?? -1,
+                        hotelsCost: x.hotelcost ?? -1,
                         housesCost: x.housecost ?? -1,
                         rent: x.rent ?? -1,
                         multpliedrent: x.multpliedrent

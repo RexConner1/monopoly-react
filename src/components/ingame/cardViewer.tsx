@@ -33,7 +33,7 @@ export default function CardViewer(props: { posistion: number; OnClick: React.Mo
             stretType = "Street";
             const streetInfo = {
                 cardCost: x.price ?? -1,
-                hotelsCost: x.ohousecost ?? -1,
+                hotelsCost: x.hotelcost ?? -1,
                 housesCost: x.housecost ?? -1,
                 rent: x.rent ?? -1,
                 multpliedrent: x.multpliedrent ? [x.multpliedrent[0] ?? -1, x.multpliedrent[1] ?? -1, x.multpliedrent[2] ?? -1, x.multpliedrent[3] ?? -1, x.multpliedrent[4] ?? -1] : [-1, -1, -1, -1, -1],

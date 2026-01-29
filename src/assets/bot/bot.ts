@@ -368,7 +368,7 @@ export async function main(host: string, initials: botInitial) {
                                     localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
 
                                     if (_info.state === 5) {
-                                        localPlayer.balance -= proprety.ohousecost ?? 0;
+                                        localPlayer.balance -= proprety.hotelcost ?? 0;
                                     } else {
                                         localPlayer.balance -= (proprety.housecost ?? 0) * _info.money;
                                     }

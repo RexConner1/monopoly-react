@@ -541,13 +541,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         if (_info.state === 5) {
                                             if (settings !== undefined && settings.notifications === true)
                                                 notifyRef.current?.message(
-                                                    `${proprety.ohousecost ?? 0} of money is deducted from the account`,
+                                                    `${proprety.hotelcost ?? 0} of money is deducted from the account`,
                                                     "info",
                                                     2,
                                                     () => {},
                                                     false
                                                 );
-                                            localPlayer.balance -= proprety.ohousecost ?? 0;
+                                            localPlayer.balance -= proprety.hotelcost ?? 0;
                                             engineRef.current?.applyAnimation(1);
                                         } else {
                                             if (settings !== undefined && settings.notifications === true)
