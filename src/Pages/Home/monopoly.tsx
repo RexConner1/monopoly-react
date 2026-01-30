@@ -13,7 +13,7 @@ import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { handlePassGo } from "../../game/actions/handlePassGo.ts";
-import { calculateUtilityRent } from "../../game/logic/rent/calculateUtilityRent.ts";
+import { calculateRent } from "../../game/logic/rent/calculateRent.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -564,26 +564,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         for (const p of players) {
                                             for (const prp of p.properties) {
                                                 if (prp.posistion === location) {
-                                                    var payment_ammount = 0;
-
-                                                    if (proprety.group === "Utilities") {
-                                                        const { rolls } = info as { rolls: number };
-                                                        payment_ammount = calculateUtilityRent(p, rolls);
-                                                    } else if (proprety.group === "Railroad") {
-                                                        const count = p.properties
-                                                            .filter((v) => v.group === "Railroad")
-                                                            .filter(
-                                                                (v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)
-                                                            ).length;
-                                                        const rents = [0, 25, 50, 100, 200];
-                                                        payment_ammount = rents[count];
-                                                    } else if (prp.count === 0) {
-                                                        payment_ammount = proprety?.rent ?? 0;
-                                                    } else if (typeof prp.count === "number" && prp.count > 0) {
-                                                        payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
-                                                    } else if (prp.count === "h") {
-                                                        payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
-                                                    }
+                                                    const { rolls } = info as { rolls: number };
+                                                    var payment_ammount = calculateRent(proprety, p, prp, rolls);
+                                                    
                                                     if (settings !== undefined && settings.notifications === true)
                                                         notifyRef.current?.message(
                                                             `${payment_ammount} of money is deducted from the account`,
@@ -593,14 +576,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                             false
                                                         );
                                                     playMoneyMinusSfx(settings);
+
                                                     if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
                                                         localPlayer.balance -= payment_ammount;
+
                                                     engineRef.current?.applyAnimation(1);
+
                                                     socket.emit("pay", {
                                                         balance: payment_ammount,
                                                         from: socket.id,
                                                         to: p.id,
                                                     });
+                                                    
                                                     engineRef.current?.applyAnimation(1);
 
                                                     socket.emit(
