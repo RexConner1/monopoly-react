@@ -13,6 +13,7 @@ import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { handlePassGo } from "../../game/actions/handlePassGo.ts";
+import { calculateUtilityRent } from "../../game/logic/rent/calculateUtilityRent.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -566,12 +567,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                     var payment_ammount = 0;
 
                                                     if (proprety.group === "Utilities") {
-                                                        const _info = info as {
-                                                            rolls: number;
-                                                        };
-                                                        const rolls = _info.rolls;
-                                                        const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                        payment_ammount = rolls * multy_;
+                                                        const { rolls } = info as { rolls: number };
+                                                        payment_ammount = calculateUtilityRent(p, rolls);
                                                     } else if (proprety.group === "Railroad") {
                                                         const count = p.properties
                                                             .filter((v) => v.group === "Railroad")
