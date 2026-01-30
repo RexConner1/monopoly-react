@@ -13,7 +13,7 @@ import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { handlePassGo } from "../../game/actions/handlePassGo.ts";
-import { calculateRent } from "../../game/logic/rent/calculateRent.ts";
+import { payRent } from "../../game/logic/rent/payRent.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -560,47 +560,14 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${proprety.name}`)
                                         );
                                     } else if (b === "someones") {
-                                        const players = Array.from(clients.values());
-                                        for (const p of players) {
-                                            for (const prp of p.properties) {
-                                                if (prp.posistion === location) {
-                                                    const { rolls } = info as { rolls: number };
-                                                    var payment_ammount = calculateRent(proprety, p, prp, rolls);
-                                                    
-                                                    if (settings !== undefined && settings.notifications === true)
-                                                        notifyRef.current?.message(
-                                                            `${payment_ammount} of money is deducted from the account`,
-                                                            "info",
-                                                            2,
-                                                            () => {},
-                                                            false
-                                                        );
-                                                    playMoneyMinusSfx(settings);
-
-                                                    if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
-                                                        localPlayer.balance -= payment_ammount;
-
-                                                    engineRef.current?.applyAnimation(1);
-
-                                                    socket.emit("pay", {
-                                                        balance: payment_ammount,
-                                                        from: socket.id,
-                                                        to: p.id,
-                                                    });
-                                                    
-                                                    engineRef.current?.applyAnimation(1);
-
-                                                    socket.emit(
-                                                        "history",
-                                                        history(`
-                                                    ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_ammount} to ${
-                                                            clients.get(p.id)?.username ?? "unknown user"
-                                                        }
-                                                    `)
-                                                    );
-                                                }
-                                            }
-                                        }
+                                        const { rolls } = info as { rolls: number };
+                                        payRent({
+                                            payer: localPlayer,
+                                            property: proprety,
+                                            location,
+                                            rolls,
+                                            ctx: gameContext
+                                        });
                                     } else if (b === "nothing") {
                                         if ((proprety?.id ?? "") == "gotojail") {
                                             const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
