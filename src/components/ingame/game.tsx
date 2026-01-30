@@ -292,7 +292,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                 } else if (x.group === "Utilities") {
                     if (!belong_to_me) {
                         if (belong_to_others) {
-                            args.onResponse("someones", {});
+                            args.onResponse("someones", {rolls: args.rolls});
                             ShowStreet(false);
                             return;
                         } else {
@@ -631,13 +631,13 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                             .filter((v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)).length;
                                         const rents = [0, 25, 50, 100, 200];
                                         var payment_ammount = rents[count];
-                                    } else if (_prp.group === "Utilities" && _prp.rent) {
+                                    } else if (_prp.group === "Utilities") {
                                         const multy_ = _player.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                        payment_ammount = _prp.rent * multy_;
+                                        payment_ammount = multy_;
                                     }
 
                                     if (payment_ammount !== 0) {
-                                        st.innerHTML = `<p>${payment_ammount}M</p>`;
+                                        st.innerHTML = _prp.group === "Utilities" ? `<p>x${payment_ammount}</p>` : `<p>${payment_ammount}M</p>`;
                                         st.style.backgroundColor = "rgba(0,0,0,75%)";
                                         if (settings !== undefined && settings?.accessibility[4]) {
                                             st.style.backgroundColor = `${_player.color}`;

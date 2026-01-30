@@ -142,7 +142,7 @@ export async function main(host: string, initials: botInitial) {
                 } else if (x.group === "Utilities") {
                     if (!belong_to_me) {
                         if (belong_to_others) {
-                            args.onResponse("someones", {});
+                            args.onResponse("someones", {rolls: args.rolls});
                             return;
                         } else {
                             if (localPlayer.balance - (x?.price ?? 0) < 0) {
@@ -384,9 +384,14 @@ export async function main(host: string, initials: botInitial) {
                                             if (prp.posistion === location) {
                                                 var payment_ammount = 0;
 
-                                                if (proprety.group === "Utilities" && prp.rent) {
+                                                if (proprety.group === "Utilities") {
+                                                    const _info = info as {
+                                                        rolls: number;
+                                                    };
+                                                    const rolls = _info.rolls;
+
                                                     const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                    payment_ammount = prp.rent * multy_;
+                                                    payment_ammount = rolls * multy_;
                                                 } else if (proprety.group === "Railroad") {
                                                     const count = p.properties
                                                         .filter((v) => v.group === "Railroad")

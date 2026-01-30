@@ -565,9 +565,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 if (prp.posistion === location) {
                                                     var payment_ammount = 0;
 
-                                                    if (proprety.group === "Utilities" && prp.rent) {
+                                                    if (proprety.group === "Utilities") {
+                                                        const _info = info as {
+                                                            rolls: number;
+                                                        };
+                                                        const rolls = _info.rolls;
                                                         const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                        payment_ammount = prp.rent * multy_;
+                                                        payment_ammount = rolls * multy_;
                                                     } else if (proprety.group === "Railroad") {
                                                         const count = p.properties
                                                             .filter((v) => v.group === "Railroad")
