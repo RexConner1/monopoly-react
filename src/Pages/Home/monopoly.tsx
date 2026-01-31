@@ -15,6 +15,7 @@ import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { handlePassGo } from "../../game/actions/handlePassGo.ts";
 import { payRent } from "../../game/actions/payRent.ts";
 import { payLuxuryTax } from "../../game/actions/payLuxuryTax.ts";
+import { payIncomeTax } from "../../game/actions/payIncomeTax.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -582,21 +583,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         }
 
                                         if (proprety?.id === "incometax") {
-                                            localPlayer.balance -= 200;
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyRef.current?.message(
-                                                    `${200} of money is deducted from the account`,
-                                                    "info",
-                                                    2,
-                                                    () => {},
-                                                    false
-                                                );
-                                            playMoneyMinusSfx(settings);
-                                            engineRef.current?.applyAnimation(1);
-                                            socket.emit(
-                                                "history",
-                                                history(`${clients.get(socket.id)?.username ?? "unknown player"} payed income taxes`)
-                                            );
+                                            payIncomeTax({
+                                                player: localPlayer,
+                                                ctx: gameContext
+                                            });
                                         }
                                         if (proprety?.id === "luxurytax") {
                                             payLuxuryTax({
