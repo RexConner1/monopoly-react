@@ -443,12 +443,12 @@ export async function main(host: string, initials: botInitial) {
                                     if (proprety?.id === "incometax") {
                                         localPlayer.balance -= 200;
 
-                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} payed income taxes`));
+                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid income taxes`));
                                     }
-                                    if (proprety?.id === "luxerytax") {
+                                    if (proprety?.id === "luxurytax") {
                                         localPlayer.balance -= 100;
 
-                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} payed luxery taxes`));
+                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid luxury taxes`));
                                     }
                                 } else if (b === "special_action") {
                                     localPlayer.balance -= (proprety?.price ?? 0) * 1;

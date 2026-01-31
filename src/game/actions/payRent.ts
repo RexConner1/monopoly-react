@@ -1,10 +1,10 @@
-import { GameContext } from "../../../assets/gameContext";
-import { Player } from "../../../assets/player";
-import { Property } from "../../../assets/property";
-import { history } from "../../../assets/types";
-import { playMoneyMinusSfx } from "../../../ui/audio/audio";
-import { calculateRent } from "./calculateRent";
-import { findPropertyOwner } from "./findPropertyOwner";
+import { GameContext } from "../../assets/gameContext";
+import { Player } from "../../assets/player";
+import { Property } from "../../assets/property";
+import { history } from "../../assets/types";
+import { playMoneyMinusSfx } from "../../ui/audio/audio";
+import { calculateRent } from "../logic/rent/calculateRent";
+import { findPropertyOwner } from "../logic/rent/findPropertyOwner";
 
 export function payRent({
     payer,

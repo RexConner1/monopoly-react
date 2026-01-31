@@ -13,7 +13,8 @@ import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { handlePassGo } from "../../game/actions/handlePassGo.ts";
-import { payRent } from "../../game/logic/rent/payRent.ts";
+import { payRent } from "../../game/actions/payRent.ts";
+import { payLuxuryTax } from "../../game/actions/payLuxuryTax.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -597,22 +598,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 history(`${clients.get(socket.id)?.username ?? "unknown player"} payed income taxes`)
                                             );
                                         }
-                                        if (proprety?.id === "luxerytax") {
-                                            localPlayer.balance -= 100;
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyRef.current?.message(
-                                                    `${100} of money is deducted from the account`,
-                                                    "info",
-                                                    2,
-                                                    () => {},
-                                                    false
-                                                );
-                                            playMoneyMinusSfx(settings);
-                                            engineRef.current?.applyAnimation(1);
-                                            socket.emit(
-                                                "history",
-                                                history(`${clients.get(socket.id)?.username ?? "unknown player"} payed luxery taxes`)
-                                            );
+                                        if (proprety?.id === "luxurytax") {
+                                            payLuxuryTax({
+                                                player: localPlayer,
+                                                ctx: gameContext
+                                            });
                                         }
                                     } else if (b === "special_action") {
                                         if (settings !== undefined && settings.notifications === true)
