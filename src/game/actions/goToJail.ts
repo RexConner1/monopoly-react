@@ -1,7 +1,7 @@
 import { GameContext } from "../../assets/gameContext";
 import { Player } from "../../assets/player";
 import { playJailSfx } from "../../ui/audio/audio";
-// import { movePlayer } from "./movePlayer";
+
 
 export function goToJail({
     player,

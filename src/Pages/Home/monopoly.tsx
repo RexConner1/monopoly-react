@@ -17,6 +17,7 @@ import { payLuxuryTax } from "../../game/actions/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/actions/payIncomeTax.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
+import { advanceProperty } from "../../game/actions/advanceProperty.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -447,42 +448,19 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             ctx: gameContext
                                         });
                                     } else if (b === "advance-buy") {
-                                        playPurchaseSfx(settings);
-                                        const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                            (v) => v[1].posistion === location
-                                        )[0][0];
-
-                                        const _info = info as {
-                                            state: 1 | 2 | 3 | 4 | 5;
-                                            money: number;
+                                        const { state, money } = info as { 
+                                            state: 1 | 2 | 3 | 4 | 5; 
+                                            money: number; 
                                         };
 
-                                        localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
-
-                                        const isHotel = _info.state === 5;
-
-                                        const cost = isHotel
-                                            ? (proprety.hotelcost ?? 0)
-                                            : (proprety.housecost ?? 0) * _info.money;
-
-                                        if (settings?.notifications) {
-                                            notifyRef.current?.message(
-                                                `${cost} of money is deducted from the account`,
-                                                "info",
-                                                2,
-                                                () => {},
-                                                false
-                                            );
-                                        }
-
-                                        localPlayer.balance -= cost;
-
-                                        engineRef.current?.applyAnimation(1);
-
-                                        socket.emit(
-                                            "history",
-                                            history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${proprety.name}`)
-                                        );
+                                        advanceProperty({
+                                            player: localPlayer,
+                                            property: proprety,
+                                            location,
+                                            state,
+                                            money,
+                                            ctx: gameContext
+                                        });
                                     } else if (b === "someones") {
                                         const { rolls } = info as { rolls: number };
                                         payRent({
