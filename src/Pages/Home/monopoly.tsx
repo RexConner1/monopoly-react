@@ -18,6 +18,7 @@ import { payIncomeTax } from "../../game/actions/payIncomeTax.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
 import { advanceProperty } from "../../game/actions/advanceProperty.ts";
+import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -463,6 +464,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         });
                                     } else if (b === "someones") {
                                         const { rolls } = info as { rolls: number };
+                                        
                                         payRent({
                                             payer: localPlayer,
                                             property: proprety,
@@ -488,38 +490,14 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             });
                                         }
                                     } else if (b === "special_action") {
-                                        if (settings !== undefined && settings.notifications === true)
-                                            notifyRef.current?.message(
-                                                `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
-                                                "info",
-                                                2,
-                                                () => {},
-                                                false
-                                            );
-                                        playPurchaseSfx(settings);
-                                        localPlayer.balance -= (proprety?.price ?? 0) * 1;
-                                        engineRef.current?.applyAnimation(1);
+                                        const { rolls } = info as { rolls: number };
 
-                                        const _info = info as {
-                                            rolls: number;
-                                        };
-                                        const prp = getPropertyByPosition(localPlayer.position);
-                                        const calculateRent = _info.rolls;
-                                        localPlayer.properties.push({
-                                            posistion: localPlayer.position,
-                                            count: 0,
-                                            rent: calculateRent,
-                                            group: prp?.group ?? "",
+                                        buySpecialProperty({
+                                            player: localPlayer,
+                                            property: proprety,
+                                            rolls: rolls,
+                                            ctx: gameContext
                                         });
-
-                                        socket.emit(
-                                            "history",
-                                            history(
-                                                `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                    prp?.name ?? "unkown place"
-                                                } with rent of ${calculateRent}`
-                                            )
-                                        );
                                     }
 
                                     setTimeout(() => {
