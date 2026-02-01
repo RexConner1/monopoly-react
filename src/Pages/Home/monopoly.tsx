@@ -8,14 +8,15 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
-import { playJailSfx, playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx, playStepSfx } from "../../ui/audio/audio.ts";
+import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
-import { handlePassGo } from "../../game/actions/handlePassGo.ts";
 import { payRent } from "../../game/actions/payRent.ts";
 import { payLuxuryTax } from "../../game/actions/payLuxuryTax.ts";
 import { payIncomeTax } from "../../game/actions/payIncomeTax.ts";
+import { movePlayer } from "../../game/actions/movePlayer.ts";
+import { goToJail } from "../../game/actions/goToJail.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -134,80 +135,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 });
             }
             removeChild();
-        }
-
-        function playerMoveGENERATOR(
-            final_position: number,
-            _xplayer: Player,
-            get200whengo: boolean = true,
-            afterFinished?: () => void,
-            adding: boolean = true
-        ) {
-            var sum_moves = (final_position - _xplayer.position) % 40;
-            if ((final_position < _xplayer.position || sum_moves < 0) && adding) {
-                sum_moves = 40 - _xplayer.position + final_position;
-            }
-
-            if (!adding) {
-                sum_moves = _xplayer.position - final_position;
-                if (sum_moves < 0) {
-                    sum_moves += 40;
-                }
-            }
-
-            const time = 0.35 * 1000 * sum_moves;
-
-            console.log(`${new Date().toTimeString()} generator ${Math.random()} target ${final_position} time ${time} current ${_xplayer.position}`);
-            function _playerMoveFunc() {
-                var firstPosition = 0;
-                var addedMoney = false;
-                var i = 0;
-                const element = document.querySelector(`div.player[player-id="${_xplayer.id}"]`) as HTMLDivElement;
-
-                firstPosition = _xplayer.position;
-                _xplayer.position += 1;
-                playStepSfx(settings);
-                element.style.animation = "jumpstreet 0.35s cubic-bezier(.26,1.5,.65,1.02)";
-                const movingAnim = () => {
-                    if (i < sum_moves) {
-                        i += 1;
-                        playStepSfx(settings);
-                        _xplayer.position = (_xplayer.position + (adding ? 1 : -1)) % 40;
-                        if (_xplayer.position == 0 && get200whengo) {
-                            handlePassGo({
-                                player: _xplayer,
-                                ctx: gameContext
-                            });
-                            addedMoney = true;
-                        }
-                        if (i == sum_moves - 1) {
-                            _xplayer.position = final_position;
-                            element.style.animation = "part 0.9s cubic-bezier(0,.7,.57,1)";
-                            setTimeout(() => {
-                                element.style.animation = "";
-                            }, 900);
-
-                            if (!addedMoney && firstPosition > _xplayer.position && get200whengo) {
-                                handlePassGo({
-                                    player: _xplayer,
-                                    ctx: gameContext
-                                });
-                                addedMoney = true;
-                            }
-                            if (afterFinished) afterFinished();
-                        } else {
-                            element.style.animation = "jumpstreet 0.35s cubic-bezier(.26,1.5,.65,1.02)";
-                            setTimeout(movingAnim, 0.35 * 1000);
-                        }
-                    }
-                };
-                setTimeout(movingAnim, 0.35 * 1000);
-            }
-
-            return {
-                func: _playerMoveFunc,
-                time,
-            };
         }
 
         //#region socket handeling
@@ -482,18 +409,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             // const sumTimes = args.listOfNums[0] + args.listOfNums[1];
             const localPlayer = clients.get(socket.id) as Player;
             const xplayer = clients.get(args.turnId) as Player;
-            const dice_generatorResults = playerMoveGENERATOR(args.listOfNums[2], xplayer, true, () => {
-                if (args.turnId != socket.id && args.listOfNums[2] === 30) {
-                    setTimeout(() => {
-                        SetHistories((old) => [...old, history(`${clients.get(args.turnId)?.username ?? "unknown player"} goes to jail`)]);
-                        const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
-                            xplayer.position = 10;
-                            xplayer.isInJail = true;
-                            playJailSfx(settings);
-                            xplayer.jailTurnsRemaining = 3;
-                        });
-                        generatorResults.func();
-                    }, 800);
+            const dice_generatorResults = movePlayer({
+                finalPosition: args.listOfNums[2], 
+                player: xplayer, 
+                ctx: gameContext, 
+                afterFinished: () => {
+                    if (args.turnId != socket.id && args.listOfNums[2] === 30) {
+                        setTimeout(() => {
+                            SetHistories((old) => [...old, history(`${clients.get(args.turnId)?.username ?? "unknown player"} goes to jail`)]);
+                            goToJail({player: xplayer, ctx: gameContext});
+                        }, 800);
+                    }
                 }
             });
 
@@ -572,14 +498,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         });
                                     } else if (b === "nothing") {
                                         if ((proprety?.id ?? "") == "gotojail") {
-                                            const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
-                                                xplayer.position = 10;
-                                                xplayer.isInJail = true;
-                                                xplayer.jailTurnsRemaining = 3;
-                                            });
-
-                                            time_till_free = generatorResults.time;
-                                            generatorResults.func();
+                                            goToJail({player: xplayer, ctx: gameContext});
                                         }
 
                                         if (proprety?.id === "incometax") {
@@ -647,7 +566,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (args.listOfNums[0] == args.listOfNums[1]) {
                         xplayer.isInJail = false;
                         setTimeout(() => {
-                            dice_generatorResults.func();
+                            dice_generatorResults.start();
                         }, 2000);
                     } else if (xplayer.jailTurnsRemaining > 0) {
                         xplayer.jailTurnsRemaining -= 1;
@@ -659,7 +578,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 }, 1500);
             } else {
                 setTimeout(() => {
-                    dice_generatorResults.func();
+                    dice_generatorResults.start();
                 }, 2000);
             }
         };
@@ -805,13 +724,20 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             const targetPos = p.get(c.tileid)?.posistion;
                             if (targetPos === undefined) break;
 
-                            const _generatorResults = playerMoveGENERATOR(targetPos, xplayer);
+                            const _generatorResults = movePlayer({finalPosition: targetPos, player: xplayer, ctx: gameContext});
                             time_till_finish = _generatorResults.time;
-                            _generatorResults.func();
+                            _generatorResults.start();
                         } else if (c.count) {
-                            const _generatorResults = playerMoveGENERATOR((xplayer.position + c.count) % 40, xplayer, true, () => {}, c.count >= 0);
+                            const _generatorResults = movePlayer({
+                                finalPosition: (xplayer.position + c.count) % 40,
+                                player: xplayer, 
+                                ctx: gameContext,
+                                get200whengo: true, 
+                                afterFinished:() => {}, 
+                                adding: c.count >= 0
+                            });
                             time_till_finish = _generatorResults.time;
-                            _generatorResults.func();
+                            _generatorResults.start();
                         }
                         break;
 
@@ -831,14 +757,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     xplayer.getoutCards += 1;
                                     break;
                                 case "goto":
-                                    const _generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
-                                        xplayer.position = 10;
-                                        xplayer.isInJail = true;
-                                        playJailSfx(settings);
-                                        xplayer.jailTurnsRemaining = 3;
-                                    });
-                                    time_till_finish = _generatorResults.time;
-                                    _generatorResults.func();
+                                    goToJail({player: xplayer, ctx: gameContext});
                                     break;
                             }
                             SetClients(new Map(clients.set(xplayer.id, xplayer)));
@@ -895,9 +814,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         }
                         const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.posistion);
                         const ongoingLocation = findNextValue(arr, xplayer.position);
-                        const _generatorResults = playerMoveGENERATOR(ongoingLocation, xplayer);
+                        const _generatorResults = movePlayer({finalPosition: ongoingLocation, player: xplayer, ctx: gameContext});
                         time_till_finish = -1;
-                        _generatorResults.func();
+                        _generatorResults.start();
                         setTimeout(() => {
                             if (xplayer.id === socket.id) {
                                 const location = xplayer?.position ?? -1;
