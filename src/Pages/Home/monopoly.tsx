@@ -459,29 +459,25 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                         localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
 
-                                        if (_info.state === 5) {
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyRef.current?.message(
-                                                    `${proprety.hotelcost ?? 0} of money is deducted from the account`,
-                                                    "info",
-                                                    2,
-                                                    () => {},
-                                                    false
-                                                );
-                                            localPlayer.balance -= proprety.hotelcost ?? 0;
-                                            engineRef.current?.applyAnimation(1);
-                                        } else {
-                                            if (settings !== undefined && settings.notifications === true)
-                                                notifyRef.current?.message(
-                                                    `${proprety.housecost ?? 0} of money is deducted from the account`,
-                                                    "info",
-                                                    2,
-                                                    () => {},
-                                                    false
-                                                );
-                                            localPlayer.balance -= (proprety.housecost ?? 0) * _info.money;
-                                            engineRef.current?.applyAnimation(1);
+                                        const isHotel = _info.state === 5;
+
+                                        const cost = isHotel
+                                            ? (proprety.hotelcost ?? 0)
+                                            : (proprety.housecost ?? 0) * _info.money;
+
+                                        if (settings?.notifications) {
+                                            notifyRef.current?.message(
+                                                `${cost} of money is deducted from the account`,
+                                                "info",
+                                                2,
+                                                () => {},
+                                                false
+                                            );
                                         }
+
+                                        localPlayer.balance -= cost;
+
+                                        engineRef.current?.applyAnimation(1);
 
                                         socket.emit(
                                             "history",
