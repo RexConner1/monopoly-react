@@ -19,6 +19,7 @@ import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
 import { advanceProperty } from "../../game/actions/advanceProperty.ts";
 import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
+import { advanceToTile } from "../../game/actions/advanceToTile.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -668,17 +669,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 switch (c.action) {
                     case "move":
                         if (c.tileid) {
-                            const p = new Map(
-                                monopolyJSON.properties.map((obj) => {
-                                    return [obj.id, obj];
-                                })
-                            );
-                            const targetPos = p.get(c.tileid)?.posistion;
-                            if (targetPos === undefined) break;
-
-                            const _generatorResults = movePlayer({finalPosition: targetPos, player: xplayer, ctx: gameContext});
-                            time_till_finish = _generatorResults.time;
-                            _generatorResults.start();
+                            time_till_finish = advanceToTile({
+                                tileId: c.tileid,
+                                player: xplayer,
+                                ctx: gameContext,
+                            });
                         } else if (c.count) {
                             const _generatorResults = movePlayer({
                                 finalPosition: (xplayer.position + c.count) % 40,
