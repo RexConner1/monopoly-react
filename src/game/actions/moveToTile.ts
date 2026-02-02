@@ -2,7 +2,7 @@ import { Player } from "../../assets/player";
 import { getPropertyById } from "../../assets/property";
 import { movePlayer } from "./movePlayer";
 
-export function advanceToTile({
+export function moveToTile({
     tileId,
     player,
     ctx,

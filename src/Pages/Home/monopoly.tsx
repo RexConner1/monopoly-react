@@ -19,7 +19,8 @@ import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
 import { advanceProperty } from "../../game/actions/advanceProperty.ts";
 import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
-import { advanceToTile } from "../../game/actions/advanceToTile.ts";
+import { moveToTile } from "../../game/actions/moveToTile.ts";
+import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -669,22 +670,19 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 switch (c.action) {
                     case "move":
                         if (c.tileid) {
-                            time_till_finish = advanceToTile({
+                            time_till_finish = moveToTile({
                                 tileId: c.tileid,
                                 player: xplayer,
                                 ctx: gameContext,
                             });
                         } else if (c.count) {
-                            const _generatorResults = movePlayer({
-                                finalPosition: (xplayer.position + c.count) % 40,
-                                player: xplayer, 
+                            time_till_finish = moveBySpaces({
+                                spaces: c.count,
+                                player: xplayer,
                                 ctx: gameContext,
-                                get200whengo: true, 
-                                afterFinished:() => {}, 
-                                adding: c.count >= 0
+                                get200whengo: true,
+                                afterFinished: () => {},
                             });
-                            time_till_finish = _generatorResults.time;
-                            _generatorResults.start();
                         }
                         break;
 
