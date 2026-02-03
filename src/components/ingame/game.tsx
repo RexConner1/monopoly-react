@@ -15,6 +15,7 @@ import DisplayStreets from "./displayStreets.tsx";
 import { createBuyHotelButton } from "../../ui/buttons/createBuyHotelButton.ts";
 import { createBuyHouseButton } from "../../ui/buttons/createBuyHouseButton.ts";
 import { playCardSfx, playClickSfx } from "../../ui/audio/audio.ts";
+import { createContinueButton } from "../../ui/buttons/createContinueButton.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -233,15 +234,14 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                     }
                                     divB.appendChild(myButton);
                                 }
-                                // last button of cancel
-                                const continueButtons = document.createElement("button");
-                                continueButtons.innerHTML = "CONTINUE";
-                                continueButtons.onclick = () => {
-                                    clickSound();
-                                    args.onResponse("nothing", {});
-                                    ShowStreet(false);
-                                };
-                                divB.appendChild(continueButtons);
+                                createContinueButton({
+                                    parent: divB,
+                                    onContinue: () => {
+                                        clickSound();
+                                        args.onResponse("nothing", {});
+                                        ShowStreet(false);
+                                    },
+                                });
                             } else {
                                 requestAnimationFrame(func);
                             }
