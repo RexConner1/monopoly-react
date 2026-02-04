@@ -12,10 +12,9 @@ import Slider from "../utils/slider.tsx";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import DisplayHouses from "./displayHouses.tsx";
 import DisplayStreets from "./displayStreets.tsx";
-import { createBuyHotelButton } from "../../ui/buttons/createBuyHotelButton.ts";
-import { createBuyHouseButton } from "../../ui/buttons/createBuyHouseButton.ts";
 import { playCardSfx, playClickSfx } from "../../ui/audio/audio.ts";
-import { createContinueButton } from "../../ui/buttons/createContinueButton.ts";
+import { getPropertyByPosition } from "../../assets/property.ts";
+import { renderUpgradeButtons } from "../../ui/street/renderUpgradeButtons.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -185,62 +184,21 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                             const b = document.querySelector("div#advanced-responses");
 
                             if (b) {
-                                const _property = propretyMap.get(location);
+                                const _property = getPropertyByPosition(location);
                                 if (!_property) return;
-                                const divB = b as HTMLDivElement;
-                                while (divB.firstChild) {
-                                    divB.removeChild(divB.firstChild);
-                                }
-                                const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                    (v) => v[1].posistion === args.location
-                                )[0][0];
 
-                                function transformCount(v: 0 | 2 | 1 | 3 | 4 | "h") {
-                                    switch (v) {
-                                        case "h":
-                                            return 5;
-
-                                        default:
-                                            return v;
-                                    }
-                                }
-                                const count: number = transformCount(localPlayer.properties[propId].count);
-                                for (let index = count + 1; index < 6; index++) {
-                                    const myButton = document.createElement("button");
-                                    if (index === 5) {
-                                        createBuyHotelButton({
-                                            button: myButton,
-                                            index,
-                                            count,
-                                            houseCost: _property.hotelcost ?? 0,
-                                            playerBalance:
-                                                prop.players.find(v => v.id === prop.socket.id)?.balance ?? 0,
-                                            onAdvanceBuy: (payload) =>
-                                                args.onResponse("advance-buy", payload),
-                                            closeStreet: () => ShowStreet(false),
-                                        });
-                                    } else {                                        
-                                        createBuyHouseButton({
-                                            button: myButton,
-                                            index,
-                                            count,
-                                            houseCost: _property.housecost ?? 0,
-                                            playerBalance:
-                                                prop.players.find(v => v.id === prop.socket.id)?.balance ?? 0,
-                                            onAdvanceBuy: (payload) =>
-                                                args.onResponse("advance-buy", payload),
-                                            closeStreet: () => ShowStreet(false),
-                                        });
-                                    }
-                                    divB.appendChild(myButton);
-                                }
-                                createContinueButton({
-                                    parent: divB,
+                                renderUpgradeButtons({
+                                    container: b as HTMLDivElement,
+                                    property: _property,
+                                    player: localPlayer,
+                                    location,
+                                    onAdvanceBuy: (payload : object) =>
+                                        args.onResponse("advance-buy", payload),
                                     onContinue: () => {
                                         clickSound();
                                         args.onResponse("nothing", {});
-                                        ShowStreet(false);
                                     },
+                                    onClose: () => ShowStreet(false),
                                 });
                             } else {
                                 requestAnimationFrame(func);
