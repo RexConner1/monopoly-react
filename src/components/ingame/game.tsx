@@ -15,7 +15,7 @@ import DisplayStreets from "./displayStreets.tsx";
 import { playCardSfx, playClickSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition } from "../../assets/property.ts";
 import { renderUpgradeButtons } from "../../ui/street/renderUpgradeButtons.ts";
-import { CancelTradeButton, TradePlayerList } from "../trade/trade.tsx";
+import { TradeOpponentSelector } from "../trade/tradeOpponentSelector.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -780,24 +780,13 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     <div className="middle">
                         <h3>Trade</h3>
                         {typeof prop.tradeObj !== "object" ? (
-                            <>
-                                <h2>Select your opponent</h2>
-                                <center>
-                                    <div className="select-players">
-                                        <TradePlayerList
-                                            players={prop.players}
-                                            currentPlayerId={prop.socket.id}
-                                            myTurn={prop.myTurn}
-                                            onSelect={prop.tradeApi.onSelectPlayer}
-                                        />
-                                        <CancelTradeButton
-                                            myTurn={prop.myTurn}
-                                            socket={prop.socket}
-                                            onCancelLocal={() => SetSended(false)}
-                                        />
-                                    </div>
-                                </center>
-                            </>
+                            <TradeOpponentSelector
+                                players={prop.players}
+                                myTurn={prop.myTurn}
+                                socket={prop.socket}
+                                onSelectPlayer={prop.tradeApi.onSelectPlayer}
+                                onCancelLocal={() => SetSended(false)}
+                            />
                         ) : (
                             <>
                                 <div className="trade-mission">

@@ -1,4 +1,44 @@
 import { Player } from "../../assets/player";
+import { Socket } from "../../assets/sockets";
+
+type Props = {
+    players: Player[];
+    myTurn: boolean;
+    socket: Socket;
+    onSelectPlayer: (id: string) => void;
+    onCancelLocal: () => void;
+};
+
+export function TradeOpponentSelector({
+    players,
+    myTurn,
+    socket,
+    onSelectPlayer,
+    onCancelLocal,
+}: Props) {
+    return (
+        <>
+            <h2>Select your opponent</h2>
+
+            <center>
+                <div className="select-players">
+                    <TradePlayerList
+                        players={players}
+                        currentPlayerId={socket.id}
+                        myTurn={myTurn}
+                        onSelect={onSelectPlayer}
+                    />
+
+                    <CancelTradeButton
+                        myTurn={myTurn}
+                        socket={socket}
+                        onCancelLocal={onCancelLocal}
+                    />
+                </div>
+            </center>
+        </>
+    );
+}
 
 export function TradePlayerList({
     players,
