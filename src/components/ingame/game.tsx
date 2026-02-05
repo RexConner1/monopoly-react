@@ -15,6 +15,7 @@ import DisplayStreets from "./displayStreets.tsx";
 import { playCardSfx, playClickSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition } from "../../assets/property.ts";
 import { renderUpgradeButtons } from "../../ui/street/renderUpgradeButtons.ts";
+import { CancelTradeButton, TradePlayerList } from "../trade/trade.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -783,34 +784,17 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                 <h2>Select your opponent</h2>
                                 <center>
                                     <div className="select-players">
-                                        {prop.players
-                                            .filter((v) => v.id !== prop.socket.id)
-                                            .map((v, i) => (
-                                                <button
-                                                    style={{ animation: "tradepopout .3s cubic-bezier(0.21, 1.57, 0.55, 1)" }}
-                                                    data-selectable={prop.myTurn}
-                                                    key={i}
-                                                    onClick={() => {
-                                                        if (prop.myTurn) {
-                                                            prop.tradeApi.onSelectPlayer(v.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    {v.username}
-                                                </button>
-                                            ))}
-                                        <button
-                                            data-selectable={prop.myTurn}
-                                            onClick={() => {
-                                                if (prop.myTurn) {
-                                                    prop.socket.emit("cancel-trade");
-                                                    SetSended(false);
-                                                }
-                                            }}
-                                        >
-                                            {" "}
-                                            CANCEL TRADE
-                                        </button>
+                                        <TradePlayerList
+                                            players={prop.players}
+                                            currentPlayerId={prop.socket.id}
+                                            myTurn={prop.myTurn}
+                                            onSelect={prop.tradeApi.onSelectPlayer}
+                                        />
+                                        <CancelTradeButton
+                                            myTurn={prop.myTurn}
+                                            socket={prop.socket}
+                                            onCancelLocal={() => SetSended(false)}
+                                        />
                                     </div>
                                 </center>
                             </>
