@@ -1,6 +1,6 @@
 import { Player } from "../../../assets/player";
 import { Property } from "../../../assets/property";
-import { PlayerProprety } from "../../../assets/types";
+import { PlayerProperty } from "../../../assets/types";
 import { calculateRailroadRent } from "./calculateRailroadRent";
 import { calculateStreetRent } from "./calculateStreetRent";
 import { calculateUtilityRent } from "./calculateUtilityRent";
@@ -8,7 +8,7 @@ import { calculateUtilityRent } from "./calculateUtilityRent";
 export function calculateRent(
     property: Property,
     owner: Player,
-    prp: PlayerProprety,
+    prp: PlayerProperty,
     diceRoll?: number
 ): number {
     switch (property.group) {

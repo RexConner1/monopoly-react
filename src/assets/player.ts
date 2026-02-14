@@ -1,4 +1,4 @@
-import { PlayerProprety } from "./types";
+import { PlayerProperty } from "./types";
 
 export class Player {
     public id: string;
@@ -7,7 +7,7 @@ export class Player {
 
     public position: number;
     public balance: number;
-    public properties: Array<PlayerProprety>;
+    public properties: Array<PlayerProperty>;
     public isInJail: boolean;
     public jailTurnsRemaining: number;
     public getoutCards: number;
