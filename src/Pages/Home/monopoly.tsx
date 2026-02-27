@@ -21,6 +21,7 @@ import { advanceProperty } from "../../game/actions/advanceProperty.ts";
 import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
 import { moveToTile } from "../../game/actions/moveToTile.ts";
 import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
+import { removeFunds } from "../../game/actions/removeFunds.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -710,26 +711,20 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "removefunds":
-                        xplayer.balance -= c.amount ?? 0;
-                        if (xplayer.id === socket.id) {
-                            engineRef.current?.applyAnimation(1);
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyRef.current?.message(`${c.amount ?? 0} of money is deducted from the account`, "info", 2, () => {}, false);
-                            playMoneyMinusSfx(settings);
-                        }
+                        removeFunds({
+                            player: xplayer,
+                            amount: c.amount ?? 0,
+                            ctx: gameContext
+                        });
                         break;
-                    // amount
+
                     case "removefundstoplayers":
                         addBalanceToOthers(c.amount ?? 0);
-                        // xplayer.balance -= (c.amount ?? 0) * l;
                         if (xplayer.id === socket.id) engineRef.current?.applyAnimation(1);
                         break;
 
                     case "addfundsfromplayers":
                         addBalanceToOthers(-(c.amount ?? 0));
-                        // xplayer.balance += (c.amount ?? 0) * l;
-                        // if (xplayer.id === socket.id)
-                        //     engineRef.current?.applyAnimation(2);
                         break;
 
                     case "movenearest":
