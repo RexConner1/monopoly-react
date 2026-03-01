@@ -22,6 +22,7 @@ import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
 import { moveToTile } from "../../game/actions/moveToTile.ts";
 import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
 import { removeFunds } from "../../game/actions/removeFunds.ts";
+import { finishTurn } from "../../game/actions/finishTurn.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -504,10 +505,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     }
 
                                     setTimeout(() => {
-                                        SetClients(new Map(clients.set(socket.id, localPlayer)));
-                                        engineRef.current?.freeDice();
-                                        const json = (clients.get(socket.id) as Player).toJson();
-                                        socket.emit("finish-turn", json);
+                                        finishTurn({ localPlayer, ctx: gameContext });
                                     }, time_till_free);
                                 },
                             });
@@ -787,10 +785,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                                 playPurchaseSfx(settings);
 
-                                                SetClients(new Map(clients.set(socket.id, xplayer)));
-                                                engineRef.current?.freeDice();
-                                                const json = (clients.get(socket.id) as Player).toJson();
-                                                socket.emit("finish-turn", json);
+                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
 
                                                 socket.emit(
                                                     "history",
@@ -827,10 +822,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 });
                                                 playPurchaseSfx(settings);
 
-                                                SetClients(new Map(clients.set(socket.id, xplayer)));
-                                                engineRef.current?.freeDice();
-                                                const json = (clients.get(socket.id) as Player).toJson();
-                                                socket.emit("finish-turn", json);
+                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
 
                                                 socket.emit(
                                                     "history",
@@ -893,10 +885,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                             )
                                                                         );
 
-                                                                        SetClients(new Map(clients.set(socket.id, xplayer)));
-                                                                        engineRef.current?.freeDice();
-                                                                        const json = (clients.get(socket.id) as Player).toJson();
-                                                                        socket.emit("finish-turn", json);
+                                                                        finishTurn({ localPlayer: xplayer, ctx: gameContext });
                                                                     },
                                                                 });
                                                             } else if (proprety.group === "Railroad") {
@@ -937,10 +926,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                         }`
                                                                     )
                                                                 );
-                                                                SetClients(new Map(clients.set(socket.id, xplayer)));
-                                                                engineRef.current?.freeDice();
-                                                                const json = (clients.get(socket.id) as Player).toJson();
-                                                                socket.emit("finish-turn", json);
+
+                                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
                                                             }
                                                         }
                                                     }
