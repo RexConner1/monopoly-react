@@ -765,36 +765,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         rolls: args.rolls,
                                         onResponse: (b, info) => {
                                             if (b === "buy") {
-                                                if (settings !== undefined && settings.notifications === true)
-                                                    notifyRef.current?.message(
-                                                        `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
-                                                        "info",
-                                                        2,
-                                                        () => {},
-                                                        false
-                                                    );
-                                                xplayer.balance -= (proprety?.price ?? 0) * 1;
-
-                                                engineRef.current?.applyAnimation(1);
-                                                const prp = getPropertyByPosition(xplayer.position);
-                                                xplayer.properties.push({
-                                                    posistion: xplayer.position,
-                                                    count: 0,
-                                                    group: prp?.group ?? "",
+                                                buyProperty({
+                                                    player: xplayer,
+                                                    property: proprety,
+                                                    ctx: gameContext
                                                 });
-
-                                                playPurchaseSfx(settings);
-
+                                            
                                                 finishTurn({ localPlayer: xplayer, ctx: gameContext });
-
-                                                socket.emit(
-                                                    "history",
-                                                    history(
-                                                        `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                            prp?.name ?? "unkown place"
-                                                        }`
-                                                    )
-                                                );
                                             } else if (b === "special_action") {
                                                 console.log(info);
                                                 if (settings !== undefined && settings.notifications === true)
