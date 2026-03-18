@@ -23,6 +23,7 @@ import { moveToTile } from "../../game/actions/moveToTile.ts";
 import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
 import { removeFunds } from "../../game/actions/removeFunds.ts";
 import { finishTurn } from "../../game/actions/finishTurn.ts";
+import { addFunds } from "../../game/actions/addFunds.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -686,13 +687,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "addfunds":
-                        xplayer.balance += c.amount ?? 0;
-                        if (xplayer.id === socket.id) {
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyRef.current?.message(`${c.amount ?? 0} of money is added to the account`, "info", 2, () => {}, false);
-                            playMoneyPlusSfx(settings);
-                            engineRef.current?.applyAnimation(2);
-                        }
+                        addFunds({
+                            player: xplayer,
+                            amount: c.amount ?? 0,
+                            ctx: gameContext
+                        });
                         break;
                     case "jail":
                         if (c.subaction !== undefined) {
