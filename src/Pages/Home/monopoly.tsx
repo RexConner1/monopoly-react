@@ -763,42 +763,16 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                             
                                                 finishTurn({ localPlayer: xplayer, ctx: gameContext });
                                             } else if (b === "special_action") {
-                                                console.log(info);
-                                                if (settings !== undefined && settings.notifications === true)
-                                                    notifyRef.current?.message(
-                                                        `${(proprety?.price ?? 0) * 1} of money is deducted from the account`,
-                                                        "info",
-                                                        2,
-                                                        () => {},
-                                                        false
-                                                    );
-                                                xplayer.balance -= (proprety?.price ?? 0) * 1;
+                                                const { rolls } = info as { rolls: number };
 
-                                                const _info = info as {
-                                                    rolls: number;
-                                                };
-
-                                                const calculateRent = _info.rolls;
-                                                engineRef.current?.applyAnimation(1);
-                                                const prp = getPropertyByPosition(xplayer.position);
-                                                xplayer.properties.push({
-                                                    posistion: xplayer.position,
-                                                    count: 0,
-                                                    rent: calculateRent,
-                                                    group: prp?.group ?? "",
+                                                buySpecialProperty({
+                                                    player: xplayer,
+                                                    property: proprety,
+                                                    rolls: rolls,
+                                                    ctx: gameContext
                                                 });
-                                                playPurchaseSfx(settings);
 
                                                 finishTurn({ localPlayer: xplayer, ctx: gameContext });
-
-                                                socket.emit(
-                                                    "history",
-                                                    history(
-                                                        `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                            prp?.name ?? "unkown place"
-                                                        } with rent of ${calculateRent}`
-                                                    )
-                                                );
                                             } else if (b === "someones") {
                                                 const players = Array.from(clients.values());
 
