@@ -24,6 +24,7 @@ import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
 import { removeFunds } from "../../game/actions/removeFunds.ts";
 import { finishTurn } from "../../game/actions/finishTurn.ts";
 import { addFunds } from "../../game/actions/addFunds.ts";
+import { ChanceCommunityChestCard } from "../../assets/card.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -569,18 +570,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             }
         };
         const socket_ChorchResult = (args: {
-            element: {
-                title: string;
-                action: string;
-                tileid: string;
-                groupid?: undefined;
-                rentmultiplier?: undefined;
-                amount?: undefined;
-                subaction?: undefined;
-                count?: undefined;
-                buildings?: undefined;
-                hotels?: undefined;
-            };
+            element: ChanceCommunityChestCard;
             rolls: number;
             is_chance: boolean;
             turnId: string;
@@ -693,6 +683,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             ctx: gameContext
                         });
                         break;
+                        
                     case "jail":
                         if (c.subaction !== undefined) {
                             switch (c.subaction) {
@@ -931,11 +922,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         var payment_ammount =
                             (c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number)) +
                             (c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length;
-                        console.log(`
-${(c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number))} + 
-${(c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length} 
-which is ${payment_ammount}
-                        `);
+                        
                         if (xplayer.id === socket.id && payment_ammount > 0) {
                             if (settings !== undefined && settings.notifications === true)
                                 notifyRef.current?.message(`${payment_ammount} of money is deducted from the account`, "info", 2, () => {}, false);

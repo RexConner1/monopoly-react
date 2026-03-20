@@ -17,6 +17,7 @@ import { getPropertyByPosition } from "../../assets/property.ts";
 import { renderUpgradeButtons } from "../../ui/street/renderUpgradeButtons.ts";
 import { TradeOpponentSelector } from "../trade/tradeOpponentSelector.tsx";
 import { TradePropertyList } from "../trade/tradePropertyList.tsx";
+import { ChanceCommunityChestCard } from "../../assets/card.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -37,18 +38,7 @@ export interface MonopolyGameRef {
         onResponse: (action: "nothing" | "buy" | "someones" | "special_action" | "advance-buy", info: object) => void;
     }) => void;
     chorch: (
-        element: {
-            title: string;
-            action: string;
-            tileid: string;
-            groupid?: undefined;
-            rentmultiplier?: undefined;
-            amount?: undefined;
-            subaction?: undefined;
-            count?: undefined;
-            buildings?: undefined;
-            hotels?: undefined;
-        },
+        element: ChanceCommunityChestCard,
         is_chance: boolean,
         time: number
     ) => void;
