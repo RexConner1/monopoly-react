@@ -23,7 +23,7 @@ export function advanceProperty({
     playPurchaseSfx(ctx.settings);
 
     const propIndex = player.properties.findIndex(
-        v => v.posistion === location
+        v => v.position === location
     );
 
     if (propIndex === -1) return;

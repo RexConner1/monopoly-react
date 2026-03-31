@@ -165,6 +165,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             SetClients(new Map(clients.set(x.id, x)));
             SetMode(args.selectedMode);
         };
+
         const socket_StartGame = () => {
             SetGameStarted(true);
             function A(n: number) {
@@ -778,7 +779,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                                 for (const p of players) {
                                                     for (const prp of p.properties) {
-                                                        if (prp.posistion === location) {
+                                                        if (prp.position === location) {
                                                             var payment_ammount = 0;
 
                                                             if (proprety.group === "Utilities" && prp.rent) {
@@ -834,8 +835,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                     .filter((v) => v.group === "Railroad")
                                                                     .filter(
                                                                         (v) =>
-                                                                            v.morgage === undefined ||
-                                                                            (v.morgage !== undefined && v.morgage === false)
+                                                                            v.mortgaged === undefined ||
+                                                                            (v.mortgaged !== undefined && v.mortgaged === false)
                                                                     ).length;
                                                                 const rents = [0, 25, 50, 100, 200];
                                                                 payment_ammount = rents[count] * (c.rentmultiplier ?? 1);
@@ -849,7 +850,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                         false
                                                                     );
                                                                 playMoneyMinusSfx(settings);
-                                                                if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
+                                                                if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
                                                                     xplayer.balance -= payment_ammount;
                                                                 engineRef.current?.applyAnimation(1);
                                                                 socket.emit("pay", {

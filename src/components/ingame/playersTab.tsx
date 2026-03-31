@@ -107,7 +107,7 @@ const playersTab = forwardRef<PlayersTabRef, PlayersTabProps>((props, ref) => {
                                         key={i}
                                         onClick={() => {
                                             SetCurrentPlayer(undefined);
-                                            props.clickedOnPlayer(v.posistion);
+                                            props.clickedOnPlayer(v.position);
                                         }}
                                         className="proprety-nav"
                                     >
@@ -117,8 +117,8 @@ const playersTab = forwardRef<PlayersTabRef, PlayersTabProps>((props, ref) => {
                                                 backgroundColor: translateGroup(v.group),
                                             }}
                                         ></i>
-                                        <h3 style={v.morgage !== undefined && v.morgage === true ? { textDecoration: "line-through white" } : {}}>
-                                            {propretyMap.get(v.posistion)?.name ?? ""}
+                                        <h3 style={v.mortgaged !== undefined && v.mortgaged === true ? { textDecoration: "line-through white" } : {}}>
+                                            {propretyMap.get(v.position)?.name ?? ""}
                                         </h3>
                                         <div>
                                             {v.count == "h" ? (

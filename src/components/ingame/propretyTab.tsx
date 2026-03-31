@@ -34,22 +34,22 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
             return (
                 x !== undefined &&
                 x.group === "Railroad" &&
-                localP.properties.filter((v) => v.group === "Railroad" && v.posistion === location).length > 0
+                localP.properties.filter((v) => v.group === "Railroad" && v.position === location).length > 0
             );
         },
         isMortaged: (location: number) => {
             const localP = props.players.filter((v) => v.id === props.socket.id)[0];
-            const a = localP.properties.filter((v) => v.group === "Railroad" && v.posistion === location)[0];
-            return a.morgage !== undefined && a.morgage === true;
+            const a = localP.properties.filter((v) => v.group === "Railroad" && v.position === location)[0];
+            return a.mortgaged !== undefined && a.mortgaged === true;
         },
         buttons: {
             cancel: () => {
                 const location = currentCardPosition;
                 const localP = props.players.filter((v) => v.id === props.socket.id)[0];
-                const prp = localP.properties.filter((v) => v.group === "Railroad" && v.posistion === location)[0];
-                prp.morgage = false;
+                const prp = localP.properties.filter((v) => v.group === "Railroad" && v.position === location)[0];
+                prp.mortgaged = false;
 
-                props.Morgage.onCanc(10, propretyMap.get(prp.posistion)?.name ?? "");
+                props.Morgage.onCanc(10, propretyMap.get(prp.position)?.name ?? "");
                 localP;
 
                 SetCardPos(-1);
@@ -58,10 +58,10 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
             pay: () => {
                 const location = currentCardPosition;
                 const localP = props.players.filter((v) => v.id === props.socket.id)[0];
-                const prp = localP.properties.filter((v) => v.group === "Railroad" && v.posistion === location)[0];
-                prp.morgage = true;
+                const prp = localP.properties.filter((v) => v.group === "Railroad" && v.position === location)[0];
+                prp.mortgaged = true;
 
-                props.Morgage.onMort(100, propretyMap.get(prp.posistion)?.name ?? "");
+                props.Morgage.onMort(100, propretyMap.get(prp.position)?.name ?? "");
 
                 SetCardPos(-1);
                 props.socket.emit("player_update", { playerId: props.socket.id, pJson: localP.toJson() });
@@ -158,7 +158,7 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
                         <div
                             key={i}
                             onClick={() => {
-                                SetCardPos(v.posistion);
+                                SetCardPos(v.position);
                             }}
                             className="proprety-nav"
                         >
@@ -168,8 +168,8 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
                                     backgroundColor: translateGroup(v.group),
                                 }}
                             ></i>
-                            <h3 style={v.morgage !== undefined && v.morgage === true ? { textDecoration: "line-through white" } : {}}>
-                                {propretyMap.get(v.posistion)?.name ?? ""}
+                            <h3 style={v.mortgaged !== undefined && v.mortgaged === true ? { textDecoration: "line-through white" } : {}}>
+                                {propretyMap.get(v.position)?.name ?? ""}
                             </h3>
                             <div>
                                 {v.count == "h" ? (

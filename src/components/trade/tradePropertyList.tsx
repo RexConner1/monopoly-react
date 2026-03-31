@@ -46,7 +46,7 @@ function PropertyList({
         <>
             {properties.map((property, i) => (
                 <PropertyNavItem
-                    key={property.posistion ?? i}
+                    key={property.position ?? i}
                     property={property}
                     trade={trade}
                     socket={socket}
@@ -94,13 +94,13 @@ function PropertyColorBox({ group }: { group: string }) {
 
 function PropertyTitle({ property }: { property: PlayerProperty }) {
     const style =
-        property.morgage === true
+        property.mortgaged === true
             ? { textDecoration: "line-through white" }
             : {};
 
     return (
         <h3 style={style}>
-            {getPropertyByPosition(property.posistion)?.name ?? ""}
+            {getPropertyByPosition(property.position)?.name ?? ""}
         </h3>
     );
 }
@@ -128,13 +128,13 @@ function getTradeEligibleProperties(
     side: TradeSide
 ): PlayerProperty[] {
     const playerId = trade[side].id;
-    const excludedPositions = trade[side].prop.map(p => p.posistion);
+    const excludedPositions = trade[side].prop.map(p => p.position);
     const player = players.find(p => p.id === playerId);
     if (!player) return [];
 
     return player.properties.filter(
         p =>
-            !excludedPositions.includes(p.posistion) &&
-            (p.morgage === undefined || p.morgage === false)
+            !excludedPositions.includes(p.position) &&
+            (p.mortgaged === undefined || p.mortgaged === false)
     );
 }

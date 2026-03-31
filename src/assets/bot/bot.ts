@@ -56,7 +56,7 @@ export async function main(host: string, initials: botInitial) {
 
                         if (localPlayer === undefined) return;
                         const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                            (v) => v[1].posistion === args.location
+                            (v) => v[1].position === args.location
                         )[0][0];
 
                         function transformCount(v: 0 | 2 | 1 | 3 | 4 | "h") {
@@ -125,7 +125,7 @@ export async function main(host: string, initials: botInitial) {
                 // check states
                 if (localPlayer === undefined) return;
                 for (const _prp of localPlayer.properties) {
-                    if (!belong_to_me && _prp.posistion === args.location) {
+                    if (!belong_to_me && _prp.position === args.location) {
                         belong_to_me = true;
                         count = _prp.count;
                     }
@@ -133,7 +133,7 @@ export async function main(host: string, initials: botInitial) {
                 const players = Array.from(clients.values());
                 for (const _p of players) {
                     for (const _prp of _p.properties) {
-                        if (_prp.posistion === args.location && _p.id != localPlayer.id) belong_to_others = true;
+                        if (_prp.position === args.location && _p.id != localPlayer.id) belong_to_others = true;
                     }
                 }
 
@@ -346,7 +346,7 @@ export async function main(host: string, initials: botInitial) {
                                 if (b === "buy") {
                                     localPlayer.balance -= (proprety?.price ?? 0) * 1;
                                     localPlayer.properties.push({
-                                        posistion: localPlayer.position,
+                                        position: localPlayer.position,
                                         count: 0,
                                         group: propretyMap.get(localPlayer.position)?.group ?? "",
                                     });
@@ -357,7 +357,7 @@ export async function main(host: string, initials: botInitial) {
                                     );
                                 } else if (b === "advance-buy") {
                                     const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                        (v) => v[1].posistion === location
+                                        (v) => v[1].position === location
                                     )[0][0];
 
                                     const _info = info as {
@@ -381,7 +381,7 @@ export async function main(host: string, initials: botInitial) {
                                     const players = Array.from(clients.values());
                                     for (const p of players) {
                                         for (const prp of p.properties) {
-                                            if (prp.posistion === location) {
+                                            if (prp.position === location) {
                                                 var payment_ammount = 0;
 
                                                 if (proprety.group === "Utilities") {
@@ -396,7 +396,7 @@ export async function main(host: string, initials: botInitial) {
                                                     const count = p.properties
                                                         .filter((v) => v.group === "Railroad")
                                                         .filter(
-                                                            (v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)
+                                                            (v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)
                                                         ).length;
                                                     const rents = [0, 25, 50, 100, 200];
                                                     payment_ammount = rents[count];
@@ -408,7 +408,7 @@ export async function main(host: string, initials: botInitial) {
                                                     payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
                                                 }
 
-                                                if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
+                                                if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
                                                     localPlayer.balance -= payment_ammount;
 
                                                 socket.emit("pay", {
@@ -459,7 +459,7 @@ export async function main(host: string, initials: botInitial) {
                                     const prp = propretyMap.get(localPlayer.position);
                                     const calculateRent = _info.rolls;
                                     localPlayer.properties.push({
-                                        posistion: localPlayer.position,
+                                        position: localPlayer.position,
                                         count: 0,
                                         rent: calculateRent,
                                         group: prp?.group ?? "",
@@ -720,7 +720,7 @@ export async function main(host: string, initials: botInitial) {
 
                                             const prp = propretyMap.get(xplayer.position);
                                             xplayer.properties.push({
-                                                posistion: xplayer.position,
+                                                position: xplayer.position,
                                                 count: 0,
                                                 group: prp?.group ?? "",
                                             });
@@ -747,7 +747,7 @@ export async function main(host: string, initials: botInitial) {
                                             const calculateRent = _info.rolls;
                                             const prp = propretyMap.get(xplayer.position);
                                             xplayer.properties.push({
-                                                posistion: xplayer.position,
+                                                position: xplayer.position,
                                                 count: 0,
                                                 rent: calculateRent,
                                                 group: prp?.group ?? "",
@@ -771,7 +771,7 @@ export async function main(host: string, initials: botInitial) {
 
                                             for (const p of players) {
                                                 for (const prp of p.properties) {
-                                                    if (prp.posistion === location) {
+                                                    if (prp.position === location) {
                                                         var payment_ammount = 0;
 
                                                         if (proprety.group === "Utilities" && prp.rent) {
@@ -819,12 +819,12 @@ export async function main(host: string, initials: botInitial) {
                                                             const count = p.properties
                                                                 .filter((v) => v.group === "Railroad")
                                                                 .filter(
-                                                                    (v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)
+                                                                    (v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)
                                                                 ).length;
                                                             const rents = [0, 25, 50, 100, 200];
                                                             payment_ammount = rents[count] * (c.rentmultiplier ?? 1);
 
-                                                            if (prp.morgage === undefined || (prp.morgage !== undefined && prp.morgage === false))
+                                                            if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
                                                                 xplayer.balance -= payment_ammount;
                                                             socket.emit("pay", {
                                                                 balance: payment_ammount,

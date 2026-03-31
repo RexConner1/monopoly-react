@@ -225,14 +225,14 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                 var count: 0 | 1 | 2 | 3 | 4 | "h" = 0;
                 // check states
                 for (const _prp of localPlayer.properties) {
-                    if (!belong_to_me && _prp.posistion === args.location) {
+                    if (!belong_to_me && _prp.position === args.location) {
                         belong_to_me = true;
                         count = _prp.count;
                     }
                 }
                 for (const _p of prop.players) {
                     for (const _prp of _p.properties) {
-                        if (_prp.posistion === args.location && _p.id != localPlayer.id) belong_to_others = true;
+                        if (_prp.position === args.location && _p.id != localPlayer.id) belong_to_others = true;
                     }
                 }
 
@@ -547,7 +547,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                 }
                 for (const _player of prop.players) {
                     for (const _prp of _player.properties) {
-                        const location = _prp.posistion;
+                        const location = _prp.position;
                         const state = _prp.count;
 
                         const queryElement = folder.querySelector(`div.street-houses[data-position="${location}"`);
@@ -578,7 +578,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                     if (_prp.group === "Railroad") {
                                         const count = _player.properties
                                             .filter((v) => v.group === "Railroad")
-                                            .filter((v) => v.morgage === undefined || (v.morgage !== undefined && v.morgage === false)).length;
+                                            .filter((v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)).length;
                                         const rents = [0, 25, 50, 100, 200];
                                         var payment_ammount = rents[count];
                                     } else if (_prp.group === "Utilities") {
@@ -875,12 +875,12 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                                                     ></i>
                                                                     <h3
                                                                         style={
-                                                                            v.morgage !== undefined && v.morgage === true
+                                                                            v.mortgaged !== undefined && v.mortgaged === true
                                                                                 ? { textDecoration: "line-through white" }
                                                                                 : {}
                                                                         }
                                                                     >
-                                                                        {propretyMap.get(v.posistion)?.name ?? ""}
+                                                                        {propretyMap.get(v.position)?.name ?? ""}
                                                                     </h3>
                                                                     <div>
                                                                         {v.count == "h" ? (
@@ -942,12 +942,12 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                                                     ></i>
                                                                     <h3
                                                                         style={
-                                                                            v.morgage !== undefined && v.morgage === true
+                                                                            v.mortgaged !== undefined && v.mortgaged === true
                                                                                 ? { textDecoration: "line-through white" }
                                                                                 : {}
                                                                         }
                                                                     >
-                                                                        {propretyMap.get(v.posistion)?.name ?? ""}
+                                                                        {propretyMap.get(v.position)?.name ?? ""}
                                                                     </h3>
                                                                     <div>
                                                                         {v.count == "h" ? (

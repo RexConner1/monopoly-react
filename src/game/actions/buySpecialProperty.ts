@@ -35,7 +35,7 @@ export function buySpecialProperty({
 
     // add property ownership
     player.properties.push({
-        posistion: player.position,
+        position: player.position,
         count: 0,
         rent: rolls, // utilities use dice roll
         group: property.group ?? "",

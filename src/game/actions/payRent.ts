@@ -24,7 +24,7 @@ export function payRent({
 
     const { owner, prp } = found;
 
-    if (prp.morgage) return;
+    if (prp.mortgaged) return;
 
     const payment = calculateRent(property, owner, prp, rolls);
 

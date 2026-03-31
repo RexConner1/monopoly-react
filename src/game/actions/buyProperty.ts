@@ -34,7 +34,7 @@ export function buyProperty({
 
     // add ownership
     player.properties.push({
-        posistion: player.position,
+        position: player.position,
         count: 0,
         group: getPropertyByPosition(player.position)?.group ?? "",
     });

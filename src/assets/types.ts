@@ -63,11 +63,11 @@ export interface MonopolyMode {
 }
 
 export interface PlayerProperty {
-    posistion: number;
+    position: number;
     count: 0 | 1 | 2 | 3 | 4 | "h";
     group: string;
     rent?: number;
-    morgage?: boolean;
+    mortgaged?: boolean;
 }
 
 export interface historyAction {
