@@ -740,7 +740,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         } else {
                             p = "Railroad";
                         }
-                        const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.posistion);
+                        const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
                         const ongoingLocation = findNextValue(arr, xplayer.position);
                         const _generatorResults = movePlayer({finalPosition: ongoingLocation, player: xplayer, ctx: gameContext});
                         time_till_finish = -1;

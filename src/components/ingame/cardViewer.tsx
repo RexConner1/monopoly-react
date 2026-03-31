@@ -4,7 +4,7 @@ import monopolyJSON from "../../assets/monopoly.json";
 export default function CardViewer(props: { posistion: number; OnClick: React.MouseEventHandler<HTMLDivElement>; style?: React.CSSProperties }) {
     const propretyMap = new Map(
         monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
+            return [obj.position ?? 0, obj];
         })
     );
     let stretDisplay = {};

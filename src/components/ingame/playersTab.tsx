@@ -23,7 +23,7 @@ const playersTab = forwardRef<PlayersTabRef, PlayersTabProps>((props, ref) => {
     const localPlayer: Player | undefined = props.players.filter((v) => v.id === props.socket.id)[0];
     const propretyMap = new Map(
         monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
+            return [obj.position ?? 0, obj];
         })
     );
 

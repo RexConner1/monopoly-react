@@ -11,7 +11,7 @@ export function moveToTile({
     player: Player;
     ctx: any;
 }): number {
-    const targetPos = getPropertyById(tileId)?.posistion;
+    const targetPos = getPropertyById(tileId)?.position;
 
     if (targetPos === undefined) return 0;
 

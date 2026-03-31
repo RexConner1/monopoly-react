@@ -22,7 +22,7 @@ export interface PropretyTabRef {
 const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) => {
     const propretyMap = new Map(
         monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
+            return [obj.position ?? 0, obj];
         })
     );
 
@@ -89,8 +89,8 @@ const propretyTab = forwardRef<PropretyTabRef, PropretyTabProps>((props, ref) =>
         SetLookCard(-1);
         SetCardPos(-1);
         const safe = Array.from(propretyMap.values()).filter((v) => v.group != "Special");
-        const lyricalSearch: Array<[string, number]> = safe.map((v) => [v.name, v.posistion]);
-        const numricalSearch: Array<string> = safe.map((v) => v.posistion.toString());
+        const lyricalSearch: Array<[string, number]> = safe.map((v) => [v.name, v.position]);
+        const numricalSearch: Array<string> = safe.map((v) => v.position.toString());
 
         const s: Array<number> = [];
 

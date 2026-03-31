@@ -53,7 +53,7 @@ export type g_Buy = 0 | 1 | 2 | 3 | 4 | "h";
 const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) => {
     const propretyMap = new Map(
         monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
+            return [obj.position ?? 0, obj];
         })
     );
 
@@ -436,11 +436,11 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
         const safe = Array.from(propretyMap.values()).filter((v) => v.group != "Special");
         for (const x of safe) {
             const element = (document.getElementById("locations") as HTMLDivElement).querySelector(
-                `div.street[data-position="${x.posistion}"]`
+                `div.street[data-position="${x.position}"]`
             ) as HTMLDivElement;
 
             element.onclick = () => {
-                prop.clickedOnBoard(x.posistion);
+                prop.clickedOnBoard(x.position);
             };
 
             element.onmousemove = () => {

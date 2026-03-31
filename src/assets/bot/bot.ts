@@ -7,7 +7,7 @@ export async function main(host: string, initials: botInitial) {
 
     const propretyMap = new Map(
         monopolyJSON.properties.map((obj) => {
-            return [obj.posistion ?? 0, obj];
+            return [obj.position ?? 0, obj];
         })
     );
     // @ts-ignore
@@ -626,7 +626,7 @@ export async function main(host: string, initials: botInitial) {
                                 return [obj.id, obj];
                             })
                         );
-                        const targetPos = p.get(c.tileid)?.posistion;
+                        const targetPos = p.get(c.tileid)?.position;
                         if (targetPos === undefined) break;
 
                         const _generatorResults = playerMoveGENERATOR(targetPos, xplayer);
@@ -701,7 +701,7 @@ export async function main(host: string, initials: botInitial) {
                     } else {
                         p = "Railroad";
                     }
-                    const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.posistion);
+                    const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
                     const ongoingLocation = findNextValue(arr, xplayer.position);
                     const _generatorResults = playerMoveGENERATOR(ongoingLocation, xplayer);
                     time_till_finish = -1;
