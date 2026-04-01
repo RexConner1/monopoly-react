@@ -282,7 +282,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 }),
                             ],
                         }),
-                        "loosing"
+                        "losing"
                     );
                 }
 
@@ -940,7 +940,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         }),
                     ],
                 }),
-                "loosing"
+                "losing"
             );
         }
 

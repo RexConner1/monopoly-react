@@ -22,7 +22,7 @@ export interface NotificatorRef {
 			innerHTML: string;
 			buttons: Array<HTMLButtonElement>;
 		},
-		soundtrack: "winning" | "loosing"
+		soundtrack: "winning" | "losing"
 	) => void;
 }
 
@@ -128,7 +128,7 @@ const NotifyElement = forwardRef<NotificatorRef, NotificatorProps>(
 				).settings;
 
 				switch (soundtrack) {
-					case "loosing":
+					case "losing":
 						var audio = new Audio("./dying.mp3");
 						audio.volume =
 							0.16 *
