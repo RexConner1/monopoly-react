@@ -25,6 +25,7 @@ import { removeFunds } from "../../game/actions/removeFunds.ts";
 import { finishTurn } from "../../game/actions/finishTurn.ts";
 import { addFunds } from "../../game/actions/addFunds.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
+import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -192,20 +193,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 notifyRef.current?.message(`${name} disconected`, "error");
             } else if (clients.has(args.id)) {
                 mainTheme.pause();
-                notifyRef.current?.dialog(
-                    (close_func, createButton) => ({
-                        innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
-                            clients.get(socket.id)?.balance ?? 0
-                        } </p>`,
-                        buttons: [
-                            createButton("PLAY ANOTHER GAME", () => {
-                                close_func();
-                                document.location.reload();
-                            }),
-                        ],
-                    }),
-                    "winning"
-                );
+                showDialog(notifyRef, "YOU_WIN", {
+                    balance: clients.get(socket.id)?.balance
+                });
             }
             destroyPlayer(args.id);
         };
@@ -231,20 +221,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     } else {
                         if (clients.has(socket.id)) {
                             mainTheme.pause();
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
-                                        clients.get(socket.id)?.balance ?? 0
-                                    } </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "YOU_WIN", {
+                                balance: clients.get(socket.id)?.balance
+                            });
                         } else {
                             const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
                             const name = xclient.username ?? 0;
@@ -323,31 +302,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (x === 3) {
                         mainTheme.pause();
                         if (p.id === socket.id) {
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> YOU WON! </h3> <p> you have 3 sets! </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "THREE_SETS");
                         } else {
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> ${p.username} WON! </h3> <p> got 3 sets! </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "THREE_SETS", {
+                                playerName: p.username
+                            });
                         }
                         return;
                     }
@@ -359,31 +318,11 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         if (c === 4) {
                             mainTheme.pause();
                             if (p.id === socket.id) {
-                                notifyRef.current?.dialog(
-                                    (close_func, createButton) => ({
-                                        innerHTML: `<h3> YOU WON! </h3> <p> you have 4 railroads! </p>`,
-                                        buttons: [
-                                            createButton("PLAY ANOTHER GAME", () => {
-                                                close_func();
-                                                document.location.reload();
-                                            }),
-                                        ],
-                                    }),
-                                    "winning"
-                                );
+                                showDialog(notifyRef, "FOUR_RAILROADS");
                             } else {
-                                notifyRef.current?.dialog(
-                                    (close_func, createButton) => ({
-                                        innerHTML: `<h3> ${p.username} WON! </h3> <p> got 4 railroads! </p>`,
-                                        buttons: [
-                                            createButton("PLAY ANOTHER GAME", () => {
-                                                close_func();
-                                                document.location.reload();
-                                            }),
-                                        ],
-                                    }),
-                                    "winning"
-                                );
+                                showDialog(notifyRef, "FOUR_RAILROADS", {
+                                    playerName: p.username
+                                });
                             }
                             return;
                         }
