@@ -228,41 +228,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
                             const name = xclient.username ?? 0;
                             mainTheme.pause();
-                            notifyRef.current?.dialog(
-                                (close_func, createButton) => ({
-                                    innerHTML: `<h3> ${name} WON! </h3> <p> ${name} won with the balance of ${
-                                        clients.get(socket.id)?.balance ?? 0
-                                    } </p>`,
-                                    buttons: [
-                                        createButton("PLAY ANOTHER GAME", () => {
-                                            close_func();
-                                            document.location.reload();
-                                        }),
-                                    ],
-                                }),
-                                "winning"
-                            );
+                            showDialog(notifyRef, "PLAYER_WON", {
+                                playerName: name,
+                                balance: clients.get(socket.id)?.balance
+                            });
                         }
                     }
                 } else {
                     mainTheme.pause();
-                    notifyRef.current?.dialog(
-                        (close_func, createButton) => ({
-                            innerHTML: `<h3> YOU LOST! </h3> <p> you lost your money and lost the monopol with a wanted balance of ${-(
-                                clients.get(socket.id)?.balance ?? 0
-                            )} </p>`,
-                            buttons: [
-                                createButton("CONTINUE WATCHING", () => {
-                                    close_func();
-                                }),
-                                createButton("PLAY ANOTHER GAME", () => {
-                                    close_func();
-                                    document.location.reload();
-                                }),
-                            ],
-                        }),
-                        "losing"
-                    );
+                    showDialog(notifyRef, "YOU_LOST", {
+                        balance: clients.get(socket.id)?.balance
+                    }, "losing");
                 }
 
                 destroyPlayer(args.pJson.id);
