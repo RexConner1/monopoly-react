@@ -845,18 +845,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
         }
         function socket_networkDisconnect() {
             mainTheme.pause();
-            notifyRef.current?.dialog(
-                (close_func, createButton) => ({
-                    innerHTML: `<h3> LOST CONNECTION </h3> <p> you were disconnected from the game </p>`,
-                    buttons: [
-                        createButton("PLAY ANOTHER GAME", () => {
-                            close_func();
-                            document.location.reload();
-                        }),
-                    ],
-                }),
-                "losing"
-            );
+            showDialog(notifyRef, "DISCONNECTED", {}, "losing");
         }
 
         function socket_history(args: historyAction) {
