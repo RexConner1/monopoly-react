@@ -26,6 +26,7 @@ import { finishTurn } from "../../game/actions/finishTurn.ts";
 import { addFunds } from "../../game/actions/addFunds.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
+import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -190,7 +191,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             SetCurrent(args.turn);
             if (clients.size > 2) {
                 const name = clients.get(args.id)?.username ?? "player";
-                notifyRef.current?.message(`${name} disconected`, "error");
+                notifyMessage(notifyRef, "PLAYER_DISCONNECTED", { name }, { level: "error" });
             } else if (clients.has(args.id)) {
                 mainTheme.pause();
                 showDialog(notifyRef, "YOU_WIN", {
@@ -217,7 +218,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 if (args.pJson.id !== socket.id) {
                     if (clients.size > 2) {
                         const name = args.pJson.username;
-                        notifyRef.current?.message(`${name} lost`, "info");
+                        notifyMessage(notifyRef, "PLAYER_LOST", { name });
                     } else {
                         if (clients.has(socket.id)) {
                             mainTheme.pause();
@@ -461,7 +462,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 } else {
                     x.balance -= 50;
                     if (x.id === socket.id && settings !== undefined && settings.notifications === true)
-                        notifyRef.current?.message(`${50} of money is deducted from the account`, "info", 2, () => {}, false);
+                        notifyMessage(notifyRef, "MONEY_DEDUCTED", { amount: 50 });
                     playMoneyMinusSfx(settings);
                 }
                 x.isInJail = false;
@@ -506,18 +507,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 const c = args.element;
                 const xplayer = clients.get(args.turnId);
                 if (xplayer === undefined) return;
-                function addBalanceToOthers(amnout: number) {
+                function addBalanceToOthers(amount: number) {
                     if (xplayer === undefined) return 0;
 
                     const other_players = Array.from(clients.values()).filter((v) => v.id !== xplayer.id);
 
                     if (xplayer.id === socket.id) {
-                        if (amnout > 0) {
+                        if (amount > 0) {
                             // give money
                             socket.emit(
                                 "history",
                                 history(
-                                    `${xplayer.username ?? "unknown user"} gave ${amnout} money to [${other_players
+                                    `${xplayer.username ?? "unknown user"} gave ${amount} money to [${other_players
                                         .map((v) => v.username)
                                         .join(", ")}]`
                                 )
@@ -527,7 +528,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             socket.emit(
                                 "history",
                                 history(
-                                    `${xplayer.username ?? "unknown user"} recieve ${-amnout} money from [${other_players
+                                    `${xplayer.username ?? "unknown user"} recieve ${-amount} money from [${other_players
                                         .map((v) => v.username)
                                         .join(", ")}]`
                                 )
@@ -536,24 +537,25 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     }
 
                     for (const p of other_players) {
-                        p.balance += amnout;
+                        p.balance += amount;
                         if (p.id === socket.id && settings !== undefined && settings.notifications === true) {
-                            notifyRef.current?.message(`${amnout} of money is added to the account`, "info", 2, () => {}, false);
+                            notifyMessage(notifyRef, "MONEY_ADDED", { amount: amount });
+
                             playMoneyPlusSfx(settings);
                         }
                         SetClients(new Map(clients.set(p.id, p)));
 
                         if (xplayer.id === socket.id) {
-                            if (amnout > 0) {
+                            if (amount > 0) {
                                 socket.emit("pay", {
-                                    balance: amnout,
+                                    balance: amount,
                                     from: socket.id,
                                     to: p.id,
                                 });
                             } else {
                                 // recieve money
                                 socket.emit("pay", {
-                                    balance: amnout,
+                                    balance: amount,
                                     from: p.id,
                                     to: socket.id,
                                 });
@@ -561,7 +563,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 socket.emit(
                                     "history",
                                     history(`
-                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_ammount} to ${
+                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_amount} to ${
                                         clients.get(xplayer.id)?.username ?? "unknown user"
                                     }
                                 `)
@@ -695,7 +697,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                 for (const p of players) {
                                                     for (const prp of p.properties) {
                                                         if (prp.position === location) {
-                                                            var payment_ammount = 0;
+                                                            var payment_amount = 0;
 
                                                             if (proprety.group === "Utilities" && prp.rent) {
                                                                 const l = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
@@ -712,21 +714,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                     l: [l[0], l[1]],
                                                                     time: 2000,
                                                                     onDone: () => {
-                                                                        payment_ammount = (l[0] + l[1]) * (c.rentmultiplier ?? 1);
+                                                                        payment_amount = (l[0] + l[1]) * (c.rentmultiplier ?? 1);
                                                                         if (settings !== undefined && settings.notifications === true)
-                                                                            notifyRef.current?.message(
-                                                                                `${payment_ammount} of money is deducted from the account`,
-                                                                                "info",
-                                                                                2,
-                                                                                () => {},
-                                                                                false
-                                                                            );
+                                                                            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+                                                                                amount: payment_amount
+                                                                            });
+
                                                                         playMoneyMinusSfx(settings);
 
-                                                                        xplayer.balance -= payment_ammount;
+                                                                        xplayer.balance -= payment_amount;
                                                                         engineRef.current?.applyAnimation(1);
                                                                         socket.emit("pay", {
-                                                                            balance: payment_ammount,
+                                                                            balance: payment_amount,
                                                                             from: socket.id,
                                                                             to: p.id,
                                                                         });
@@ -736,7 +735,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                             history(
                                                                                 `${
                                                                                     clients.get(socket.id)?.username ?? "unknown player"
-                                                                                } pay ${payment_ammount} to ${
+                                                                                } pay ${payment_amount} to ${
                                                                                     clients.get(p.id)?.username ?? "unknown player"
                                                                                 }`
                                                                             )
@@ -754,22 +753,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                             (v.mortgaged !== undefined && v.mortgaged === false)
                                                                     ).length;
                                                                 const rents = [0, 25, 50, 100, 200];
-                                                                payment_ammount = rents[count] * (c.rentmultiplier ?? 1);
+                                                                payment_amount = rents[count] * (c.rentmultiplier ?? 1);
 
                                                                 if (settings !== undefined && settings.notifications === true)
-                                                                    notifyRef.current?.message(
-                                                                        `${payment_ammount} of money is deducted from the account`,
-                                                                        "info",
-                                                                        2,
-                                                                        () => {},
-                                                                        false
-                                                                    );
+                                                                    notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+                                                                        amount: payment_amount
+                                                                    });
                                                                 playMoneyMinusSfx(settings);
                                                                 if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
-                                                                    xplayer.balance -= payment_ammount;
+                                                                    xplayer.balance -= payment_amount;
                                                                 engineRef.current?.applyAnimation(1);
                                                                 socket.emit("pay", {
-                                                                    balance: payment_ammount,
+                                                                    balance: payment_amount,
                                                                     from: socket.id,
                                                                     to: p.id,
                                                                 });
@@ -778,7 +773,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                                                     history(
                                                                         `${
                                                                             clients.get(socket.id)?.username ?? "unknown player"
-                                                                        } pay ${payment_ammount} to ${
+                                                                        } pay ${payment_amount} to ${
                                                                             clients.get(p.id)?.username ?? "unknown player"
                                                                         }`
                                                                     )
@@ -809,17 +804,20 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             }
                             return 1;
                         }
-                        var payment_ammount =
+                        var payment_amount =
                             (c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number)) +
                             (c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length;
                         
-                        if (xplayer.id === socket.id && payment_ammount > 0) {
+                        if (xplayer.id === socket.id && payment_amount > 0) {
                             if (settings !== undefined && settings.notifications === true)
-                                notifyRef.current?.message(`${payment_ammount} of money is deducted from the account`, "info", 2, () => {}, false);
+                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
+                                    amount: payment_amount
+                                });
+
                             playMoneyMinusSfx(settings);
                             engineRef.current?.applyAnimation(1);
                         }
-                        xplayer.balance -= payment_ammount;
+                        xplayer.balance -= payment_amount;
                         SetClients(new Map(clients.set(xplayer.id, xplayer)));
                         break;
                     default:
@@ -953,13 +951,9 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             const localPlayer = clients.get(socket.id);
                             if (localPlayer === undefined) return;
                             if (settings !== undefined && settings.notifications === true)
-                                notifyRef.current?.message(
-                                    `${a} of money is deducted from the account for canceling mortgage`,
-                                    "info",
-                                    2,
-                                    () => {},
-                                    false
-                                );
+                                notifyMessage(notifyRef, "MORTGAGE_CANCELED", {
+                                    amount: a
+                                });
 
                             localPlayer.balance -= a;
                             engineRef.current?.applyAnimation(1);
@@ -974,7 +968,10 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                             const localPlayer = clients.get(socket.id);
                             if (localPlayer === undefined) return;
                             if (settings !== undefined && settings.notifications === true)
-                                notifyRef.current?.message(`${a} of money is deducted from the account for mortgage`, "info", 2, () => {}, false);
+                                notifyMessage(notifyRef, "MORTGAGE_DEDUCTED", {
+                                    amount: a
+                                });
+
                             localPlayer.balance -= a;
                             engineRef.current?.applyAnimation(1);
                             playPurchaseSfx(settings);
