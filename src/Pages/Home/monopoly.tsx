@@ -29,6 +29,7 @@ import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
+import { payChanceRent } from "../../game/actions/payChanceRent.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -614,98 +615,13 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
                                                 finishTurn({ localPlayer: xplayer, ctx: gameContext });
                                             } else if (b === "someones") {
-                                                const players = Array.from(clients.values());
-
-                                                for (const p of players) {
-                                                    for (const prp of p.properties) {
-                                                        if (prp.position === location) {
-                                                            var payment_amount = 0;
-
-                                                            if (proprety.group === "Utilities" && prp.rent) {
-                                                                const l = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
-                                                                socket.emit(
-                                                                    "history",
-                                                                    history(
-                                                                        `${clients.get(socket.id)?.username ?? "unknown player"} rolled [${l[0]}, ${
-                                                                            l[1]
-                                                                        }]`
-                                                                    )
-                                                                );
-
-                                                                engineRef.current?.diceResults({
-                                                                    l: [l[0], l[1]],
-                                                                    time: 2000,
-                                                                    onDone: () => {
-                                                                        payment_amount = (l[0] + l[1]) * (c.rentmultiplier ?? 1);
-                                                                        if (settings !== undefined && settings.notifications === true)
-                                                                            notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                                                amount: payment_amount
-                                                                            });
-
-                                                                        playMoneyMinusSfx(settings);
-
-                                                                        xplayer.balance -= payment_amount;
-                                                                        engineRef.current?.applyAnimation(1);
-                                                                        socket.emit("pay", {
-                                                                            balance: payment_amount,
-                                                                            from: socket.id,
-                                                                            to: p.id,
-                                                                        });
-
-                                                                        socket.emit(
-                                                                            "history",
-                                                                            history(
-                                                                                `${
-                                                                                    clients.get(socket.id)?.username ?? "unknown player"
-                                                                                } pay ${payment_amount} to ${
-                                                                                    clients.get(p.id)?.username ?? "unknown player"
-                                                                                }`
-                                                                            )
-                                                                        );
-
-                                                                        finishTurn({ localPlayer: xplayer, ctx: gameContext });
-                                                                    },
-                                                                });
-                                                            } else if (proprety.group === "Railroad") {
-                                                                const count = p.properties
-                                                                    .filter((v) => v.group === "Railroad")
-                                                                    .filter(
-                                                                        (v) =>
-                                                                            v.mortgaged === undefined ||
-                                                                            (v.mortgaged !== undefined && v.mortgaged === false)
-                                                                    ).length;
-                                                                const rents = [0, 25, 50, 100, 200];
-                                                                payment_amount = rents[count] * (c.rentmultiplier ?? 1);
-
-                                                                if (settings !== undefined && settings.notifications === true)
-                                                                    notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                                                        amount: payment_amount
-                                                                    });
-                                                                playMoneyMinusSfx(settings);
-                                                                if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
-                                                                    xplayer.balance -= payment_amount;
-                                                                engineRef.current?.applyAnimation(1);
-                                                                socket.emit("pay", {
-                                                                    balance: payment_amount,
-                                                                    from: socket.id,
-                                                                    to: p.id,
-                                                                });
-                                                                socket.emit(
-                                                                    "history",
-                                                                    history(
-                                                                        `${
-                                                                            clients.get(socket.id)?.username ?? "unknown player"
-                                                                        } pay ${payment_amount} to ${
-                                                                            clients.get(p.id)?.username ?? "unknown player"
-                                                                        }`
-                                                                    )
-                                                                );
-
-                                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                                payChanceRent({
+                                                    payer: xplayer,
+                                                    property: proprety,
+                                                    location,
+                                                    rentMultiplier: c.rentmultiplier ?? 1,
+                                                    ctx: gameContext,
+                                                });
                                             } else {
                                                 engineRef.current?.freeDice();
                                                 const json = (clients.get(socket.id) as Player).toJson();
