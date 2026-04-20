@@ -7,7 +7,7 @@ import MonopolyGame, { MonopolyGameRef } from "../../components/ingame/game.tsx"
 import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
-import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
+import { playMoneyMinusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition, properties } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
@@ -25,6 +25,7 @@ import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.t
 import { findNextGroupPosition } from "../../game/logic/board/findNextGroupPosition.ts";
 import { handleChanceNearestLanding } from "../../game/handlers/handleChanceNearestLanding.ts";
 import { applyPropertyCharges } from "../../game/actions/applyPropertyCharges.ts";
+import { addBalanceToOtherPlayers } from "../../game/actions/addBalanceToOtherPlayers.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -371,72 +372,6 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 const c = args.element;
                 const xplayer = clients.get(args.turnId);
                 if (xplayer === undefined) return;
-                function addBalanceToOthers(amount: number) {
-                    if (xplayer === undefined) return 0;
-
-                    const other_players = Array.from(clients.values()).filter((v) => v.id !== xplayer.id);
-
-                    if (xplayer.id === socket.id) {
-                        if (amount > 0) {
-                            // give money
-                            socket.emit(
-                                "history",
-                                history(
-                                    `${xplayer.username ?? "unknown user"} gave ${amount} money to [${other_players
-                                        .map((v) => v.username)
-                                        .join(", ")}]`
-                                )
-                            );
-                        } else {
-                            // get money!
-                            socket.emit(
-                                "history",
-                                history(
-                                    `${xplayer.username ?? "unknown user"} recieve ${-amount} money from [${other_players
-                                        .map((v) => v.username)
-                                        .join(", ")}]`
-                                )
-                            );
-                        }
-                    }
-
-                    for (const p of other_players) {
-                        p.balance += amount;
-                        if (p.id === socket.id && settings !== undefined && settings.notifications === true) {
-                            notifyMessage(notifyRef, "MONEY_ADDED", { amount: amount });
-
-                            playMoneyPlusSfx(settings);
-                        }
-                        SetClients(new Map(clients.set(p.id, p)));
-
-                        if (xplayer.id === socket.id) {
-                            if (amount > 0) {
-                                socket.emit("pay", {
-                                    balance: amount,
-                                    from: socket.id,
-                                    to: p.id,
-                                });
-                            } else {
-                                // recieve money
-                                socket.emit("pay", {
-                                    balance: amount,
-                                    from: p.id,
-                                    to: socket.id,
-                                });
-
-                                socket.emit(
-                                    "history",
-                                    history(`
-                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${amount} to ${
-                                        clients.get(xplayer.id)?.username ?? "unknown user"
-                                    }
-                                `)
-                                );
-                            }
-                        }
-                    }
-                    return other_players.length;
-                }
 
                 var time_till_finish = 0;
                 switch (c.action) {
@@ -489,12 +424,20 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "removefundstoplayers":
-                        addBalanceToOthers(c.amount ?? 0);
+                        addBalanceToOtherPlayers({
+                            player: xplayer,
+                            amount: (c.amount ?? 0),
+                            ctx: gameContext
+                        });
                         if (xplayer.id === socket.id) engineRef.current?.applyAnimation(1);
                         break;
 
                     case "addfundsfromplayers":
-                        addBalanceToOthers(-(c.amount ?? 0));
+                        addBalanceToOtherPlayers({
+                            player: xplayer,
+                            amount: -(c.amount ?? 0),
+                            ctx: gameContext
+                        });
                         break;
 
                     case "movenearest":
@@ -542,6 +485,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 }
             }, numOfTime);
         };
+        
         function socket_Mouse(args: { id: string; x: number; y: number }) {
             const xplayer = clients.get(args.id);
             if (xplayer === undefined) return;
