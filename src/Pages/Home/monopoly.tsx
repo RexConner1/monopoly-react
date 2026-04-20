@@ -27,6 +27,7 @@ import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTra
 import { payChanceRent } from "../../game/actions/payChanceRent.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 import { findNextGroupPosition } from "../../game/logic/board/findNextGroupPosition.ts";
+import { handleChanceNearestLanding } from "../../game/handlers/handleChanceNearestLanding.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -512,50 +513,12 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         time_till_finish = -1;
                         _generatorResults.start();
                         setTimeout(() => {
-                            if (xplayer.id === socket.id) {
-                                const location = xplayer?.position ?? -1;
-                                const proprety = getPropertyByPosition(location);
-                                if (proprety !== undefined) {
-                                    engineRef.current?.setStreet({
-                                        location,
-                                        rolls: args.rolls,
-                                        onResponse: (b, info) => {
-                                            if (b === "buy") {
-                                                buyProperty({
-                                                    player: xplayer,
-                                                    property: proprety,
-                                                    ctx: gameContext
-                                                });
-                                            
-                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
-                                            } else if (b === "special_action") {
-                                                const { rolls } = info as { rolls: number };
-
-                                                buySpecialProperty({
-                                                    player: xplayer,
-                                                    property: proprety,
-                                                    rolls: rolls,
-                                                    ctx: gameContext
-                                                });
-
-                                                finishTurn({ localPlayer: xplayer, ctx: gameContext });
-                                            } else if (b === "someones") {
-                                                payChanceRent({
-                                                    payer: xplayer,
-                                                    property: proprety,
-                                                    location,
-                                                    rentMultiplier: c.rentmultiplier ?? 1,
-                                                    ctx: gameContext,
-                                                });
-                                            } else {
-                                                engineRef.current?.freeDice();
-                                                const json = (clients.get(socket.id) as Player).toJson();
-                                                socket.emit("finish-turn", json);
-                                            }
-                                        },
-                                    });
-                                }
-                            }
+                            handleChanceNearestLanding({
+                                player: xplayer,
+                                rolls: args.rolls,
+                                card: c,
+                                ctx: gameContext,
+                            });
                         }, _generatorResults.time);
                         break;
 
