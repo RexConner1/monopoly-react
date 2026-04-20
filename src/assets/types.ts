@@ -70,6 +70,13 @@ export interface PlayerProperty {
     mortgaged?: boolean;
 }
 
+export type StreetResponseType =
+    | "buy"
+    | "advance-buy"
+    | "someones"
+    | "nothing"
+    | "special_action";
+
 export interface historyAction {
     time: string;
     action: string;

@@ -12,12 +12,8 @@ import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } fro
 import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
-import { payRent } from "../../game/actions/payRent.ts";
-import { payLuxuryTax } from "../../game/actions/payLuxuryTax.ts";
-import { payIncomeTax } from "../../game/actions/payIncomeTax.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
-import { advanceProperty } from "../../game/actions/advanceProperty.ts";
 import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
 import { moveToTile } from "../../game/actions/moveToTile.ts";
 import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
@@ -30,6 +26,7 @@ import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 import { payChanceRent } from "../../game/actions/payChanceRent.ts";
+import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -278,77 +275,23 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     if (socket.id !== args.turnId) return;
 
                     const location = clients.get(socket.id)?.position ?? -1;
-                    const proprety = getPropertyByPosition(location);
-                    if (proprety != undefined) {
-                        if (proprety.id === "communitychest" || proprety.id === "chance") {
-                            socket.emit("chorch_roll", { is_chance: proprety.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
+                    const property = getPropertyByPosition(location);
+                    if (property != undefined) {
+                        if (property.id === "communitychest" || property.id === "chance") {
+                            socket.emit("chorch_roll", { is_chance: property.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
                         } else {
                             engineRef.current?.setStreet({
                                 location,
-                                rolls: args.listOfNums[1] + args.listOfNums[0],
+                                rolls: args.listOfNums[0] + args.listOfNums[1],
                                 onResponse: (b, info) => {
-                                    var time_till_free = 0;
-                                    if (b === "buy") {
-                                        buyProperty({
-                                            player: localPlayer,
-                                            property: proprety,
-                                            ctx: gameContext
-                                        });
-                                    } else if (b === "advance-buy") {
-                                        const { state, money } = info as { 
-                                            state: 1 | 2 | 3 | 4 | 5; 
-                                            money: number; 
-                                        };
-
-                                        advanceProperty({
-                                            player: localPlayer,
-                                            property: proprety,
-                                            location,
-                                            state,
-                                            money,
-                                            ctx: gameContext
-                                        });
-                                    } else if (b === "someones") {
-                                        const { rolls } = info as { rolls: number };
-                                        
-                                        payRent({
-                                            payer: localPlayer,
-                                            property: proprety,
-                                            location,
-                                            rolls,
-                                            ctx: gameContext
-                                        });
-                                    } else if (b === "nothing") {
-                                        if ((proprety?.id ?? "") == "gotojail") {
-                                            goToJail({player: xplayer, ctx: gameContext});
-                                        }
-
-                                        if (proprety?.id === "incometax") {
-                                            payIncomeTax({
-                                                player: localPlayer,
-                                                ctx: gameContext
-                                            });
-                                        }
-                                        if (proprety?.id === "luxurytax") {
-                                            payLuxuryTax({
-                                                player: localPlayer,
-                                                ctx: gameContext
-                                            });
-                                        }
-                                    } else if (b === "special_action") {
-                                        const { rolls } = info as { rolls: number };
-
-                                        buySpecialProperty({
-                                            player: localPlayer,
-                                            property: proprety,
-                                            rolls: rolls,
-                                            ctx: gameContext
-                                        });
-                                    }
-
-                                    setTimeout(() => {
-                                        finishTurn({ localPlayer, ctx: gameContext });
-                                    }, time_till_free);
+                                    handleStreetResponse({
+                                        response: b,
+                                        info,
+                                        player: localPlayer,
+                                        property,
+                                        location,
+                                        ctx: gameContext,
+                                    });
                                 },
                             });
                         }

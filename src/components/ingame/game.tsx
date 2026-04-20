@@ -7,7 +7,7 @@ import { Socket } from "../../assets/sockets.ts";
 import StreetCard, { StreetDisplayInfo, UtilitiesDisplayInfo, RailroadDisplayInfo, translateGroup } from "./streetCard.tsx";
 import monopolyJSON from "../../assets/monopoly.json";
 import ChacneCard, { ChanceDisplayInfo } from "./specialCards.tsx";
-import { MonopolyCookie, MonopolySettings, GameTrading, MonopolyMode } from "../../assets/types.ts";
+import { MonopolyCookie, MonopolySettings, GameTrading, MonopolyMode, StreetResponseType } from "../../assets/types.ts";
 import Slider from "../utils/slider.tsx";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import DisplayHouses from "./displayHouses.tsx";
@@ -35,7 +35,7 @@ export interface MonopolyGameRef {
     setStreet: (args: {
         location: number;
         rolls: number;
-        onResponse: (action: "nothing" | "buy" | "someones" | "special_action" | "advance-buy", info: object) => void;
+        onResponse: (action: StreetResponseType, info: object) => void;
     }) => void;
     chorch: (
         element: ChanceCommunityChestCard,

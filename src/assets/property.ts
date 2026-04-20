@@ -18,31 +18,11 @@ export interface Property {
     id: string;
     position: number;
     group: PropertyGroup;
-
-    // ownership
-    // ownedby?: number;
-    // mortgaged?: boolean;
-
-    // pricing
     price?: number;
     rent?: number;
     multpliedrent?: number[];
     housecost?: number;
     hotelcost?: number;
-
-    // houses
-    // buildings?: number;
-
-    // probability stats
-    // averageProbability?: number;
-
-    // misc relational metadata
-    // rel?: {
-    //     Square: string;
-    //     "Probability % (Jail Short)"?: number;
-    //     "Probability % (Jail Long)"?: number;
-    //     Rank?: number;
-    // };
 }
 
 export const properties: Property[] = monopolyJSON.properties as Property[];
