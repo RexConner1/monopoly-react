@@ -5,11 +5,10 @@ import "../../monopoly.css";
 import MonopolyNav, { MonopolyNavRef } from "../../components/ingame/nav.tsx";
 import MonopolyGame, { MonopolyGameRef } from "../../components/ingame/game.tsx";
 import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx";
-import monopolyJSON from "../../assets/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
-import { getPropertyByPosition } from "../../assets/property.ts";
+import { getPropertyByPosition, properties } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
@@ -27,6 +26,7 @@ import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptc
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 import { payChanceRent } from "../../game/actions/payChanceRent.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
+import { findNextGroupPosition } from "../../game/logic/board/findNextGroupPosition.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -500,32 +500,14 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "movenearest":
-                        if (!c.groupid) return;
+                        const ongoingLocation = findNextGroupPosition({
+                            properties,
+                            groupId: c.groupid,
+                            currentPosition: xplayer.position,
+                        });
 
-                        function findNextValue(arr: number[], X: number) {
-                            // Sort the array in ascending order
-                            arr.sort((a, b) => a - b);
+                        if (ongoingLocation === null) return;
 
-                            // Loop through the array to find the next value
-                            for (let i = 0; i < arr.length; i++) {
-                                if (arr[i] > X) {
-                                    return arr[i];
-                                }
-                            }
-
-                            // If no value greater than X is found, return the first element (wrap around)
-                            return arr[0];
-                        }
-
-                        var p = "";
-
-                        if (c.groupid === "utility") {
-                            p = "Utilities";
-                        } else {
-                            p = "Railroad";
-                        }
-                        const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
-                        const ongoingLocation = findNextValue(arr, xplayer.position);
                         const _generatorResults = movePlayer({finalPosition: ongoingLocation, player: xplayer, ctx: gameContext});
                         time_till_finish = -1;
                         _generatorResults.start();
