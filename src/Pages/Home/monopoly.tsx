@@ -8,24 +8,17 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playMoneyMinusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
-import { getPropertyByPosition, properties } from "../../assets/property.ts";
+import { getPropertyByPosition } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
-import { moveToTile } from "../../game/actions/moveToTile.ts";
-import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
-import { removeFunds } from "../../game/actions/removeFunds.ts";
-import { addFunds } from "../../game/actions/addFunds.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
-import { findNextGroupPosition } from "../../game/logic/board/findNextGroupPosition.ts";
-import { handleChanceNearestLanding } from "../../game/handlers/handleChanceNearestLanding.ts";
-import { applyPropertyCharges } from "../../game/actions/applyPropertyCharges.ts";
-import { addBalanceToOtherPlayers } from "../../game/actions/addBalanceToOtherPlayers.ts";
+import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -351,6 +344,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 engineRef.current?.applyAnimation(2);
             }
         };
+
         const socket_ChorchResult = (args: {
             element: ChanceCommunityChestCard;
             rolls: number;
@@ -369,123 +363,18 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             engineRef.current?.chorch(args.element, args.is_chance, numOfTime);
 
             setTimeout(() => {
-                const c = args.element;
                 const xplayer = clients.get(args.turnId);
-                if (xplayer === undefined) return;
+                if (!xplayer) return;
 
-                var time_till_finish = 0;
-                switch (c.action) {
-                    case "move":
-                        if (c.tileid) {
-                            time_till_finish = moveToTile({
-                                tileId: c.tileid,
-                                player: xplayer,
-                                ctx: gameContext,
-                            });
-                        } else if (c.count) {
-                            time_till_finish = moveBySpaces({
-                                spaces: c.count,
-                                player: xplayer,
-                                ctx: gameContext,
-                                get200whengo: true,
-                                afterFinished: () => {},
-                            });
-                        }
-                        break;
-
-                    case "addfunds":
-                        addFunds({
-                            player: xplayer,
-                            amount: c.amount ?? 0,
-                            ctx: gameContext
-                        });
-                        break;
-                        
-                    case "jail":
-                        if (c.subaction !== undefined) {
-                            switch (c.subaction) {
-                                case "getout":
-                                    xplayer.getoutCards += 1;
-                                    break;
-                                case "goto":
-                                    goToJail({player: xplayer, ctx: gameContext});
-                                    break;
-                            }
-                            SetClients(new Map(clients.set(xplayer.id, xplayer)));
-                        }
-                        break;
-
-                    case "removefunds":
-                        removeFunds({
-                            player: xplayer,
-                            amount: c.amount ?? 0,
-                            ctx: gameContext
-                        });
-                        break;
-
-                    case "removefundstoplayers":
-                        addBalanceToOtherPlayers({
-                            player: xplayer,
-                            amount: (c.amount ?? 0),
-                            ctx: gameContext
-                        });
-                        if (xplayer.id === socket.id) engineRef.current?.applyAnimation(1);
-                        break;
-
-                    case "addfundsfromplayers":
-                        addBalanceToOtherPlayers({
-                            player: xplayer,
-                            amount: -(c.amount ?? 0),
-                            ctx: gameContext
-                        });
-                        break;
-
-                    case "movenearest":
-                        const ongoingLocation = findNextGroupPosition({
-                            properties,
-                            groupId: c.groupid,
-                            currentPosition: xplayer.position,
-                        });
-
-                        if (ongoingLocation === null) return;
-
-                        const _generatorResults = movePlayer({finalPosition: ongoingLocation, player: xplayer, ctx: gameContext});
-                        time_till_finish = -1;
-                        _generatorResults.start();
-                        setTimeout(() => {
-                            handleChanceNearestLanding({
-                                player: xplayer,
-                                rolls: args.rolls,
-                                card: c,
-                                ctx: gameContext,
-                            });
-                        }, _generatorResults.time);
-                        break;
-
-                    case "propertycharges":
-                        applyPropertyCharges({
-                            player: xplayer,
-                            buildingsCost: c.buildings ?? 1,
-                            hotelsCost: c.hotels ?? 1,
-                            ctx: gameContext,
-                        });
-                        break;
-                    default:
-                        break;
-                }
-
-                if (time_till_finish >= 0) {
-                    setTimeout(() => {
-                        SetClients(new Map(clients.set(xplayer.id, xplayer)));
-                        if (xplayer.id === socket.id) {
-                            engineRef.current?.freeDice();
-                            socket.emit("finish-turn", (clients.get(socket.id) as Player).toJson());
-                        }
-                    }, time_till_finish);
-                }
+                handleCardAction({
+                    card: args.element,
+                    player: xplayer,
+                    rolls: args.rolls,
+                    ctx: gameContext,
+                });
             }, numOfTime);
         };
-        
+
         function socket_Mouse(args: { id: string; x: number; y: number }) {
             const xplayer = clients.get(args.id);
             if (xplayer === undefined) return;
