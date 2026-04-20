@@ -10,24 +10,21 @@ import { CookieManager } from "../../assets/cookieManager.ts";
 import { playMoneyMinusSfx, playMoneyPlusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition, properties } from "../../assets/property.ts";
 import { GameContext } from "../../assets/gameContext.ts";
-import { buyProperty } from "../../game/actions/buyProperty.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
-import { buySpecialProperty } from "../../game/actions/buySpecialProperty.ts";
 import { moveToTile } from "../../game/actions/moveToTile.ts";
 import { moveBySpaces } from "../../game/actions/moveBySpaces.ts";
 import { removeFunds } from "../../game/actions/removeFunds.ts";
-import { finishTurn } from "../../game/actions/finishTurn.ts";
 import { addFunds } from "../../game/actions/addFunds.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
-import { payChanceRent } from "../../game/actions/payChanceRent.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 import { findNextGroupPosition } from "../../game/logic/board/findNextGroupPosition.ts";
 import { handleChanceNearestLanding } from "../../game/handlers/handleChanceNearestLanding.ts";
+import { applyPropertyCharges } from "../../game/actions/applyPropertyCharges.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -430,7 +427,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 socket.emit(
                                     "history",
                                     history(`
-                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_amount} to ${
+                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${amount} to ${
                                         clients.get(xplayer.id)?.username ?? "unknown user"
                                     }
                                 `)
@@ -523,28 +520,12 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         break;
 
                     case "propertycharges":
-                        function sum(b: number[]) {
-                            var s = 0;
-                            for (const x of b) {
-                                s += x;
-                            }
-                            return 1;
-                        }
-                        var payment_amount =
-                            (c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number)) +
-                            (c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length;
-                        
-                        if (xplayer.id === socket.id && payment_amount > 0) {
-                            if (settings !== undefined && settings.notifications === true)
-                                notifyMessage(notifyRef, "MONEY_DEDUCTED", {
-                                    amount: payment_amount
-                                });
-
-                            playMoneyMinusSfx(settings);
-                            engineRef.current?.applyAnimation(1);
-                        }
-                        xplayer.balance -= payment_amount;
-                        SetClients(new Map(clients.set(xplayer.id, xplayer)));
+                        applyPropertyCharges({
+                            player: xplayer,
+                            buildingsCost: c.buildings ?? 1,
+                            hotelsCost: c.hotels ?? 1,
+                            ctx: gameContext,
+                        });
                         break;
                     default:
                         break;
