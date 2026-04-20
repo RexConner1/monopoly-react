@@ -1,7 +1,7 @@
-import { Property } from "../../../assets/property";
-import { showDialog } from "../../../ui/dialogs/dialogFactory";
-import monopolyJSON from "../../../assets/monopoly.json";
-import { GameContext } from "../../../assets/gameContext";
+import { Property } from "../../assets/property";
+import { showDialog } from "../../ui/dialogs/dialogFactory";
+import monopolyJSON from "../../assets/monopoly.json";
+import { GameContext } from "../../assets/gameContext";
 
 export function handleMonopolsTrains({
     winningMode,

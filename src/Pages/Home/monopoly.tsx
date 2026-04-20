@@ -15,8 +15,8 @@ import { goToJail } from "../../game/actions/goToJail.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
-import { handlePlayerBankruptcy } from "../../game/logic/winLose/handleBankruptcy.ts";
-import { handleMonopolsTrains } from "../../game/logic/winLose/handleMonopolsTrains.ts";
+import { handlePlayerBankruptcy } from "../../game/handlers/handleBankruptcy.ts";
+import { handleMonopolsTrains } from "../../game/handlers/handleMonopolsTrains.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
