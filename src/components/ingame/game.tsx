@@ -18,6 +18,7 @@ import { renderUpgradeButtons } from "../../ui/street/renderUpgradeButtons.ts";
 import { TradeOpponentSelector } from "../trade/tradeOpponentSelector.tsx";
 import { TradePropertyList } from "../trade/tradePropertyList.tsx";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
+import TradeCraftButtons from "../trade/tradeCraftButtons.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -974,63 +975,12 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                     <div className="flexchild"></div>
                                 </div>
 
-                                {prop.myTurn ? (
-                                    <center>
-                                        <div className="trade-craft-buttons">
-                                            <button
-                                                data-selectable={prop.myTurn}
-                                                onClick={() => {
-                                                    if (prop.myTurn) {
-                                                        prop.socket.emit("cancel-trade");
-                                                        SetSended(false);
-                                                    }
-                                                }}
-                                            >
-                                                {" "}
-                                                CANCEL
-                                            </button>
-                                            <button
-                                                data-selectable={prop.myTurn}
-                                                onClick={() => {
-                                                    if (prop.myTurn) {
-                                                        prop.socket.emit("trade");
-                                                    }
-                                                }}
-                                            >
-                                                {" "}
-                                                BACK
-                                            </button>
-                                            <button
-                                                data-selectable={prop.myTurn}
-                                                onClick={() => {
-                                                    if (prop.myTurn) {
-                                                        prop.socket.emit("submit-trade", prop.tradeObj);
-                                                        SetSended(false);
-                                                    }
-                                                }}
-                                            >
-                                                {" "}
-                                                SUBMIT
-                                            </button>
-                                        </div>
-                                    </center>
-                                ) : (prop.tradeObj as GameTrading).againstPlayer.id === prop.socket.id ? (
-                                    <center>
-                                        <div className="trade-craft-buttons">
-                                            <button
-                                                data-selectable={prop.myTurn}
-                                                onClick={() => {
-                                                    prop.socket.emit("trade");
-                                                }}
-                                            >
-                                                {" "}
-                                                CANCEL
-                                            </button>
-                                        </div>
-                                    </center>
-                                ) : (
-                                    <></>
-                                )}
+                                <TradeCraftButtons
+                                    myTurn={prop.myTurn}
+                                    tradeObj={prop.tradeObj as GameTrading}
+                                    socket={prop.socket}
+                                    setSended={SetSended}
+                                />
                             </>
                         )}
                     </div>
