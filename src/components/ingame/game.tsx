@@ -8,7 +8,6 @@ import StreetCard, { StreetDisplayInfo, UtilitiesDisplayInfo, RailroadDisplayInf
 import monopolyJSON from "../../assets/monopoly.json";
 import ChacneCard, { ChanceDisplayInfo } from "./specialCards.tsx";
 import { MonopolyCookie, MonopolySettings, GameTrading, MonopolyMode, StreetResponseType } from "../../assets/types.ts";
-import Slider from "../utils/slider.tsx";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import DisplayHouses from "./displayHouses.tsx";
 import DisplayStreets from "./displayStreets.tsx";
@@ -20,6 +19,8 @@ import { TradePropertyList } from "../trade/tradePropertyList.tsx";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import TradeCraftButtons from "../trade/tradeCraftButtons.tsx";
 import TradePlayerPanel from "../trade/tradePlayerPanel.tsx";
+import TradeBalanceSlider from "../trade/tradeBalanceSlider.tsx";
+import TradeRoleIndicator from "../trade/tradeRoleIndicator.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -786,33 +787,14 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                     <div className="flexchild">
                                         {prop.socket.id === prop.tradeObj.againstPlayer.id || prop.socket.id === prop.tradeObj.turnPlayer.id ? (
                                             <div className="trade-craft">
-                                                <p>
-                                                    {" "}
-                                                    {prop.socket.id === prop.tradeObj.againstPlayer.id
-                                                        ? "You are the Opponent"
-                                                        : "You are the Current Player"}
-                                                </p>
-                                                <Slider
-                                                    max={
-                                                        prop.socket.id === prop.tradeObj.againstPlayer.id
-                                                            ? prop.players.filter((v) => v.id === (prop.tradeObj as GameTrading).againstPlayer.id)[0]
-                                                                  .balance
-                                                            : prop.players.filter((v) => v.id === (prop.tradeObj as GameTrading).turnPlayer.id)[0]
-                                                                  .balance
-                                                    }
-                                                    min={0}
-                                                    step={25}
-                                                    onChange={(e) => {
-                                                        const v = parseInt(e.currentTarget.value);
-                                                        const b = JSON.parse(JSON.stringify(prop.tradeObj)) as GameTrading;
-                                                        if (prop.socket.id === (prop.tradeObj as GameTrading).againstPlayer.id) {
-                                                            b.againstPlayer.balance = v;
-                                                        } else {
-                                                            b.turnPlayer.balance = v;
-                                                        }
-                                                        prop.socket.emit("trade-update", b);
-                                                    }}
-                                                    suffix=" M"
+                                                <TradeRoleIndicator
+                                                    socket={prop.socket}
+                                                    tradeObj={prop.tradeObj as GameTrading}
+                                                />
+                                                <TradeBalanceSlider
+                                                    socket={prop.socket}
+                                                    tradeObj={prop.tradeObj as GameTrading}
+                                                    players={prop.players}
                                                 />
                                                 <br />
 
