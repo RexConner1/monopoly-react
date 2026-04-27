@@ -384,6 +384,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             xplayer.positions = { x: args.x, y: args.y };
             clients.set(args.id, xplayer);
         }
+        
         function socket_networkDisconnect() {
             mainTheme.pause();
             showDialog(notifyRef, "DISCONNECTED", {}, "losing");

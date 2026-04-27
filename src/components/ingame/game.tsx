@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import RollIcon from "../../../public/roll.png";
 import HouseIcon from "../../../public/h.png";
 import HotelIcon from "../../../public/ho.png";
@@ -59,6 +59,8 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
             return [obj.position ?? 0, obj];
         })
     );
+
+    const rotationLockedRef = useRef(false);
 
     const [showDice, SetShowDice] = useState<boolean>(false);
     const [sended, SetSended] = useState<boolean>(false);
@@ -432,7 +434,19 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
             if (e.shiftKey) {
                 SetScale((old) => old + (e.deltaY * (settings !== undefined ? settings.accessibility[1] : 5)) / 5000);
             } else {
-                SetRotation((old) => old + (e.deltaY * (settings !== undefined ? settings.accessibility[0] : 45)) / 100);
+                if (Math.abs(e.deltaY) < 20) return;
+                if (rotationLockedRef.current) return;
+
+                rotationLockedRef.current = true;
+
+                SetRotation((old) => {
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    return old + direction * 90;
+                });
+
+                setTimeout(() => {
+                    rotationLockedRef.current = false;
+                }, 350);
             }
         };
         // Clicking Street
@@ -703,6 +717,9 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                         </button>
                         <button data-button-type="pay" data-tooltip-hover="pay" aria-disabled={true}>
                             <img src="pay1.png" />
+                        </button>
+                        <button data-button-type="build" data-tooltip-hover="build" aria-disabled={true}>
+                            <img src="build.png" />
                         </button>
                         <button data-button-type="card" data-tooltip-hover="card" aria-disabled={true}>
                             <img src="golden-card.png" />
