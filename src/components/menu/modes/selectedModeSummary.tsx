@@ -1,4 +1,4 @@
-import type { MonopolyMode } from "../../assets/types";
+import type { MonopolyMode } from "../../../assets/types";
 
 export function SelectedModeSummary({ selectedMode }: { selectedMode: MonopolyMode }) {
     const timerText =

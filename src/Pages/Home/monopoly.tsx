@@ -19,7 +19,9 @@ import { handlePlayerBankruptcy } from "../../game/handlers/handleBankruptcy.ts"
 import { handleMonopolsTrains } from "../../game/handlers/handleMonopolsTrains.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
-import { SelectedModeSummary } from "../../components/menu/selectedModeSummary.tsx";
+import { SelectedModeSummary } from "../../components/menu/modes/selectedModeSummary.tsx";
+import { CustomModeButton } from "../../components/menu/modes/customModeButton.tsx";
+import { ModeList } from "../../components/menu/modes/modeList.tsx";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -645,51 +647,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         <SelectedModeSummary selectedMode={selectedMode} />
                         
                         <div className="selecting-mde">
-                            {MonopolyModes.map((v, k) => {
-                                return (
-                                    <p
-                                        data-select={JSON.stringify(v) === JSON.stringify(selectedMode)}
-                                        key={k}
-                                        onClick={() => {
-                                            if (server !== undefined)
-                                                socket.emit("ready", {
-                                                    mode: v,
-                                                });
-                                        }}
-                                        data-disabled={server === undefined}
-                                    >
-                                        {v.Name}
-                                    </p>
-                                );
-                            })}
-                            <p
-                                data-select={selectedMode.Name === "Custom Mode"}
-                                data-disabled={server === undefined}
-                                onClick={() => {
-                                    // const winstateChoice = window.prompt("Winning State\n1=last-standing\n2=monopols\n3=monopols & trains", "3");
-                                    // const buyingChoice = window.prompt("Buying System State\n1=following-order\n2=card-firsts\n3=everything", "3");
-                                    const allowTrade = window.confirm("Allow Trades");
-                                    const allowMortgage = window.confirm("Allow Mortgage");
-                                    const startingCash = window.prompt("Starting Cash", "1500");
-                                    const turnTimer = window.prompt("Turn Timer", "0");
-                                    const v = {
-                                        AllowDeals: allowTrade,
-                                        // BuyingSystem: buyingChoice === "2" ? "card-firsts" : buyingChoice === "3" ? "everything" : "following-order",
-                                        WinningMode: "last-standing",
-                                            // winstateChoice === "2" ? "monopols" : winstateChoice === "3" ? "monopols & trains" : "last-standing",
-                                        Name: "Custom Mode",
-                                        mortageAllowed: allowMortgage,
-                                        startingCash: startingCash === null ? 1500 : parseInt(startingCash) ?? 1500,
-                                        turnTimer: turnTimer === null ? undefined : parseInt(turnTimer) ?? undefined,
-                                    } as MonopolyMode;
-                                    if (server !== undefined)
-                                        socket.emit("ready", {
-                                            mode: v,
-                                        });
-                                }}
-                            >
-                                Custom Mode
-                            </p>
+                            <ModeList
+                                modes={MonopolyModes}
+                                selectedMode={selectedMode}
+                                server={server}
+                                socket={socket}
+                            />
+                            <CustomModeButton
+                                selectedMode={selectedMode}
+                                server={server}
+                                socket={socket}
+                            />
                         </div>
                     </div>
                 </div>
