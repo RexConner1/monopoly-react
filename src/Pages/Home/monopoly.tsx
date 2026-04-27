@@ -19,6 +19,7 @@ import { handlePlayerBankruptcy } from "../../game/handlers/handleBankruptcy.ts"
 import { handleMonopolsTrains } from "../../game/handlers/handleMonopolsTrains.ts";
 import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
 import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
+import { SelectedModeSummary } from "../../components/menu/selectedModeSummary.tsx";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -641,38 +642,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     )}
 
                     <div className="modes">
-                        <main>
-                            <h3>{selectedMode.Name}</h3>
-                            <table>
-                                <tr>
-                                    <td> Winning State:</td> <td>{selectedMode.WinningMode.toUpperCase()}</td>
-                                </tr>
-                                {/* <tr>
-                                    <td> Buying System:</td> <td>{selectedMode.BuyingSystem.toUpperCase()}</td>
-                                </tr> */}
-                                <tr>
-                                    <td>Trades: </td>
-                                    <td>{selectedMode.AllowDeals ? "ALLOWED" : "NOT-ALLOWED"}</td>
-                                </tr>
-                                <tr>
-                                    <td>Mortgage: </td>
-                                    <td>{selectedMode.mortageAllowed ? "ALLOWED" : "NOT-ALLOWED"}</td>
-                                </tr>
-                                <tr>
-                                    <td>Starting Cash: </td>
-                                    <td>{selectedMode.startingCash} M</td>
-                                </tr>
-                                <tr>
-                                    <td>Turn Timer: </td>
-                                    <td>
-                                        {selectedMode.turnTimer === undefined ||
-                                        (typeof selectedMode.turnTimer === "number" && selectedMode.turnTimer === 0)
-                                            ? "No Timer"
-                                            : JSON.stringify(selectedMode.turnTimer) + " Sec"}
-                                    </td>
-                                </tr>
-                            </table>
-                        </main>
+                        <SelectedModeSummary selectedMode={selectedMode} />
+                        
                         <div className="selecting-mde">
                             {MonopolyModes.map((v, k) => {
                                 return (
@@ -695,7 +666,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                 data-select={selectedMode.Name === "Custom Mode"}
                                 data-disabled={server === undefined}
                                 onClick={() => {
-                                    const winstateChoice = window.prompt("Winning State\n1=last-standing\n2=monopols\n3=monopols & trains", "3");
+                                    // const winstateChoice = window.prompt("Winning State\n1=last-standing\n2=monopols\n3=monopols & trains", "3");
                                     // const buyingChoice = window.prompt("Buying System State\n1=following-order\n2=card-firsts\n3=everything", "3");
                                     const allowTrade = window.confirm("Allow Trades");
                                     const allowMortgage = window.confirm("Allow Mortgage");
@@ -704,8 +675,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                     const v = {
                                         AllowDeals: allowTrade,
                                         // BuyingSystem: buyingChoice === "2" ? "card-firsts" : buyingChoice === "3" ? "everything" : "following-order",
-                                        WinningMode:
-                                            winstateChoice === "2" ? "monopols" : winstateChoice === "3" ? "monopols & trains" : "last-standing",
+                                        WinningMode: "last-standing",
+                                            // winstateChoice === "2" ? "monopols" : winstateChoice === "3" ? "monopols & trains" : "last-standing",
                                         Name: "Custom Mode",
                                         mortageAllowed: allowMortgage,
                                         startingCash: startingCash === null ? 1500 : parseInt(startingCash) ?? 1500,

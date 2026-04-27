@@ -644,8 +644,8 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
     }, []);
 
     useEffect(() => {
+        let l: ReturnType<typeof setTimeout> | undefined = undefined;
         if (prop.myTurn && !sended) {
-            var l: NodeJS.Timeout | undefined = undefined;
             if (prop.selectedMode.turnTimer !== undefined && prop.selectedMode.turnTimer > 0) {
                 var x = 0;
                 l = setInterval(() => {
