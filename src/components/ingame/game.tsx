@@ -1,5 +1,4 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
-import RollIcon from "../../../public/roll.png";
 import HouseIcon from "../../../public/h.png";
 import HotelIcon from "../../../public/ho.png";
 import { Player } from "./../../assets/player.ts";
@@ -21,6 +20,7 @@ import TradeCraftButtons from "../trade/tradeCraftButtons.tsx";
 import TradePlayerPanel from "../trade/tradePlayerPanel.tsx";
 import TradeBalanceSlider from "../trade/tradeBalanceSlider.tsx";
 import TradeRoleIndicator from "../trade/tradeRoleIndicator.tsx";
+import { ActionBar } from "./actionBar.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -700,46 +700,14 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                         <DisplayHouses />
                         <DisplayStreets />
                     </div>
-                    <div className="action-bar" style={prop.myTurn && !sended ? {} : { translate: "-50% 20vh" }}>
-                        {prop.selectedMode.turnTimer !== undefined && prop.selectedMode.turnTimer > 0 ? (
-                            <>
-                                <p style={{ display: "inline-block", opacity: 1, color: "rgb(0, 114, 187)", marginRight: 5 }}>
-                                    {prop.selectedMode.turnTimer - timer}{" "}
-                                </p>
-                                <hr style={{ display: "inline", opacity: 0.5 }} />
-                            </>
-                        ) : (
-                            <></>
-                        )}
-                        <button data-button-type="roll" aria-disabled={false}>
-                            <p>ROLL THE </p>
-                            <img style={{ marginLeft: 10 }} src={RollIcon.replace("public/", "")} />
-                        </button>
-                        <button data-button-type="pay" data-tooltip-hover="pay" aria-disabled={true}>
-                            <img src="pay1.png" />
-                        </button>
-                        <button data-button-type="build" data-tooltip-hover="build" aria-disabled={true}>
-                            <img src="build.png" />
-                        </button>
-                        <button data-button-type="card" data-tooltip-hover="card" aria-disabled={true}>
-                            <img src="golden-card.png" />
-                        </button>
-                        {prop.selectedMode.AllowDeals ? (
-                            <button
-                                data-button-type="trade"
-                                data-tooltip-hover="trade"
-                                aria-disabled={false}
-                                onClick={() => {
-                                    SetSended(true);
-                                    prop.socket.emit("trade");
-                                }}
-                            >
-                                <img src="morgage.png" />
-                            </button>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
+                    <ActionBar
+                        myTurn={prop.myTurn}
+                        sended={sended}
+                        timer={timer}
+                        selectedMode={prop.selectedMode}
+                        socket={prop.socket}
+                        setSended={SetSended}
+                    />
                     <div
                         className={streetType === "Chance" || streetType === "CommunityChest" ? "chance-display-actions" : "card-display-actions"}
                         style={
