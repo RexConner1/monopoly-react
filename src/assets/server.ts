@@ -336,6 +336,10 @@ export async function main(playersCount: number, f?: (host: string, Server: Serv
                     }
                     if (args.mode !== undefined) {
                         selectedMode = args.mode;
+
+                        for (const client of Clients.values()) {
+                            client.player.balance = selectedMode.startingCash;
+                        }
                     }
                     Clients.set(socket.id, client);
 
@@ -346,6 +350,7 @@ export async function main(playersCount: number, f?: (host: string, Server: Serv
                         id: socket.id,
                         state: client.ready,
                         selectedMode,
+                        players: Array.from(Clients.values()).map((v) => v.player.to_json()),
                     });
                     if (!readys.includes(false)) {
                         server.logFunction(`Game has Started, No more Players can join the Server`);

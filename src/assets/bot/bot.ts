@@ -211,12 +211,29 @@ export async function main(host: string, initials: botInitial) {
         clients.set(args.id, new Player(args.id, args.username).recieveJson(args));
     };
 
-    const socket_Ready = (args: { id: string; state: boolean; selectedMode: MonopolyMode }) => {
+    const socket_Ready = (args: {
+        id: string;
+        state: boolean;
+        selectedMode: MonopolyMode;
+        players?: PlayerJSON[];
+    }) => {
+        selectedMode = args.selectedMode;
+
+        if (args.players) {
+            for (const pJson of args.players) {
+                const existing = clients.get(pJson.id) ?? new Player(pJson.id, pJson.username);
+                existing.recieveJson(pJson);
+                clients.set(existing.id, existing);
+            }
+            return;
+        }
+
+        // fallback (older behavior)
         const x = clients.get(args.id);
         if (x === undefined) return;
+
         x.ready = args.state;
         clients.set(x.id, x);
-        selectedMode = args.selectedMode;
     };
 
     const socket_DisconnectedPlayer = (args: { id: string; turn: string }) => {

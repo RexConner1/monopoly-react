@@ -13,12 +13,12 @@ export class Player {
     public getoutCards: number;
     public ready: boolean;
     public positions: { x: number; y: number };
-    constructor(_id: string, _name: string) {
+    constructor(_id: string, _name: string, _icon: number = -1, cash: number = 1500) {
         this.id = _id;
         this.username = _name;
-        this.icon = -1;
+        this.icon = _icon;
         this.position = 0;
-        this.balance = 1500;
+        this.balance = cash;
         this.properties = [];
         this.isInJail = false;
         this.jailTurnsRemaining = 0;

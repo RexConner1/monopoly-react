@@ -155,11 +155,29 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             SetClients(new Map(clients.set(args.id, new Player(args.id, args.username).recieveJson(args))));
         };
 
-        const socket_Ready = (args: { id: string; state: boolean; selectedMode: MonopolyMode }) => {
-            const x = clients.get(args.id);
-            if (x === undefined) return;
-            x.ready = args.state;
-            SetClients(new Map(clients.set(x.id, x)));
+        const socket_Ready = (args: {
+            id: string;
+            state: boolean;
+            selectedMode: MonopolyMode;
+            players?: PlayerJSON[];
+        }) => {
+            const updatedClients = new Map(clients);
+
+            if (args.players) {
+                for (const pJson of args.players) {
+                    const existing = updatedClients.get(pJson.id) ?? new Player(pJson.id, pJson.username);
+                    existing.recieveJson(pJson);
+                    updatedClients.set(pJson.id, existing);
+                }
+            } else {
+                const x = updatedClients.get(args.id);
+                if (x !== undefined) {
+                    x.ready = args.state;
+                    updatedClients.set(x.id, x);
+                }
+            }
+
+            SetClients(updatedClients);
             SetMode(args.selectedMode);
         };
 
