@@ -23,6 +23,7 @@ import TradeRoleIndicator from "../trade/tradeRoleIndicator.tsx";
 import { ActionBar } from "./actionBar.tsx";
 import { calculateRailroadRent } from "../../game/logic/rent/calculateRailroadRent.ts";
 import { calculateUtilityMultiplier } from "../../game/logic/rent/calculateUtilityRent.ts";
+import { createPlayerElement } from "./createPlayerElement.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -524,23 +525,11 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                         elementSearch.appendChild(secondDiv);
                     }
                 } else {
-                    // Create
-                    const element = document.createElement("div");
-                    element.className = "player";
-                    element.setAttribute("player-id", x.id);
-                    element.setAttribute("player-position", x.position.toString());
-                    const secondDiv = document.createElement("div");
-                    secondDiv.setAttribute("data-tooltip-hover", x.username);
-                    const image = document.createElement("img");
-                    image.src = `./p${icon}.png`;
-                    secondDiv.appendChild(image);
-                    element.appendChild(secondDiv);
-                    if (injail) {
-                        const jimage = document.createElement("img");
-                        jimage.src = `./jail.png`;
-                        jimage.className = "jailIcon";
-                        element.appendChild(jimage);
-                    }
+                    const element = createPlayerElement({
+                        player: x,
+                        icon,
+                        inJail: injail,
+                    });
 
                     document.querySelector(`div.street[data-position="${location}"]`)?.appendChild(element);
                 }
