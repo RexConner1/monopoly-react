@@ -21,6 +21,8 @@ import TradePlayerPanel from "../trade/tradePlayerPanel.tsx";
 import TradeBalanceSlider from "../trade/tradeBalanceSlider.tsx";
 import TradeRoleIndicator from "../trade/tradeRoleIndicator.tsx";
 import { ActionBar } from "./actionBar.tsx";
+import { calculateRailroadRent } from "../../game/logic/rent/calculateRailroadRent.ts";
+import { calculateUtilityMultiplier } from "../../game/logic/rent/calculateUtilityRent.ts";
 interface MonopolyGameProps {
     players: Array<Player>;
     myTurn: boolean;
@@ -593,14 +595,9 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                                     }
                                     var payment_ammount = 0;
                                     if (_prp.group === "Railroad") {
-                                        const count = _player.properties
-                                            .filter((v) => v.group === "Railroad")
-                                            .filter((v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)).length;
-                                        const rents = [0, 25, 50, 100, 200];
-                                        var payment_ammount = rents[count];
+                                        payment_ammount = calculateRailroadRent(_player);
                                     } else if (_prp.group === "Utilities") {
-                                        const multy_ = _player.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                        payment_ammount = multy_;
+                                        payment_ammount = calculateUtilityMultiplier(_player);
                                     }
 
                                     if (payment_ammount !== 0) {
