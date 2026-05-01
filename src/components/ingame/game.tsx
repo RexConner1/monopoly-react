@@ -321,7 +321,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                             return;
                         }
                     }
-                    if (belong_to_me && count === "h") {
+                    if (belong_to_me) {
                         ShowStreet(false);
                         args.onResponse("nothing", {});
                         return;
@@ -716,7 +716,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                             </>
                         ) : (
                             <>
-                                <h3>{advnacedStreet ? "would you like to buy this card?" : "you can buy houses and hotels"}</h3>
+                                <h3>{advnacedStreet ? "You can buy houses and hotels" : "Would you like to buy this card?"}</h3>
                                 {streetType === "Railroad" ? (
                                     <StreetCard railroad={streetDisplay as RailroadDisplayInfo} />
                                 ) : streetType === "Utilities" ? (
