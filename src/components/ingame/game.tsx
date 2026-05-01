@@ -314,18 +314,15 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     }
 
                     if (belong_to_me) {
-                    } else {
-                        if (belong_to_others) {
-                            args.onResponse("someones", {});
-                            ShowStreet(false);
-                            return;
-                        }
-                    }
-                    if (belong_to_me) {
                         ShowStreet(false);
                         args.onResponse("nothing", {});
                         return;
+                    } else if (belong_to_others) {
+                        args.onResponse("someones", {});
+                        ShowStreet(false);
+                        return;
                     }
+                    
                     SetStreetType("Street");
                     const streetInfo = {
                         cardCost: x.price ?? -1,
