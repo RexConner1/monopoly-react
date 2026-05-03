@@ -1,7 +1,7 @@
-import { Player, PlayerJSON } from "../player";
-import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial } from "../types.ts";
-import { io } from "../sockets.ts";
-import monopolyJSON from "../monopoly.json";
+import { Player, PlayerJSON } from "../src/assets/player.ts";
+import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial } from "../src/assets/types.ts";
+import { io } from "../src/assets/sockets.ts";
+import monopolyJSON from "../src/assets/monopoly.json";
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
 

@@ -1,6 +1,6 @@
-import { Socket, Server } from "./sockets";
-import monopolyJSON from "./monopoly.json";
-import { GameTrading, MonopolyMode, MonopolyModes, historyAction } from "./types";
+import { Socket, Server } from "../../src/assets/sockets.ts";
+import monopolyJSON from "../../src/assets/monopoly.json";
+import { GameTrading, MonopolyMode, MonopolyModes, historyAction } from "../../src/assets/types";
 class Player {
     public id: string;
     public username: string;

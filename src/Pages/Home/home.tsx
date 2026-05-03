@@ -12,9 +12,9 @@ import JoinScreen from "../../components/menu/joinScreen.tsx";
 // import { FirebaseApp, initializeApp } from "firebase/app";
 // import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-import { main as onlineServer } from "../../assets/server.ts";
-import { main as botServer } from "../../assets/bot/server.ts";
-import { main as runBot } from "../../assets/bot/bot.ts";
+import { main as onlineServer } from "../../../server/player/server.ts";
+import { main as botServer } from "../../../server/bot/server.ts";
+import { main as runBot } from "../../../bot/bot.ts";
 import Slider from "../../components/utils/slider.tsx";
 import { TranslateCode } from "../../assets/code.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
