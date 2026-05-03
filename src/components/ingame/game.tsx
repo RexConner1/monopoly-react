@@ -230,17 +230,17 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
 
                 var belong_to_me = false;
                 var belong_to_others = false;
-                var count: 0 | 1 | 2 | 3 | 4 | "h" = 0;
                 // check states
                 for (const _prp of localPlayer.properties) {
                     if (!belong_to_me && _prp.position === args.location) {
                         belong_to_me = true;
-                        count = _prp.count;
                     }
                 }
                 for (const _p of prop.players) {
                     for (const _prp of _p.properties) {
-                        if (_prp.position === args.location && _p.id != localPlayer.id) belong_to_others = true;
+                        if (_prp.position === args.location && _p.id != localPlayer.id) {
+                            belong_to_others = true;
+                        };
                     }
                 }
 

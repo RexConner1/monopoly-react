@@ -121,19 +121,19 @@ export async function main(host: string, initials: botInitial) {
 
                 var belong_to_me = false;
                 var belong_to_others = false;
-                var count: 0 | 1 | 2 | 3 | 4 | "h" = 0;
                 // check states
                 if (localPlayer === undefined) return;
                 for (const _prp of localPlayer.properties) {
                     if (!belong_to_me && _prp.position === args.location) {
                         belong_to_me = true;
-                        count = _prp.count;
                     }
                 }
                 const players = Array.from(clients.values());
                 for (const _p of players) {
                     for (const _prp of _p.properties) {
-                        if (_prp.position === args.location && _p.id != localPlayer.id) belong_to_others = true;
+                        if (_prp.position === args.location && _p.id != localPlayer.id) {
+                            belong_to_others = true;
+                        };
                     }
                 }
 
@@ -180,14 +180,10 @@ export async function main(host: string, initials: botInitial) {
                     }
 
                     if (belong_to_me) {
-                    } else {
-                        if (belong_to_others) {
-                            args.onResponse("someones", {});
-                            return;
-                        }
-                    }
-                    if (belong_to_me && count === "h") {
                         args.onResponse("nothing", {});
+                        return;
+                    } else if (belong_to_others) {
+                        args.onResponse("someones", {});
                         return;
                     }
 
