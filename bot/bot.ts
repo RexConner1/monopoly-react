@@ -74,7 +74,7 @@ export async function main(host: string, initials: botInitial) {
                         for (let index = count + 1; index < 6; index++) {
                             const actionName = `${index}houses${index > 1 ? "s" : ""}`;
 
-                            if (!((index - count) * (_property.housecost ?? 0) > localPlayer.balance ?? 0)) {
+                            if (!((index - count) * (_property.housecost ?? 0) > (localPlayer.balance ?? 0))) {
                                 actions.push(actionName);
                                 genereatedActions[actionName] = () => {
                                     args.onResponse("advance-buy", {

@@ -4,7 +4,6 @@ export class Player {
     public id: string;
     public username: string;
     public icon: number;
-
     public position: number;
     public balance: number;
     public properties: Array<PlayerProperty>;
