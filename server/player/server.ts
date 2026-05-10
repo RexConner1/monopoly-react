@@ -3,17 +3,11 @@ import monopolyJSON from "../../src/assets/monopoly.json";
 import { GameTrading, MonopolyMode, MonopolyModes, historyAction } from "../../src/assets/types";
 import { Player } from "../shared/models/player.ts";
 import { PlayerJSON } from "../shared/types/player.ts";
+import { Client } from "../shared/types/client.ts";
 
 export async function main(playersCount: number, f?: (host: string, Server: Server) => void) {
 
     const maxPlayers = playersCount > 0 ? Math.min(playersCount, 6) : 6;
-
-    interface Client {
-        player: Player;
-        socket: Socket;
-        ready: boolean;
-        positions: { x: number; y: number };
-    }
 
     const Clients = new Map<string, Client>();
     const logs_strings: Array<string> = [];
