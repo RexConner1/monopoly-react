@@ -1,5 +1,5 @@
+import { PlayerJSON } from "../../../shared/types/player";
 import { GameContext } from "../../assets/gameContext";
-import { PlayerJSON } from "../../assets/player";
 import { showDialog } from "../../ui/dialogs/dialogFactory";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
 

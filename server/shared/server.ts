@@ -2,7 +2,7 @@ import { Socket, Server } from "../../src/assets/sockets";
 import monopolyJSON from "../../src/assets/monopoly.json";
 import { GameTrading, MonopolyMode, MonopolyModes, historyAction } from "../../src/assets/types";
 import { Player } from "./models/player";
-import { PlayerJSON } from "./types/player";
+import { PlayerJSON } from "../../shared/types/player";
 import type { Client } from "./types/client";
 
 export function createMonopolyServer({

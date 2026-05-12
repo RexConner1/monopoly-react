@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Server, Socket } from "../../assets/sockets.ts";
-import { Player, PlayerJSON } from "../../assets/player.ts";
+import { Player } from "../../assets/player.ts";
 import "../../monopoly.css";
 import MonopolyNav, { MonopolyNavRef } from "../../components/ingame/nav.tsx";
 import MonopolyGame, { MonopolyGameRef } from "../../components/ingame/game.tsx";
@@ -22,6 +22,7 @@ import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
 import { SelectedModeSummary } from "../../components/menu/modes/selectedModeSummary.tsx";
 import { CustomModeButton } from "../../components/menu/modes/customModeButton.tsx";
 import { ModeList } from "../../components/menu/modes/modeList.tsx";
+import { PlayerJSON } from "../../../shared/types/player.ts";
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());

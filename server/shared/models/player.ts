@@ -1,4 +1,4 @@
-import type { PlayerJSON } from "../types/player";
+import type { PlayerJSON } from "../../../shared/types/player";
 
 export class Player {
     public id: string;
