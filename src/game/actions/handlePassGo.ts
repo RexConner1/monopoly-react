@@ -1,3 +1,4 @@
+import { applyPassGoReward } from "../../../shared/game/actions/applyPassGoReward";
 import { GameContext } from "../../assets/gameContext";
 import { Player } from "../../assets/player";
 import { playMoneyPlusSfx } from "../../ui/audio/audio";
@@ -9,17 +10,15 @@ export function handlePassGo({
     player: Player;
     ctx: GameContext;
 }) {
-    const AMOUNT = 200;
+    const amount = applyPassGoReward(player);
 
     playMoneyPlusSfx(ctx.settings);
-
-    player.balance += AMOUNT;
 
     const isLocal = player.id === ctx.socket.id;
     if (isLocal) {
         if (ctx.settings?.notifications) {
             ctx.notifyRef.current?.message(
-                `${AMOUNT} of money is added to the account`,
+                `${amount} of money is added to the account`,
                 "info",
                 2,
                 () => {},

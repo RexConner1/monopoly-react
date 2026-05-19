@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "bot", "server"]
+  "include": ["src", "bot", "server", "shared"]
 }

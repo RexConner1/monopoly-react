@@ -1,7 +1,11 @@
-import { Player, PlayerJSON } from "../src/assets/player.ts";
-import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial } from "../src/assets/types.ts";
+import { Player } from "../src/assets/player.ts";
+import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial, StreetResponseType } from "../src/assets/types.ts";
 import { io } from "../src/assets/sockets.ts";
 import monopolyJSON from "../src/assets/monopoly.json";
+import { PlayerJSON } from "../shared/types/player.ts";
+import { moveSteps } from "../shared/game/actions/moveSteps.ts";
+import { handlePassGo } from "./game/actions/handlePassGo.ts";
+
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
 
@@ -23,7 +27,7 @@ export async function main(host: string, initials: botInitial) {
         setStreet: (args: {
             location: number;
             rolls: number;
-            onResponse: (action: "nothing" | "buy" | "someones" | "special_action" | "advance-buy", info: object) => void;
+            onResponse: (action: StreetResponseType, info: object) => void;
         }) =>
             | {
                   actions: number[] | string[];
@@ -256,69 +260,28 @@ export async function main(host: string, initials: botInitial) {
             }, Math.round(Math.random() * 1000));
         }
     };
-    function playerMoveGENERATOR(
+    
+    function movePlayer(
         final_position: number,
         _xplayer: Player,
         get200whengo: boolean = true,
         afterFinished?: () => void,
         adding: boolean = true
     ) {
-        var sum_moves = (final_position - _xplayer.position) % 40;
-        if ((final_position < _xplayer.position || sum_moves < 0) && adding) {
-            sum_moves = 40 - _xplayer.position + final_position;
-        }
-
-        if (!adding) {
-            sum_moves = _xplayer.position - final_position;
-            if (sum_moves < 0) {
-                sum_moves += 40;
-            }
-        }
-
-        const time = 0.35 * 1000 * sum_moves;
-
-        console.log(
-            `${initials.name}`,
-            `${new Date().toTimeString()} generator ${Math.random()} target ${final_position} time ${time} current ${_xplayer.position}`
-        );
-        function _playerMoveFunc() {
-            var firstPosition = 0;
-            var addedMoney = false;
-            var i = 0;
-
-            firstPosition = _xplayer.position;
-            _xplayer.position += 1;
-            const movingAnim = () => {
-                if (i < sum_moves) {
-                    i += 1;
-                    _xplayer.position = (_xplayer.position + (adding ? 1 : -1)) % 40;
-                    if (_xplayer.position == 0 && get200whengo) {
-                        _xplayer.balance += 200;
-
-                        addedMoney = true;
-                        clients.set(_xplayer.id, _xplayer);
-                    }
-                    if (i == sum_moves - 1) {
-                        _xplayer.position = final_position;
-
-                        if (!addedMoney && firstPosition > _xplayer.position && get200whengo) {
-                            _xplayer.balance += 200;
-                            addedMoney = true;
-
-                            clients.set(_xplayer.id, _xplayer);
-                        }
-                        if (afterFinished) afterFinished();
-                    } else {
-                        setTimeout(movingAnim, 0.35 * 1000);
-                    }
-                }
-            };
-            setTimeout(movingAnim, 0.35 * 1000);
-        }
+        const plan = moveSteps({
+            player: _xplayer,
+            finalPosition: final_position,
+            adding,
+            get200whengo,
+            onPassGo: () => {
+                handlePassGo({ player: _xplayer, clients });
+            },
+            onFinish: afterFinished,
+        });
 
         return {
-            func: _playerMoveFunc,
-            time,
+            func: plan.start,
+            time: plan.time,
         };
     }
 
@@ -326,10 +289,10 @@ export async function main(host: string, initials: botInitial) {
         // const sumTimes = args.listOfNums[0] + args.listOfNums[1];
         const localPlayer = clients.get(socket.id) as Player;
         const xplayer = clients.get(args.turnId) as Player;
-        const dice_generatorResults = playerMoveGENERATOR(args.listOfNums[2], xplayer, true, () => {
+        const dice_generatorResults = movePlayer(args.listOfNums[2], xplayer, true, () => {
             if (args.turnId != socket.id && args.listOfNums[2] === 30) {
                 setTimeout(() => {
-                    const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
+                    const generatorResults = movePlayer(10, xplayer, false, () => {
                         xplayer.position = 10;
                         xplayer.isInJail = true;
                         xplayer.jailTurnsRemaining = 3;
@@ -443,7 +406,7 @@ export async function main(host: string, initials: botInitial) {
                                     }
                                 } else if (b === "nothing") {
                                     if ((proprety?.id ?? "") == "gotojail") {
-                                        const generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
+                                        const generatorResults = movePlayer(10, xplayer, false, () => {
                                             xplayer.position = 10;
                                             xplayer.isInJail = true;
                                             xplayer.jailTurnsRemaining = 3;
@@ -642,11 +605,11 @@ export async function main(host: string, initials: botInitial) {
                         const targetPos = p.get(c.tileid)?.position;
                         if (targetPos === undefined) break;
 
-                        const _generatorResults = playerMoveGENERATOR(targetPos, xplayer);
+                        const _generatorResults = movePlayer(targetPos, xplayer);
                         time_till_finish = _generatorResults.time;
                         _generatorResults.func();
                     } else if (c.count) {
-                        const _generatorResults = playerMoveGENERATOR((xplayer.position + c.count) % 40, xplayer, true, () => {}, c.count >= 0);
+                        const _generatorResults = movePlayer((xplayer.position + c.count) % 40, xplayer, true, () => {}, c.count >= 0);
                         time_till_finish = _generatorResults.time;
                         _generatorResults.func();
                     }
@@ -662,7 +625,7 @@ export async function main(host: string, initials: botInitial) {
                                 xplayer.getoutCards += 1;
                                 break;
                             case "goto":
-                                const _generatorResults = playerMoveGENERATOR(10, xplayer, false, () => {
+                                const _generatorResults = movePlayer(10, xplayer, false, () => {
                                     xplayer.position = 10;
                                     xplayer.isInJail = true;
                                     xplayer.jailTurnsRemaining = 3;
@@ -716,7 +679,7 @@ export async function main(host: string, initials: botInitial) {
                     }
                     const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
                     const ongoingLocation = findNextValue(arr, xplayer.position);
-                    const _generatorResults = playerMoveGENERATOR(ongoingLocation, xplayer);
+                    const _generatorResults = movePlayer(ongoingLocation, xplayer);
                     time_till_finish = -1;
                     _generatorResults.func();
                     setTimeout(() => {
