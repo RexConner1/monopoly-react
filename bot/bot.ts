@@ -5,6 +5,7 @@ import monopolyJSON from "../src/assets/monopoly.json";
 import { PlayerJSON } from "../shared/types/player.ts";
 import { moveSteps } from "../shared/game/actions/moveSteps.ts";
 import { handlePassGo } from "./game/actions/handlePassGo.ts";
+import { BotGameContext } from "./game/context/botGameContext.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -198,6 +199,35 @@ export async function main(host: string, initials: botInitial) {
             }
         },
     };
+
+    const botGameContext: BotGameContext = {
+        settings: undefined,
+
+        socket,
+
+        engineRef: {
+            current: {
+                diceResults: engineRef.diceResults,
+                setStreet: engineRef.setStreet,
+                applyAnimation: () => {},
+                freeDice: () => {},
+            },
+        },
+
+        notifyRef: {
+            current: {
+                message: () => {},
+            },
+        },
+
+        clients,
+
+        SetClients: (nextClients) => {
+            clients = nextClients;
+            botGameContext.clients = clients;
+        },
+    };
+
     //#endregion
     const socket_Initials = (args: { turn_id: string; other_players: Array<PlayerJSON>; selectedMode: MonopolyMode }) => {
         currentId = args.turn_id.toString();
@@ -274,7 +304,7 @@ export async function main(host: string, initials: botInitial) {
             adding,
             get200whengo,
             onPassGo: () => {
-                handlePassGo({ player: _xplayer, clients });
+                handlePassGo({ player: _xplayer, ctx: botGameContext });
             },
             onFinish: afterFinished,
         });

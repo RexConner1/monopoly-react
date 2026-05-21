@@ -255,6 +255,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
         const socket_Message = (message: { from: string; message: string }) => {
             navRef.current?.addMessage(message);
         };
+        
         const socket_DiceRollResult = (args: { listOfNums: [number, number, number]; turnId: string }) => {
             SetHistories((old) => [
                 ...old,
@@ -334,6 +335,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 }, 2000);
             }
         };
+
         const socket_Unjail = (args: { to: string; option: "card" | "pay" }) => {
             const x = clients.get(args.to);
             if (x) {
@@ -350,6 +352,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 SetClients(new Map(clients.set(args.to, x)));
             }
         };
+
         const socket_MemberUpdating = (args: {
             playerId: string;
             animation: "recieveMoney";
