@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { playStepSfx } from "../../ui/audio/audio";
 import { Player } from "../../assets/player";
 import { handlePassGo } from "./handlePassGo";
@@ -14,7 +14,7 @@ export function movePlayer({
 }: {
     finalPosition: number;
     player: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
     get200whengo?: boolean;
     afterFinished?: () => void;
     adding?: boolean;

@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { MoveNearestCard } from "../../assets/card";
 import { getPropertyByPosition } from "../../assets/property";
@@ -16,7 +16,7 @@ export function handleChanceNearestLanding({
     player: Player;
     rolls: number;
     card: MoveNearestCard;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 

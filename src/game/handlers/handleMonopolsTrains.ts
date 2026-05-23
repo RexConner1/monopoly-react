@@ -1,7 +1,7 @@
 import { Property } from "../../assets/property";
 import { showDialog } from "../../ui/dialogs/dialogFactory";
 import monopolyJSON from "../../assets/monopoly.json";
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 
 export function handleMonopolsTrains({
     winningMode,
@@ -10,7 +10,7 @@ export function handleMonopolsTrains({
 }: {
     winningMode: string;
     mainTheme: HTMLAudioElement;
-    ctx: GameContext
+    ctx: ReactGameContext
 }) {
     if (winningMode === "monopols" || winningMode === "monopols & trains") {
         function removeDuplicates(originalList: Array<any>) {

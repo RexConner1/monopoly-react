@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../assets/property";
 
@@ -26,7 +26,7 @@ export function handleStreetResponse({
     player: Player;
     property: Property;
     location: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     let time_till_free = 0;
 

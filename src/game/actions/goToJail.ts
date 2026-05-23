@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { playJailSfx } from "../../ui/audio/audio";
 
@@ -8,7 +8,7 @@ export function goToJail({
     ctx,
 }: {
     player: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     player.position = 10;
     player.isInJail = true;

@@ -1,10 +1,10 @@
 import { Player } from "../../assets/player";
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 
 
 export function finishTurn({ localPlayer, ctx }: {
     localPlayer: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     // SetClients(new Map(clients.set(socket.id, localPlayer)));
     const updatedClients = new Map(ctx.clients);

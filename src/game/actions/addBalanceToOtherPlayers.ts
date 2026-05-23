@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { history } from "../../assets/types";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
@@ -11,7 +11,7 @@ export function addBalanceToOtherPlayers({
 }: {
     player?: Player;
     amount: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     if (!player) return 0;
 
@@ -45,7 +45,7 @@ function emitTransferSummaryHistory({
     player: Player;
     amount: number;
     otherPlayers: Player[];
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 
@@ -70,7 +70,7 @@ function applyBalanceToOtherPlayers({
     player: Player;
     amount: number;
     otherPlayers: Player[];
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const updatedClients = new Map(ctx.clients);
 
@@ -104,7 +104,7 @@ function emitOtherPlayerTransfer({
     player: Player;
     other: Player;
     amount: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 

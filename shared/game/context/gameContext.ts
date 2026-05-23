@@ -2,14 +2,18 @@ import { Player } from "../../../src/assets/player";
 import { Socket } from "../../../src/assets/sockets";
 import { MonopolySettings, StreetResponseType } from "../../../src/assets/types";
 
-export interface BotGameContext {
+export interface GameContext {
     settings?: MonopolySettings;
 
     socket: Socket;
 
     engineRef: {
         current: {
-            diceResults?: (args: { l: [number, number]; time: number; onDone: () => void }) => void;
+            diceResults?: (args: { 
+                l: [number, number]; 
+                time: number; 
+                onDone: () => void 
+            }) => void;
             setStreet?: (args: {
                 location: number;
                 rolls: number;

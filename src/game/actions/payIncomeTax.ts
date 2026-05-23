@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { history } from "../../assets/types";
 import { playMoneyMinusSfx } from "../../ui/audio/audio";
@@ -10,7 +10,7 @@ export function payIncomeTax({
     ctx
 }: {
     player: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     player.balance -= INCOME_TAX_AMOUNT;
 

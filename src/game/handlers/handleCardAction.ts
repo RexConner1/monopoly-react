@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { ChanceCommunityChestCard } from "../../assets/card";
 
@@ -26,7 +26,7 @@ export function handleCardAction({
     card: ChanceCommunityChestCard;
     player: Player;
     rolls: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const { clients, SetClients, socket, engineRef } = ctx;
 

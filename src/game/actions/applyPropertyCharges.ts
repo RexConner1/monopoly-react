@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
 import { playMoneyMinusSfx } from "../../ui/audio/audio";
@@ -12,7 +12,7 @@ export function applyPropertyCharges({
     player: Player;
     buildingsCost?: number;
     hotelsCost?: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const { socket, settings, notifyRef, engineRef, clients, SetClients } = ctx;
 

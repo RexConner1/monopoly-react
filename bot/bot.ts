@@ -5,7 +5,7 @@ import monopolyJSON from "../src/assets/monopoly.json";
 import { PlayerJSON } from "../shared/types/player.ts";
 import { moveSteps } from "../shared/game/actions/moveSteps.ts";
 import { handlePassGo } from "./game/actions/handlePassGo.ts";
-import { BotGameContext } from "./game/context/botGameContext.ts";
+import { GameContext } from "../shared/game/context/gameContext.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -200,11 +200,9 @@ export async function main(host: string, initials: botInitial) {
         },
     };
 
-    const botGameContext: BotGameContext = {
+    const botGameContext: GameContext = {
         settings: undefined,
-
         socket,
-
         engineRef: {
             current: {
                 diceResults: engineRef.diceResults,
@@ -213,15 +211,12 @@ export async function main(host: string, initials: botInitial) {
                 freeDice: () => {},
             },
         },
-
         notifyRef: {
             current: {
                 message: () => {},
             },
         },
-
         clients,
-
         SetClients: (nextClients) => {
             clients = nextClients;
             botGameContext.clients = clients;

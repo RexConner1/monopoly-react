@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../assets/property";
 import { playPurchaseSfx } from "../../ui/audio/audio";
@@ -13,7 +13,7 @@ export function buySpecialProperty({
     player: Player;
     property: Property;
     rolls: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const price = property.price ?? 0;
 

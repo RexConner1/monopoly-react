@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { playMoneyPlusSfx } from "../../ui/audio/audio";
 
@@ -6,7 +6,7 @@ import { playMoneyPlusSfx } from "../../ui/audio/audio";
 export function addFunds({ player, amount, ctx }: {
     player: Player;
     amount: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     player.balance += amount;
 

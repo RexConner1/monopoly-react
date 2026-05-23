@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../assets/property";
 import { calculateRent } from "../logic/rent/calculateRent";
@@ -16,7 +16,7 @@ export function payRent({
     property: Property;
     location: number;
     rolls: number;
-    ctx: GameContext
+    ctx: ReactGameContext
 }) {
     const found = findPropertyOwner(ctx.clients, location);
     if (!found) return;

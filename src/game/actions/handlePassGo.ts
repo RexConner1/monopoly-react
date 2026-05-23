@@ -1,5 +1,5 @@
 import { applyPassGoReward } from "../../../shared/game/actions/applyPassGoReward";
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { playMoneyPlusSfx } from "../../ui/audio/audio";
 
@@ -8,7 +8,7 @@ export function handlePassGo({
     ctx
 }: {
     player: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const amount = applyPassGoReward(player);
 

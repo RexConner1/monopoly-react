@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { movePlayer } from "./movePlayer";
 
@@ -11,7 +11,7 @@ export function moveBySpaces({
 }: {
     spaces: number;
     player: Player;
-    ctx: GameContext;
+    ctx: ReactGameContext;
     get200whengo?: boolean;
     afterFinished?: () => void;
 }) {

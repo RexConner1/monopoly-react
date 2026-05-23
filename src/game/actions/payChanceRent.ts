@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../assets/property";
 import { history } from "../../assets/types";
@@ -18,7 +18,7 @@ export function payChanceRent({
     property: Property;
     location: number;
     rentMultiplier: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const found = findPropertyOwner(ctx.clients, location);
     if (!found) {

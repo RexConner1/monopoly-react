@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { history } from "../../assets/types";
 import { playMoneyMinusSfx } from "../../ui/audio/audio";
@@ -13,7 +13,7 @@ export function applyRentPayment({
     payer: Player;
     owner: Player;
     amount: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     if (ctx.settings?.notifications) {
         notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", { amount });

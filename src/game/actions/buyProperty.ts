@@ -1,7 +1,7 @@
 import { Player } from "../../assets/player";
 import { playPurchaseSfx } from "../../ui/audio/audio";
 import { history } from "../../assets/types";
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { getPropertyByPosition, Property } from "../../assets/property";
 
 export function buyProperty({
@@ -11,7 +11,7 @@ export function buyProperty({
 }: {
     player: Player;
     property: Property;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     const cost = property?.price ?? 0;
 

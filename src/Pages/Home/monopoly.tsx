@@ -9,7 +9,7 @@ import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, M
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playMoneyMinusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
 import { getPropertyByPosition } from "../../assets/property.ts";
-import { GameContext } from "../../assets/gameContext.ts";
+import { ReactGameContext } from "../../assets/reactGameContext.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
@@ -91,7 +91,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             settings = (JSON.parse(decodeURIComponent(CookieManager.get("monopolySettings") as string)) as MonopolyCookie).settings;
         }, 1000);
 
-        const gameContext: GameContext = {
+        const gameContext: ReactGameContext = {
             settings,
             socket,
             engineRef,

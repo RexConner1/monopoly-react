@@ -1,4 +1,4 @@
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../assets/property";
 import { history } from "../../assets/types";
@@ -18,7 +18,7 @@ export function advanceProperty({
     location: number;
     state: 1 | 2 | 3 | 4 | 5;
     money: number;
-    ctx: GameContext;
+    ctx: ReactGameContext;
 }) {
     playPurchaseSfx(ctx.settings);
 

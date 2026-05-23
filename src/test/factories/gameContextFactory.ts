@@ -1,6 +1,6 @@
 import React from "react";
 import { vi } from "vitest";
-import { GameContext } from "../../assets/gameContext";
+import { ReactGameContext } from "../../assets/reactGameContext";
 import { MonopolyGameRef } from "../../components/ingame/game";
 import { NotificatorRef } from "../../components/notificator";
 import { Socket } from "../../assets/sockets";
@@ -22,7 +22,7 @@ export function makeGameContext({
     },
     socketId = "p1",
     clients = new Map<string, Player>(),
-}: MakeGameContextArgs = {}): GameContext & {
+}: MakeGameContextArgs = {}): ReactGameContext & {
     socket: Socket & { emit: ReturnType<typeof vi.fn> };
     SetClients: ReturnType<typeof vi.fn>;
     engineRef: React.RefObject<MonopolyGameRef>;

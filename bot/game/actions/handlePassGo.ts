@@ -1,6 +1,6 @@
 import { applyPassGoReward } from "../../../shared/game/actions/applyPassGoReward.ts";
 import { Player } from "../../../src/assets/player.ts";
-import { BotGameContext } from "../context/botGameContext.ts";
+import { GameContext } from "../../../shared/game/context/gameContext.ts";
 import { updatePlayer } from "../state/updatePlayer.ts";
 
 export function handlePassGo({
@@ -8,7 +8,7 @@ export function handlePassGo({
     ctx
 }: {
     player: Player;
-    ctx: BotGameContext;
+    ctx: GameContext;
 }) {
     applyPassGoReward(player);
 
