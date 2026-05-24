@@ -1,6 +1,6 @@
-import { Property } from "../../assets/property";
+import { Property } from "../../../shared/types/property";
 import { showDialog } from "../../ui/dialogs/dialogFactory";
-import monopolyJSON from "../../assets/monopoly.json";
+import monopolyJSON from "../../../shared/data/classic/monopoly.json";
 import { ReactGameContext } from "../../assets/reactGameContext";
 
 export function handleMonopolsTrains({

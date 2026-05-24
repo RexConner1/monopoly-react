@@ -3,8 +3,8 @@ import { moveToTile } from "../moveToTile";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 
-vi.mock("../../../assets/property", async () => {
-    const actual = await vi.importActual<typeof import("../../../assets/property")>("../../../assets/property");
+vi.mock("../../../../shared/types/property", async () => {
+    const actual = await vi.importActual<typeof import("../../../../shared/types/property")>("../../../../shared/types/property");
 
     return {
         ...actual,
@@ -16,7 +16,7 @@ vi.mock("../movePlayer", () => ({
     movePlayer: vi.fn(),
 }));
 
-import { getPropertyById } from "../../../assets/property";
+import { getPropertyById } from "../../../../shared/types/property";
 import { movePlayer } from "../movePlayer";
 
 describe("moveToTile", () => {

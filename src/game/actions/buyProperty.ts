@@ -2,7 +2,7 @@ import { Player } from "../../assets/player";
 import { playPurchaseSfx } from "../../ui/audio/audio";
 import { history } from "../../assets/types";
 import { ReactGameContext } from "../../assets/reactGameContext";
-import { getPropertyByPosition, Property } from "../../assets/property";
+import { getPropertyByPosition, Property } from "../../../shared/types/property";
 
 export function buyProperty({
     player,

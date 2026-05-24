@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { payRent } from "../payRent";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
-import { Property } from "../../../assets/property";
+import { Property } from "../../../../shared/types/property";
 
 vi.mock("../../../ui/audio/audio", () => ({
     playMoneyMinusSfx: vi.fn(),

@@ -4,7 +4,7 @@ import { GameTrading, PlayerProperty } from "../../assets/types";
 import HouseIcon from "../../../public/h.png";
 import HotelIcon from "../../../public/ho.png";
 import { translateGroup } from "../ingame/streetCard";
-import { getPropertyByPosition } from "../../assets/property";
+import { getPropertyByPosition } from "../../../shared/types/property";
 
 type TradeSide = "againstPlayer" | "turnPlayer";
 

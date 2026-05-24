@@ -1,4 +1,4 @@
-import monopolyJSON from "./monopoly.json";
+import monopolyJSON from "../data/classic/monopoly.json";
 
 export type PropertyGroup =
     | "Purple"

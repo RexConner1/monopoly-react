@@ -1,4 +1,4 @@
-import { Property } from "../../../assets/property";
+import { Property } from "../../../../shared/types/property";
 
 export function calculateStreetRent(
     property: Property,

@@ -1,5 +1,5 @@
 import { Socket, Server } from "../../src/assets/sockets";
-import monopolyJSON from "../../src/assets/monopoly.json";
+import monopolyJSON from "../../shared/data/classic/monopoly.json";
 import { GameTrading, MonopolyMode, MonopolyModes, historyAction } from "../../src/assets/types";
 import { Player } from "./models/player";
 import { PlayerJSON } from "../../shared/types/player";

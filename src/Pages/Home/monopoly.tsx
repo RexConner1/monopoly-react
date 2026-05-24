@@ -8,7 +8,7 @@ import NotifyElement, { NotificatorRef } from "../../components/notificator.tsx"
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode, MonopolyCookie } from "../../assets/types.ts";
 import { CookieManager } from "../../assets/cookieManager.ts";
 import { playMoneyMinusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/audio.ts";
-import { getPropertyByPosition } from "../../assets/property.ts";
+import { getPropertyByPosition } from "../../../shared/types/property.ts";
 import { ReactGameContext } from "../../assets/reactGameContext.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
 import { goToJail } from "../../game/actions/goToJail.ts";

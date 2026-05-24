@@ -1,6 +1,6 @@
 import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
-import { Property } from "../../assets/property";
+import { Property } from "../../../shared/types/property";
 import { playPurchaseSfx } from "../../ui/audio/audio";
 import { history } from "../../assets/types";
 

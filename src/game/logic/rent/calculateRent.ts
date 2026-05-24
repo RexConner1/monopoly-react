@@ -1,5 +1,5 @@
 import { Player } from "../../../assets/player";
-import { Property } from "../../../assets/property";
+import { Property } from "../../../../shared/types/property";
 import { PlayerProperty } from "../../../assets/types";
 import { calculateRailroadRent } from "./calculateRailroadRent";
 import { calculateStreetRent } from "./calculateStreetRent";

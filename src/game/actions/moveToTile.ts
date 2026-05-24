@@ -1,5 +1,5 @@
 import { Player } from "../../assets/player";
-import { getPropertyById } from "../../assets/property";
+import { getPropertyById } from "../../../shared/types/property";
 import { movePlayer } from "./movePlayer";
 
 export function moveToTile({

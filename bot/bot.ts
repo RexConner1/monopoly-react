@@ -1,7 +1,7 @@
 import { Player } from "../src/assets/player.ts";
 import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial, StreetResponseType } from "../src/assets/types.ts";
 import { io } from "../src/assets/sockets.ts";
-import monopolyJSON from "../src/assets/monopoly.json";
+import monopolyJSON from "../shared/data/classic/monopoly.json";
 import { PlayerJSON } from "../shared/types/player.ts";
 import { moveSteps } from "../shared/game/actions/moveSteps.ts";
 import { handlePassGo } from "./game/actions/handlePassGo.ts";

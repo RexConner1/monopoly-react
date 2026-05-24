@@ -1,6 +1,6 @@
 import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
-import { Property } from "../../assets/property";
+import { Property } from "../../../shared/types/property";
 import { calculateRent } from "../logic/rent/calculateRent";
 import { findPropertyOwner } from "../logic/rent/findPropertyOwner";
 import { applyRentPayment } from "./applyRentPayment";

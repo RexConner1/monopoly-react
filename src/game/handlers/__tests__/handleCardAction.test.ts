@@ -54,7 +54,7 @@ import { addBalanceToOtherPlayers } from "../../actions/addBalanceToOtherPlayers
 import { applyPropertyCharges } from "../../actions/applyPropertyCharges";
 import { findNextGroupPosition } from "../../logic/board/findNextGroupPosition";
 import { handleChanceNearestLanding } from "../handleChanceNearestLanding";
-import { properties } from "../../../assets/property";
+import { properties } from "../../../../shared/types/property";
 
 describe("handleCardAction", () => {
     beforeEach(() => {

@@ -4,9 +4,9 @@ import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import type { MoveNearestCard } from "../../../assets/card";
 
-vi.mock("../../../assets/property", async () => {
-    const actual = await vi.importActual<typeof import("../../../assets/property")>(
-        "../../../assets/property"
+vi.mock("../../../../shared/types/property", async () => {
+    const actual = await vi.importActual<typeof import("../../../../shared/types/property")>(
+        "../../../../shared/types/property"
     );
 
     return {
@@ -31,7 +31,7 @@ vi.mock("../../actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
-import { getPropertyByPosition } from "../../../assets/property";
+import { getPropertyByPosition } from "../../../../shared/types/property";
 import { buyProperty } from "../../actions/buyProperty";
 import { buySpecialProperty } from "../../actions/buySpecialProperty";
 import { payChanceRent } from "../../actions/payChanceRent";

@@ -1,5 +1,5 @@
 import { Player } from "../../assets/player";
-import { Property } from "../../assets/property";
+import { Property } from "../../../shared/types/property";
 
 export function renderUpgradeButtons({
     container,
