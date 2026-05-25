@@ -4,7 +4,7 @@ import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import { Property } from "../../../../shared/types/property";
 
-vi.mock("../../actions/buyProperty", () => ({
+vi.mock("../../../../shared/game/actions/buyProperty", () => ({
     buyProperty: vi.fn(),
 }));
 
@@ -36,7 +36,7 @@ vi.mock("../../actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
-import { buyProperty } from "../../actions/buyProperty";
+import { buyProperty } from "../../../../shared/game/actions/buyProperty";
 import { advanceProperty } from "../../actions/advanceProperty";
 import { payRent } from "../../actions/payRent";
 import { buySpecialProperty } from "../../actions/buySpecialProperty";

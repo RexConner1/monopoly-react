@@ -2,7 +2,7 @@ import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { MoveNearestCard } from "../../assets/card";
 import { getPropertyByPosition } from "../../../shared/types/property";
-import { buyProperty } from "../actions/buyProperty";
+import { buyProperty } from "../../../shared/game/actions/buyProperty";
 import { buySpecialProperty } from "../actions/buySpecialProperty";
 import { payChanceRent } from "../actions/payChanceRent";
 import { finishTurn } from "../actions/finishTurn";

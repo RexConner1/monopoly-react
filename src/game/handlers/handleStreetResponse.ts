@@ -2,7 +2,7 @@ import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../../shared/types/property";
 
-import { buyProperty } from "../actions/buyProperty";
+import { buyProperty } from "../../../shared/game/actions/buyProperty";
 import { advanceProperty } from "../actions/advanceProperty";
 import { payRent } from "../actions/payRent";
 import { buySpecialProperty } from "../actions/buySpecialProperty";

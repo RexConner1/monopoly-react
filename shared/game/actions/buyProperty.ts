@@ -1,8 +1,8 @@
-import { Player } from "../../assets/player";
-import { playPurchaseSfx } from "../../ui/audio/audio";
-import { history } from "../../assets/types";
-import { ReactGameContext } from "../../assets/reactGameContext";
-import { getPropertyByPosition, Property } from "../../../shared/types/property";
+import { Player } from "../../../src/assets/player";
+import { playPurchaseSfx } from "../../../src/ui/audio/audio";
+import { history } from "../../../src/assets/types";
+import { ReactGameContext } from "../../../src/assets/reactGameContext";
+import { getPropertyByPosition, Property } from "../../types/property";
 
 export function buyProperty({
     player,
