@@ -64,5 +64,6 @@ export function makeGameContext({
         notifyRef,
         clients,
         SetClients,
+        effectsEnabled: true,
     };
 }

@@ -1,8 +1,8 @@
 import { Player } from "../../../src/assets/player";
 import { playPurchaseSfx } from "../../../src/ui/audio/audio";
 import { history } from "../../../src/assets/types";
-import { ReactGameContext } from "../../../src/assets/reactGameContext";
 import { getPropertyByPosition, Property } from "../../types/property";
+import { GameContext } from "../context/gameContext";
 
 export function buyProperty({
     player,
@@ -11,13 +11,13 @@ export function buyProperty({
 }: {
     player: Player;
     property: Property;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     const cost = property?.price ?? 0;
 
     // notify
     if (ctx.settings?.notifications) {
-        ctx.notifyRef.current?.message(
+        ctx.notifyRef.current?.message?.(
             `${cost} of money is deducted from the account`,
             "info",
             2,
@@ -30,7 +30,7 @@ export function buyProperty({
     player.balance -= cost;
 
     // animation
-    ctx.engineRef.current?.applyAnimation(1);
+    ctx.engineRef.current?.applyAnimation?.(1);
 
     // add ownership
     player.properties.push({
@@ -40,7 +40,9 @@ export function buyProperty({
     });
 
     // sound
-    playPurchaseSfx(ctx.settings);
+    if (ctx.effectsEnabled !== false) {
+        playPurchaseSfx(ctx.settings);
+    }
 
     // history
     ctx.socket.emit(

@@ -6,6 +6,8 @@ import { PlayerJSON } from "../shared/types/player.ts";
 import { moveSteps } from "../shared/game/actions/moveSteps.ts";
 import { handlePassGo } from "./game/actions/handlePassGo.ts";
 import { GameContext } from "../shared/game/context/gameContext.ts";
+import { getPropertyByPosition } from "../shared/types/property.ts";
+import { buyProperty } from "../shared/game/actions/buyProperty.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -221,6 +223,7 @@ export async function main(host: string, initials: botInitial) {
             clients = nextClients;
             botGameContext.clients = clients;
         },
+        effectsEnabled: false
     };
 
     //#endregion
@@ -334,10 +337,10 @@ export async function main(host: string, initials: botInitial) {
                 if (socket.id !== args.turnId) return;
 
                 const location = clients.get(socket.id)?.position ?? -1;
-                const proprety = propretyMap.get(location);
-                if (proprety != undefined) {
-                    if (proprety.id === "communitychest" || proprety.id === "chance") {
-                        socket.emit("chorch_roll", { is_chance: proprety.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
+                const property = getPropertyByPosition(location);
+                if (property != undefined) {
+                    if (property.id === "communitychest" || property.id === "chance") {
+                        socket.emit("chorch_roll", { is_chance: property.id === "chance", rolls: args.listOfNums[0] + args.listOfNums[1] });
                     } else {
                         const actionList = engineRef.setStreet({
                             location,
@@ -345,17 +348,11 @@ export async function main(host: string, initials: botInitial) {
                             onResponse: (b, info) => {
                                 var time_till_free = 0;
                                 if (b === "buy") {
-                                    localPlayer.balance -= (proprety?.price ?? 0) * 1;
-                                    localPlayer.properties.push({
-                                        position: localPlayer.position,
-                                        count: 0,
-                                        group: propretyMap.get(localPlayer.position)?.group ?? "",
+                                    buyProperty({
+                                        player: localPlayer,
+                                        property: property,
+                                        ctx: botGameContext,
                                     });
-
-                                    socket.emit(
-                                        "history",
-                                        history(`${clients.get(socket.id)?.username ?? "unknown player"} bought ${proprety.name}`)
-                                    );
                                 } else if (b === "advance-buy") {
                                     const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
                                         (v) => v[1].position === location
@@ -369,14 +366,14 @@ export async function main(host: string, initials: botInitial) {
                                     localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
 
                                     if (_info.state === 5) {
-                                        localPlayer.balance -= proprety.hotelcost ?? 0;
+                                        localPlayer.balance -= property.hotelcost ?? 0;
                                     } else {
-                                        localPlayer.balance -= (proprety.housecost ?? 0) * _info.money;
+                                        localPlayer.balance -= (property.housecost ?? 0) * _info.money;
                                     }
 
                                     socket.emit(
                                         "history",
-                                        history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${proprety.name}`)
+                                        history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
                                     );
                                 } else if (b === "someones") {
                                     const players = Array.from(clients.values());
@@ -385,7 +382,7 @@ export async function main(host: string, initials: botInitial) {
                                             if (prp.position === location) {
                                                 var payment_ammount = 0;
 
-                                                if (proprety.group === "Utilities") {
+                                                if (property.group === "Utilities") {
                                                     const _info = info as {
                                                         rolls: number;
                                                     };
@@ -393,7 +390,7 @@ export async function main(host: string, initials: botInitial) {
 
                                                     const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
                                                     payment_ammount = rolls * multy_;
-                                                } else if (proprety.group === "Railroad") {
+                                                } else if (property.group === "Railroad") {
                                                     const count = p.properties
                                                         .filter((v) => v.group === "Railroad")
                                                         .filter(
@@ -402,11 +399,11 @@ export async function main(host: string, initials: botInitial) {
                                                     const rents = [0, 25, 50, 100, 200];
                                                     payment_ammount = rents[count];
                                                 } else if (prp.count === 0) {
-                                                    payment_ammount = proprety?.rent ?? 0;
+                                                    payment_ammount = property?.rent ?? 0;
                                                 } else if (typeof prp.count === "number" && prp.count > 0) {
-                                                    payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
+                                                    payment_ammount = (property?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
                                                 } else if (prp.count === "h") {
-                                                    payment_ammount = (proprety?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
+                                                    payment_ammount = (property?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
                                                 }
 
                                                 if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
@@ -430,7 +427,7 @@ export async function main(host: string, initials: botInitial) {
                                         }
                                     }
                                 } else if (b === "nothing") {
-                                    if ((proprety?.id ?? "") == "gotojail") {
+                                    if ((property?.id ?? "") == "gotojail") {
                                         const generatorResults = movePlayer(10, xplayer, false, () => {
                                             xplayer.position = 10;
                                             xplayer.isInJail = true;
@@ -441,18 +438,18 @@ export async function main(host: string, initials: botInitial) {
                                         generatorResults.func();
                                     }
 
-                                    if (proprety?.id === "incometax") {
+                                    if (property?.id === "incometax") {
                                         localPlayer.balance -= 200;
 
                                         socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid income taxes`));
                                     }
-                                    if (proprety?.id === "luxurytax") {
+                                    if (property?.id === "luxurytax") {
                                         localPlayer.balance -= 100;
 
                                         socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid luxury taxes`));
                                     }
                                 } else if (b === "special_action") {
-                                    localPlayer.balance -= (proprety?.price ?? 0) * 1;
+                                    localPlayer.balance -= (property?.price ?? 0) * 1;
 
                                     const _info = info as {
                                         rolls: number;

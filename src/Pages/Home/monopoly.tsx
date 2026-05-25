@@ -97,7 +97,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             engineRef,
             notifyRef,
             clients,
-            SetClients
+            SetClients,
+            effectsEnabled: true
         };
 
         function mouseMove(e: MouseEvent) {

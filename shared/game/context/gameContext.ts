@@ -33,4 +33,6 @@ export interface GameContext {
     clients: Map<string, Player>;
     
     SetClients: (next: Map<string, Player>) => void;
+
+    effectsEnabled: boolean;
 }
