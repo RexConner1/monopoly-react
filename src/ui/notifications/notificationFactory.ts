@@ -1,9 +1,20 @@
-import { NotificatorRef } from "../../components/notificator";
 import { NotificationType } from "./notificationTypes";
 import { notificationTemplates } from "./notificationTemplates";
 
+export type MessageNotifierRef = {
+    current: {
+        message?: (
+            message: string,
+            type?: "info" | "warn" | "error",
+            time?: number,
+            after?: () => void,
+            sfx?: boolean
+        ) => void;
+    } | null;
+};
+
 export function notifyMessage(
-    notifier: React.RefObject<NotificatorRef>,
+    notifier: MessageNotifierRef, //React.RefObject<NotificatorRef>,
     type: NotificationType,
     payload: {
         name?: string;
@@ -17,7 +28,7 @@ export function notifyMessage(
 ) {
     const message = notificationTemplates[type](payload);
 
-    notifier.current?.message(
+    notifier.current?.message?.(
         message,
         options?.level ?? "info",
         options?.duration ?? 2,

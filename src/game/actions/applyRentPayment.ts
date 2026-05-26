@@ -1,4 +1,4 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
+import { GameContext } from "../../../shared/game/context/gameContext";
 import { Player } from "../../assets/player";
 import { history } from "../../assets/types";
 import { playMoneyMinusSfx } from "../../ui/audio/audio";
@@ -13,17 +13,17 @@ export function applyRentPayment({
     payer: Player;
     owner: Player;
     amount: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
-    if (ctx.settings?.notifications) {
-        notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", { amount });
-    }
-
-    playMoneyMinusSfx(ctx.settings);
-
     payer.balance -= amount;
 
-    ctx.engineRef.current?.applyAnimation(1);
+    if (ctx.effectsEnabled !== false) {
+        if (ctx.settings?.notifications) {
+            notifyMessage(ctx.notifyRef, "MONEY_DEDUCTED", { amount });
+        }
+        playMoneyMinusSfx(ctx.settings);
+        ctx.engineRef.current?.applyAnimation?.(1);
+    }
 
     ctx.socket.emit("pay", {
         balance: amount,

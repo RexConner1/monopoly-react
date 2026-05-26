@@ -9,6 +9,7 @@ import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { buyProperty } from "../shared/game/actions/buyProperty.ts";
 import { advanceProperty } from "../shared/game/actions/advanceProperty.ts";
+import { payRent } from "../src/game/actions/payRent.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -369,56 +370,15 @@ export async function main(host: string, initials: botInitial) {
                                         ctx: botGameContext,
                                     });
                                 } else if (b === "someones") {
-                                    const players = Array.from(clients.values());
-                                    for (const p of players) {
-                                        for (const prp of p.properties) {
-                                            if (prp.position === location) {
-                                                var payment_ammount = 0;
+                                    const { rolls } = info as { rolls: number };
 
-                                                if (property.group === "Utilities") {
-                                                    const _info = info as {
-                                                        rolls: number;
-                                                    };
-                                                    const rolls = _info.rolls;
-
-                                                    const multy_ = p.properties.filter((v) => v.group === "Utilities").length === 2 ? 10 : 4;
-                                                    payment_ammount = rolls * multy_;
-                                                } else if (property.group === "Railroad") {
-                                                    const count = p.properties
-                                                        .filter((v) => v.group === "Railroad")
-                                                        .filter(
-                                                            (v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)
-                                                        ).length;
-                                                    const rents = [0, 25, 50, 100, 200];
-                                                    payment_ammount = rents[count];
-                                                } else if (prp.count === 0) {
-                                                    payment_ammount = property?.rent ?? 0;
-                                                } else if (typeof prp.count === "number" && prp.count > 0) {
-                                                    payment_ammount = (property?.multpliedrent ?? [0, 0, 0, 0])[prp.count - 1] ?? 0;
-                                                } else if (prp.count === "h") {
-                                                    payment_ammount = (property?.multpliedrent ?? [0, 0, 0, 0, 0])[4] ?? 0;
-                                                }
-
-                                                if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
-                                                    localPlayer.balance -= payment_ammount;
-
-                                                socket.emit("pay", {
-                                                    balance: payment_ammount,
-                                                    from: socket.id,
-                                                    to: p.id,
-                                                });
-
-                                                socket.emit(
-                                                    "history",
-                                                    history(`
-                                                ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_ammount} to ${
-                                                        clients.get(p.id)?.username ?? "unknown user"
-                                                    }
-                                                `)
-                                                );
-                                            }
-                                        }
-                                    }
+                                    payRent({
+                                        payer: localPlayer,
+                                        property,
+                                        location,
+                                        rolls,
+                                        ctx: botGameContext,
+                                    });
                                 } else if (b === "nothing") {
                                     if ((property?.id ?? "") == "gotojail") {
                                         const generatorResults = movePlayer(10, xplayer, false, () => {
