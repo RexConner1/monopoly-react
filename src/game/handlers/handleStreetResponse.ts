@@ -3,7 +3,7 @@ import { Player } from "../../assets/player";
 import { Property } from "../../../shared/types/property";
 
 import { buyProperty } from "../../../shared/game/actions/buyProperty";
-import { advanceProperty } from "../actions/advanceProperty";
+import { advanceProperty } from "../../../shared/game/actions/advanceProperty";
 import { payRent } from "../actions/payRent";
 import { buySpecialProperty } from "../actions/buySpecialProperty";
 import { payIncomeTax } from "../actions/payIncomeTax";

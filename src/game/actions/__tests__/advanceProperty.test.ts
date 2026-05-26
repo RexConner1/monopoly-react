@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { advanceProperty } from "../advanceProperty";
+import { advanceProperty } from "../../../../shared/game/actions/advanceProperty";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import { Property } from "../../../../shared/types/property";
@@ -50,7 +50,7 @@ describe("advanceProperty", () => {
         expect(ctx.notifyRef.current?.message).not.toHaveBeenCalled();
         expect(ctx.engineRef.current?.applyAnimation).not.toHaveBeenCalled();
         expect(ctx.socket.emit).not.toHaveBeenCalled();
-        expect(playPurchaseSfx).toHaveBeenCalledWith(ctx.settings);
+        expect(playPurchaseSfx).not.toHaveBeenCalled();
     });
 
     it("sets house count and deducts house cost times money", () => {

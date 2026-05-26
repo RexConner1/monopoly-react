@@ -1,8 +1,8 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
-import { Player } from "../../assets/player";
-import { Property } from "../../../shared/types/property";
-import { history } from "../../assets/types";
-import { playPurchaseSfx } from "../../ui/audio/audio";
+import { Player } from "../../../src/assets/player";
+import { Property } from "../../types/property";
+import { history } from "../../../src/assets/types";
+import { playPurchaseSfx } from "../../../src/ui/audio/audio";
+import { GameContext } from "../context/gameContext";
 
 
 export function advanceProperty({
@@ -18,10 +18,8 @@ export function advanceProperty({
     location: number;
     state: 1 | 2 | 3 | 4 | 5;
     money: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
-    playPurchaseSfx(ctx.settings);
-
     const propIndex = player.properties.findIndex(
         v => v.position === location
     );
@@ -33,20 +31,23 @@ export function advanceProperty({
     const cost = state === 5
         ? (property.hotelcost ?? 0)
         : (property.housecost ?? 0) * money;
-
-    if (ctx.settings?.notifications) {
-        ctx.notifyRef.current?.message(
-            `${cost} of money is deducted from the account`,
-            "info",
-            2,
-            () => {},
-            false
-        );
-    }
-
     player.balance -= cost;
 
-    ctx.engineRef.current?.applyAnimation(1);
+    if (ctx.effectsEnabled !== false) {
+        playPurchaseSfx(ctx.settings);
+
+        if (ctx.settings?.notifications) {
+            ctx.notifyRef.current?.message?.(
+                `${cost} of money is deducted from the account`,
+                "info",
+                2,
+                () => {},
+                false
+            );
+        }
+
+        ctx.engineRef.current?.applyAnimation?.(1);       
+    }
 
     ctx.socket.emit(
         "history",

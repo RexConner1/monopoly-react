@@ -8,7 +8,7 @@ vi.mock("../../../../shared/game/actions/buyProperty", () => ({
     buyProperty: vi.fn(),
 }));
 
-vi.mock("../../actions/advanceProperty", () => ({
+vi.mock("../../../../shared/game/actions/advanceProperty", () => ({
     advanceProperty: vi.fn(),
 }));
 
@@ -37,7 +37,7 @@ vi.mock("../../actions/finishTurn", () => ({
 }));
 
 import { buyProperty } from "../../../../shared/game/actions/buyProperty";
-import { advanceProperty } from "../../actions/advanceProperty";
+import { advanceProperty } from "../../../../shared/game/actions/advanceProperty";
 import { payRent } from "../../actions/payRent";
 import { buySpecialProperty } from "../../actions/buySpecialProperty";
 import { payIncomeTax } from "../../actions/payIncomeTax";

@@ -8,6 +8,7 @@ import { handlePassGo } from "./game/actions/handlePassGo.ts";
 import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { buyProperty } from "../shared/game/actions/buyProperty.ts";
+import { advanceProperty } from "../shared/game/actions/advanceProperty.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -354,27 +355,19 @@ export async function main(host: string, initials: botInitial) {
                                         ctx: botGameContext,
                                     });
                                 } else if (b === "advance-buy") {
-                                    const propId = Array.from(new Map(localPlayer.properties.map((v, i) => [i, v])).entries()).filter(
-                                        (v) => v[1].position === location
-                                    )[0][0];
-
-                                    const _info = info as {
+                                    const { state, money } = info as {
                                         state: 1 | 2 | 3 | 4 | 5;
                                         money: number;
                                     };
 
-                                    localPlayer.properties[propId].count = _info.state === 5 ? "h" : _info.state;
-
-                                    if (_info.state === 5) {
-                                        localPlayer.balance -= property.hotelcost ?? 0;
-                                    } else {
-                                        localPlayer.balance -= (property.housecost ?? 0) * _info.money;
-                                    }
-
-                                    socket.emit(
-                                        "history",
-                                        history(`${clients.get(socket.id)?.username ?? "unknown player"} advanced ${property.name}`)
-                                    );
+                                    advanceProperty({
+                                        player: localPlayer,
+                                        property,
+                                        location,
+                                        state,
+                                        money,
+                                        ctx: botGameContext,
+                                    });
                                 } else if (b === "someones") {
                                     const players = Array.from(clients.values());
                                     for (const p of players) {

@@ -13,24 +13,28 @@ export function buyProperty({
     property: Property;
     ctx: GameContext;
 }) {
-    const cost = property?.price ?? 0;
-
-    // notify
-    if (ctx.settings?.notifications) {
-        ctx.notifyRef.current?.message?.(
-            `${cost} of money is deducted from the account`,
-            "info",
-            2,
-            () => {},
-            false
-        );
-    }
-
     // deduct money
+    const cost = property?.price ?? 0;
     player.balance -= cost;
 
-    // animation
-    ctx.engineRef.current?.applyAnimation?.(1);
+    if (ctx.effectsEnabled !== false) {
+        // sound
+        playPurchaseSfx(ctx.settings);
+    
+        // notify
+        if (ctx.settings?.notifications) {
+            ctx.notifyRef.current?.message?.(
+                `${cost} of money is deducted from the account`,
+                "info",
+                2,
+                () => {},
+                false
+            );
+        }
+
+        // animation
+        ctx.engineRef.current?.applyAnimation?.(1);
+    }
 
     // add ownership
     player.properties.push({
@@ -38,11 +42,6 @@ export function buyProperty({
         count: 0,
         group: getPropertyByPosition(player.position)?.group ?? "",
     });
-
-    // sound
-    if (ctx.effectsEnabled !== false) {
-        playPurchaseSfx(ctx.settings);
-    }
 
     // history
     ctx.socket.emit(
