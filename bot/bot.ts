@@ -14,6 +14,7 @@ import { goToJail } from "../shared/game/actions/goToJail.ts";
 import { payIncomeTax } from "../shared/game/actions/payIncomeTax.ts";
 import { payLuxuryTax } from "../shared/game/actions/payLuxuryTax.ts";
 import { buySpecialProperty } from "../shared/game/actions/buySpecialProperty.ts";
+import { finishTurn } from "../shared/game/actions/finishTurn.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -416,9 +417,10 @@ export async function main(host: string, initials: botInitial) {
                                 }
 
                                 setTimeout(() => {
-                                    clients.set(socket.id, localPlayer);
-                                    const json = (clients.get(socket.id) as Player).toJson();
-                                    socket.emit("finish-turn", json);
+                                    finishTurn({
+                                        localPlayer,
+                                        ctx: botGameContext,
+                                    });
                                 }, time_till_free);
                             },
                         });

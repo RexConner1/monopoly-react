@@ -5,7 +5,7 @@ import { history } from "../../assets/types";
 import { calculateRailroadRent } from "../../../shared/game/logic/rent/calculateRailroadRent";
 import { findPropertyOwner } from "../../../shared/game/logic/rent/findPropertyOwner";
 import { applyRentPayment } from "../../../shared/game/actions/applyRentPayment";
-import { finishTurn } from "./finishTurn";
+import { finishTurn } from "../../../shared/game/actions/finishTurn";
 
 export function payChanceRent({
     payer,

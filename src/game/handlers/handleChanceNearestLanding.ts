@@ -5,7 +5,7 @@ import { getPropertyByPosition } from "../../../shared/types/property";
 import { buyProperty } from "../../../shared/game/actions/buyProperty";
 import { buySpecialProperty } from "../../../shared/game/actions/buySpecialProperty";
 import { payChanceRent } from "../actions/payChanceRent";
-import { finishTurn } from "../actions/finishTurn";
+import { finishTurn } from "../../../shared/game/actions/finishTurn";
 
 export function handleChanceNearestLanding({
     player,

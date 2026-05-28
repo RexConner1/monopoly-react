@@ -32,7 +32,7 @@ vi.mock("../../../../shared/game/actions/goToJail", () => ({
     goToJail: vi.fn(),
 }));
 
-vi.mock("../../actions/finishTurn", () => ({
+vi.mock("../../../../shared/game/actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
@@ -43,7 +43,7 @@ import { buySpecialProperty } from "../../../../shared/game/actions/buySpecialPr
 import { payIncomeTax } from "../../../../shared/game/actions/payIncomeTax";
 import { payLuxuryTax } from "../../../../shared/game/actions/payLuxuryTax";
 import { goToJail } from "../../../../shared/game/actions/goToJail";
-import { finishTurn } from "../../actions/finishTurn";
+import { finishTurn } from "../../../../shared/game/actions/finishTurn";
 
 describe("handleStreetResponse", () => {
     beforeEach(() => {

@@ -9,7 +9,7 @@ import { buySpecialProperty } from "../../../shared/game/actions/buySpecialPrope
 import { payIncomeTax } from "../../../shared/game/actions/payIncomeTax";
 import { payLuxuryTax } from "../../../shared/game/actions/payLuxuryTax";
 import { goToJail } from "../../../shared/game/actions/goToJail";
-import { finishTurn } from "../actions/finishTurn";
+import { finishTurn } from "../../../shared/game/actions/finishTurn";
 import { StreetResponseType } from "../../assets/types";
 
 

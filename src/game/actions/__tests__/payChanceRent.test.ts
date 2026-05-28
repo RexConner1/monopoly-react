@@ -8,7 +8,7 @@ vi.mock("../../../../shared/game/actions/applyRentPayment", () => ({
     applyRentPayment: vi.fn(),
 }));
 
-vi.mock("../finishTurn", () => ({
+vi.mock("../../../../shared/game/actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
@@ -17,7 +17,7 @@ vi.mock("../../../../shared/game/logic/rent/calculateRailroadRent", () => ({
 }));
 
 import { applyRentPayment } from "../../../../shared/game/actions/applyRentPayment";
-import { finishTurn } from "../finishTurn";
+import { finishTurn } from "../../../../shared/game/actions/finishTurn";
 import { calculateRailroadRent } from "../../../../shared/game/logic/rent/calculateRailroadRent";
 
 describe("payChanceRent", () => {

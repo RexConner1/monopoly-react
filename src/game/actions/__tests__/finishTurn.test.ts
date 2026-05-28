@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { finishTurn } from "../finishTurn";
+import { finishTurn } from "../../../../shared/game/actions/finishTurn";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

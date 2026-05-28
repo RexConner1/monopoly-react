@@ -27,7 +27,7 @@ vi.mock("../../actions/payChanceRent", () => ({
     payChanceRent: vi.fn(),
 }));
 
-vi.mock("../../actions/finishTurn", () => ({
+vi.mock("../../../../shared/game/actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
@@ -35,7 +35,7 @@ import { getPropertyByPosition } from "../../../../shared/types/property";
 import { buyProperty } from "../../../../shared/game/actions/buyProperty";
 import { buySpecialProperty } from "../../../../shared/game/actions/buySpecialProperty";
 import { payChanceRent } from "../../actions/payChanceRent";
-import { finishTurn } from "../../actions/finishTurn";
+import { finishTurn } from "../../../../shared/game/actions/finishTurn";
 
 describe("handleChanceNearestLanding", () => {
     beforeEach(() => {
