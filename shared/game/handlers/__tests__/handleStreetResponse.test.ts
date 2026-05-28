@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleStreetResponse } from "../handleStreetResponse";
-import { makePlayer } from "../../../test/factories/playerFactory";
-import { makeGameContext } from "../../../test/factories/gameContextFactory";
-import { Property } from "../../../../shared/types/property";
+import { makePlayer } from "../../../../src/test/factories/playerFactory";
+import { makeGameContext } from "../../../../src/test/factories/gameContextFactory";
+import { Property } from "../../../types/property";
 
 vi.mock("../../../../shared/game/actions/buyProperty", () => ({
     buyProperty: vi.fn(),
@@ -36,14 +36,14 @@ vi.mock("../../../../shared/game/actions/finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
-import { buyProperty } from "../../../../shared/game/actions/buyProperty";
-import { advanceProperty } from "../../../../shared/game/actions/advanceProperty";
-import { payRent } from "../../../../shared/game/actions/payRent";
-import { buySpecialProperty } from "../../../../shared/game/actions/buySpecialProperty";
-import { payIncomeTax } from "../../../../shared/game/actions/payIncomeTax";
-import { payLuxuryTax } from "../../../../shared/game/actions/payLuxuryTax";
-import { goToJail } from "../../../../shared/game/actions/goToJail";
-import { finishTurn } from "../../../../shared/game/actions/finishTurn";
+import { buyProperty } from "../../actions/buyProperty";
+import { advanceProperty } from "../../actions/advanceProperty";
+import { payRent } from "../../actions/payRent";
+import { buySpecialProperty } from "../../actions/buySpecialProperty";
+import { payIncomeTax } from "../../actions/payIncomeTax";
+import { payLuxuryTax } from "../../actions/payLuxuryTax";
+import { goToJail } from "../../actions/goToJail";
+import { finishTurn } from "../../actions/finishTurn";
 
 describe("handleStreetResponse", () => {
     beforeEach(() => {

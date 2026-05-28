@@ -7,14 +7,7 @@ import { moveSteps } from "../shared/game/actions/moveSteps.ts";
 import { handlePassGo } from "./game/actions/handlePassGo.ts";
 import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
-import { buyProperty } from "../shared/game/actions/buyProperty.ts";
-import { advanceProperty } from "../shared/game/actions/advanceProperty.ts";
-import { payRent } from "../shared/game/actions/payRent.ts";
-import { goToJail } from "../shared/game/actions/goToJail.ts";
-import { payIncomeTax } from "../shared/game/actions/payIncomeTax.ts";
-import { payLuxuryTax } from "../shared/game/actions/payLuxuryTax.ts";
-import { buySpecialProperty } from "../shared/game/actions/buySpecialProperty.ts";
-import { finishTurn } from "../shared/game/actions/finishTurn.ts";
+import { handleStreetResponse } from "../shared/game/handlers/handleStreetResponse.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -353,75 +346,14 @@ export async function main(host: string, initials: botInitial) {
                             location,
                             rolls: args.listOfNums[1] + args.listOfNums[0],
                             onResponse: (b, info) => {
-                                var time_till_free = 0;
-                                if (b === "buy") {
-                                    buyProperty({
-                                        player: localPlayer,
-                                        property: property,
-                                        ctx: botGameContext,
-                                    });
-                                } else if (b === "advance-buy") {
-                                    const { state, money } = info as {
-                                        state: 1 | 2 | 3 | 4 | 5;
-                                        money: number;
-                                    };
-
-                                    advanceProperty({
-                                        player: localPlayer,
-                                        property,
-                                        location,
-                                        state,
-                                        money,
-                                        ctx: botGameContext,
-                                    });
-                                } else if (b === "someones") {
-                                    const { rolls } = info as { rolls: number };
-
-                                    payRent({
-                                        payer: localPlayer,
-                                        property,
-                                        location,
-                                        rolls,
-                                        ctx: botGameContext,
-                                    });
-                                } else if (b === "nothing") {
-                                    if ((property?.id ?? "") === "gotojail") {
-                                        goToJail({
-                                            player: localPlayer,
-                                            ctx: botGameContext,
-                                        });
-                                    }
-
-                                    if (property?.id === "incometax") {
-                                        payIncomeTax({
-                                            player: localPlayer,
-                                            ctx: botGameContext,
-                                        });
-                                    }
-
-                                    if (property?.id === "luxurytax") {
-                                        payLuxuryTax({
-                                            player: localPlayer,
-                                            ctx: botGameContext,
-                                        });
-                                    }
-                                } else if (b === "special_action") {
-                                    const { rolls } = info as { rolls: number };
-
-                                    buySpecialProperty({
-                                        player: localPlayer,
-                                        property,
-                                        rolls,
-                                        ctx: botGameContext,
-                                    });
-                                }
-
-                                setTimeout(() => {
-                                    finishTurn({
-                                        localPlayer,
-                                        ctx: botGameContext,
-                                    });
-                                }, time_till_free);
+                                handleStreetResponse({
+                                    response: b,
+                                    info,
+                                    player: localPlayer,
+                                    property,
+                                    location,
+                                    ctx: botGameContext,
+                                });
                             },
                         });
                         actionList?.action(actionList.actions[Math.floor(Math.random() * actionList.actions.length)]);

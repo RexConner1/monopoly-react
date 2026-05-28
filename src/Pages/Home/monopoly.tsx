@@ -17,7 +17,7 @@ import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/handlers/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/handlers/handleMonopolsTrains.ts";
-import { handleStreetResponse } from "../../game/handlers/handleStreetResponse.ts";
+import { handleStreetResponse } from "../../../shared/game/handlers/handleStreetResponse.ts";
 import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
 import { SelectedModeSummary } from "../../components/menu/modes/selectedModeSummary.tsx";
 import { CustomModeButton } from "../../components/menu/modes/customModeButton.tsx";
@@ -91,7 +91,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             settings = (JSON.parse(decodeURIComponent(CookieManager.get("monopolySettings") as string)) as MonopolyCookie).settings;
         }, 1000);
 
-        const gameContext: ReactGameContext = {
+        const reactGameContext: ReactGameContext = {
             settings,
             socket,
             engineRef,
@@ -232,14 +232,14 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             handlePlayerBankruptcy({
                 bankruptPlayer: args.pJson,
                 mainTheme,
-                ctx: gameContext,
+                ctx: reactGameContext,
                 destroyPlayer
             });
 
             handleMonopolsTrains({
                 winningMode: args.WinningMode,
                 mainTheme,
-                ctx: gameContext
+                ctx: reactGameContext
             });
 
             SetCurrent(args.turnId);
@@ -273,12 +273,12 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             const dice_generatorResults = movePlayer({
                 finalPosition: args.listOfNums[2], 
                 player: xplayer, 
-                ctx: gameContext, 
+                ctx: reactGameContext, 
                 afterFinished: () => {
                     if (args.turnId != socket.id && args.listOfNums[2] === 30) {
                         setTimeout(() => {
                             SetHistories((old) => [...old, history(`${clients.get(args.turnId)?.username ?? "unknown player"} goes to jail`)]);
-                            goToJail({player: xplayer, ctx: gameContext});
+                            goToJail({player: xplayer, ctx: reactGameContext});
                         }, 800);
                     }
                 }
@@ -306,7 +306,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                                         player: localPlayer,
                                         property,
                                         location,
-                                        ctx: gameContext,
+                                        ctx: reactGameContext,
                                     });
                                 },
                             });
@@ -396,7 +396,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     card: args.element,
                     player: xplayer,
                     rolls: args.rolls,
-                    ctx: gameContext,
+                    ctx: reactGameContext,
                 });
             }, numOfTime);
         };

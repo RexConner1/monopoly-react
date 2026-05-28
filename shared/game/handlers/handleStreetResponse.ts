@@ -1,16 +1,16 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
-import { Player } from "../../assets/player";
-import { Property } from "../../../shared/types/property";
+import { Player } from "../../../src/assets/player";
+import { Property } from "../../types/property";
 
-import { buyProperty } from "../../../shared/game/actions/buyProperty";
-import { advanceProperty } from "../../../shared/game/actions/advanceProperty";
-import { payRent } from "../../../shared/game/actions/payRent";
-import { buySpecialProperty } from "../../../shared/game/actions/buySpecialProperty";
-import { payIncomeTax } from "../../../shared/game/actions/payIncomeTax";
-import { payLuxuryTax } from "../../../shared/game/actions/payLuxuryTax";
-import { goToJail } from "../../../shared/game/actions/goToJail";
-import { finishTurn } from "../../../shared/game/actions/finishTurn";
-import { StreetResponseType } from "../../assets/types";
+import { buyProperty } from "../actions/buyProperty";
+import { advanceProperty } from "../actions/advanceProperty";
+import { payRent } from "../actions/payRent";
+import { buySpecialProperty } from "../actions/buySpecialProperty";
+import { payIncomeTax } from "../actions/payIncomeTax";
+import { payLuxuryTax } from "../actions/payLuxuryTax";
+import { goToJail } from "../actions/goToJail";
+import { finishTurn } from "../actions/finishTurn";
+import { StreetResponseType } from "../../../src/assets/types";
+import { GameContext } from "../context/gameContext";
 
 
 export function handleStreetResponse({
@@ -26,7 +26,7 @@ export function handleStreetResponse({
     player: Player;
     property: Property;
     location: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     let time_till_free = 0;
 
