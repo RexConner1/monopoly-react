@@ -11,7 +11,7 @@ import { playMoneyMinusSfx, playPurchaseSfx, playRollSfx } from "../../ui/audio/
 import { getPropertyByPosition } from "../../../shared/types/property.ts";
 import { ReactGameContext } from "../../assets/reactGameContext.ts";
 import { movePlayer } from "../../game/actions/movePlayer.ts";
-import { goToJail } from "../../game/actions/goToJail.ts";
+import { goToJail } from "../../../shared/game/actions/goToJail.ts";
 import { ChanceCommunityChestCard } from "../../assets/card.ts";
 import { showDialog } from "../../ui/dialogs/dialogFactory.ts";
 import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";

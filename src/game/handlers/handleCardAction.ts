@@ -8,7 +8,7 @@ import { movePlayer } from "../actions/movePlayer";
 
 import { addFunds } from "../actions/addFunds";
 import { removeFunds } from "../actions/removeFunds";
-import { goToJail } from "../actions/goToJail";
+import { goToJail } from "../../../shared/game/actions/goToJail";
 
 import { addBalanceToOtherPlayers } from "../actions/addBalanceToOtherPlayers";
 import { applyPropertyCharges } from "../actions/applyPropertyCharges";

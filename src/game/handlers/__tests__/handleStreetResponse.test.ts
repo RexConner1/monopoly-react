@@ -20,15 +20,15 @@ vi.mock("../../actions/buySpecialProperty", () => ({
     buySpecialProperty: vi.fn(),
 }));
 
-vi.mock("../../actions/payIncomeTax", () => ({
+vi.mock("../../../../shared/game/actions/payIncomeTax", () => ({
     payIncomeTax: vi.fn(),
 }));
 
-vi.mock("../../actions/payLuxuryTax", () => ({
+vi.mock("../../../../shared/game/actions/payLuxuryTax", () => ({
     payLuxuryTax: vi.fn(),
 }));
 
-vi.mock("../../actions/goToJail", () => ({
+vi.mock("../../../../shared/game/actions/goToJail", () => ({
     goToJail: vi.fn(),
 }));
 
@@ -40,9 +40,9 @@ import { buyProperty } from "../../../../shared/game/actions/buyProperty";
 import { advanceProperty } from "../../../../shared/game/actions/advanceProperty";
 import { payRent } from "../../../../shared/game/actions/payRent";
 import { buySpecialProperty } from "../../actions/buySpecialProperty";
-import { payIncomeTax } from "../../actions/payIncomeTax";
-import { payLuxuryTax } from "../../actions/payLuxuryTax";
-import { goToJail } from "../../actions/goToJail";
+import { payIncomeTax } from "../../../../shared/game/actions/payIncomeTax";
+import { payLuxuryTax } from "../../../../shared/game/actions/payLuxuryTax";
+import { goToJail } from "../../../../shared/game/actions/goToJail";
 import { finishTurn } from "../../actions/finishTurn";
 
 describe("handleStreetResponse", () => {

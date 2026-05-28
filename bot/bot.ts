@@ -10,6 +10,9 @@ import { getPropertyByPosition } from "../shared/types/property.ts";
 import { buyProperty } from "../shared/game/actions/buyProperty.ts";
 import { advanceProperty } from "../shared/game/actions/advanceProperty.ts";
 import { payRent } from "../shared/game/actions/payRent.ts";
+import { goToJail } from "../shared/game/actions/goToJail.ts";
+import { payIncomeTax } from "../shared/game/actions/payIncomeTax.ts";
+import { payLuxuryTax } from "../shared/game/actions/payLuxuryTax.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -380,26 +383,25 @@ export async function main(host: string, initials: botInitial) {
                                         ctx: botGameContext,
                                     });
                                 } else if (b === "nothing") {
-                                    if ((property?.id ?? "") == "gotojail") {
-                                        const generatorResults = movePlayer(10, xplayer, false, () => {
-                                            xplayer.position = 10;
-                                            xplayer.isInJail = true;
-                                            xplayer.jailTurnsRemaining = 3;
+                                    if ((property?.id ?? "") === "gotojail") {
+                                        goToJail({
+                                            player: localPlayer,
+                                            ctx: botGameContext,
                                         });
-
-                                        time_till_free = generatorResults.time;
-                                        generatorResults.func();
                                     }
 
                                     if (property?.id === "incometax") {
-                                        localPlayer.balance -= 200;
-
-                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid income taxes`));
+                                        payIncomeTax({
+                                            player: localPlayer,
+                                            ctx: botGameContext,
+                                        });
                                     }
-                                    if (property?.id === "luxurytax") {
-                                        localPlayer.balance -= 100;
 
-                                        socket.emit("history", history(`${clients.get(socket.id)?.username ?? "unknown player"} paid luxury taxes`));
+                                    if (property?.id === "luxurytax") {
+                                        payLuxuryTax({
+                                            player: localPlayer,
+                                            ctx: botGameContext,
+                                        });
                                     }
                                 } else if (b === "special_action") {
                                     localPlayer.balance -= (property?.price ?? 0) * 1;
