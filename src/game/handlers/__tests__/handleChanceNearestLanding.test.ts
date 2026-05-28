@@ -19,7 +19,7 @@ vi.mock("../../../../shared/game/actions/buyProperty", () => ({
     buyProperty: vi.fn(),
 }));
 
-vi.mock("../../actions/buySpecialProperty", () => ({
+vi.mock("../../../../shared/game/actions/buySpecialProperty", () => ({
     buySpecialProperty: vi.fn(),
 }));
 
@@ -33,7 +33,7 @@ vi.mock("../../actions/finishTurn", () => ({
 
 import { getPropertyByPosition } from "../../../../shared/types/property";
 import { buyProperty } from "../../../../shared/game/actions/buyProperty";
-import { buySpecialProperty } from "../../actions/buySpecialProperty";
+import { buySpecialProperty } from "../../../../shared/game/actions/buySpecialProperty";
 import { payChanceRent } from "../../actions/payChanceRent";
 import { finishTurn } from "../../actions/finishTurn";
 

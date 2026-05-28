@@ -13,6 +13,7 @@ import { payRent } from "../shared/game/actions/payRent.ts";
 import { goToJail } from "../shared/game/actions/goToJail.ts";
 import { payIncomeTax } from "../shared/game/actions/payIncomeTax.ts";
 import { payLuxuryTax } from "../shared/game/actions/payLuxuryTax.ts";
+import { buySpecialProperty } from "../shared/game/actions/buySpecialProperty.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -404,28 +405,14 @@ export async function main(host: string, initials: botInitial) {
                                         });
                                     }
                                 } else if (b === "special_action") {
-                                    localPlayer.balance -= (property?.price ?? 0) * 1;
+                                    const { rolls } = info as { rolls: number };
 
-                                    const _info = info as {
-                                        rolls: number;
-                                    };
-                                    const prp = propretyMap.get(localPlayer.position);
-                                    const calculateRent = _info.rolls;
-                                    localPlayer.properties.push({
-                                        position: localPlayer.position,
-                                        count: 0,
-                                        rent: calculateRent,
-                                        group: prp?.group ?? "",
+                                    buySpecialProperty({
+                                        player: localPlayer,
+                                        property,
+                                        rolls,
+                                        ctx: botGameContext,
                                     });
-
-                                    socket.emit(
-                                        "history",
-                                        history(
-                                            `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                prp?.name ?? "unkown place"
-                                            } with rent of ${calculateRent}`
-                                        )
-                                    );
                                 }
 
                                 setTimeout(() => {
