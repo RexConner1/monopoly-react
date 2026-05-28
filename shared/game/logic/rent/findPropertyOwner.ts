@@ -1,5 +1,5 @@
-import { Player } from "../../../assets/player";
-import { PlayerProperty } from "../../../assets/types";
+import { Player } from "../../../../src/assets/player";
+import { PlayerProperty } from "../../../../src/assets/types";
 
 export function findPropertyOwner(
     clients: Map<string, Player>,

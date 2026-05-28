@@ -2,9 +2,9 @@ import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../../shared/types/property";
 import { history } from "../../assets/types";
-import { calculateRailroadRent } from "../logic/rent/calculateRailroadRent";
-import { findPropertyOwner } from "../logic/rent/findPropertyOwner";
-import { applyRentPayment } from "./applyRentPayment";
+import { calculateRailroadRent } from "../../../shared/game/logic/rent/calculateRailroadRent";
+import { findPropertyOwner } from "../../../shared/game/logic/rent/findPropertyOwner";
+import { applyRentPayment } from "../../../shared/game/actions/applyRentPayment";
 import { finishTurn } from "./finishTurn";
 
 export function payChanceRent({

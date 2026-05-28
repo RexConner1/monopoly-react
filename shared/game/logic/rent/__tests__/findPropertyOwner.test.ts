@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { findPropertyOwner } from "../findPropertyOwner";
-import { makePlayer } from "../../../../test/factories/playerFactory";
+import { makePlayer } from "../../../../../src/test/factories/playerFactory";
 
 describe("findPropertyOwner", () => {
     it("returns the owner and property when a player owns the location", () => {

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { calculateRent } from "../calculateRent";
-import { makePlayer } from "../../../../test/factories/playerFactory";
-import { Property } from "../../../../../shared/types/property";
-import { PlayerProperty } from "../../../../assets/types";
+import { makePlayer } from "../../../../../src/test/factories/playerFactory";
+import { Property } from "../../../../types/property";
+import { PlayerProperty } from "../../../../../src/assets/types";
 
 vi.mock("../calculateUtilityRent", () => ({
     calculateUtilityRent: vi.fn(),

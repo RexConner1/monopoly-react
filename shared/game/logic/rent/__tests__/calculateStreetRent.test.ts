@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateStreetRent } from "../calculateStreetRent";
-import { Property } from "../../../../../shared/types/property";
+import { Property } from "../../../../types/property";
 
 describe("calculateStreetRent", () => {
     const property: Property = {

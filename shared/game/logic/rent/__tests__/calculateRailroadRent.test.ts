@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateRailroadRent } from "../calculateRailroadRent";
-import { makePlayer } from "../../../../test/factories/playerFactory";
+import { makePlayer } from "../../../../../src/test/factories/playerFactory";
 
 describe("calculateRailroadRent", () => {
     it("returns 25 when the owner has 1 non-mortgaged railroad", () => {

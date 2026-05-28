@@ -4,7 +4,7 @@ import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import { Property } from "../../../../shared/types/property";
 
-vi.mock("../applyRentPayment", () => ({
+vi.mock("../../../../shared/game/actions/applyRentPayment", () => ({
     applyRentPayment: vi.fn(),
 }));
 
@@ -12,13 +12,13 @@ vi.mock("../finishTurn", () => ({
     finishTurn: vi.fn(),
 }));
 
-vi.mock("../../logic/rent/calculateRailroadRent", () => ({
+vi.mock("../../../../shared/game/logic/rent/calculateRailroadRent", () => ({
     calculateRailroadRent: vi.fn(),
 }));
 
-import { applyRentPayment } from "../applyRentPayment";
+import { applyRentPayment } from "../../../../shared/game/actions/applyRentPayment";
 import { finishTurn } from "../finishTurn";
-import { calculateRailroadRent } from "../../logic/rent/calculateRailroadRent";
+import { calculateRailroadRent } from "../../../../shared/game/logic/rent/calculateRailroadRent";
 
 describe("payChanceRent", () => {
     beforeEach(() => {

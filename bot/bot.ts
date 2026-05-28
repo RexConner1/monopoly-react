@@ -9,7 +9,7 @@ import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { buyProperty } from "../shared/game/actions/buyProperty.ts";
 import { advanceProperty } from "../shared/game/actions/advanceProperty.ts";
-import { payRent } from "../src/game/actions/payRent.ts";
+import { payRent } from "../shared/game/actions/payRent.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);

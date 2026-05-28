@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { applyRentPayment } from "../applyRentPayment";
+import { applyRentPayment } from "../../../../shared/game/actions/applyRentPayment";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

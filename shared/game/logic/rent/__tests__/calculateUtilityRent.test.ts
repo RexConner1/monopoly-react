@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateUtilityRent } from "../calculateUtilityRent";
-import { makePlayer } from "../../../../test/factories/playerFactory";
+import { makePlayer } from "../../../../../src/test/factories/playerFactory";
 
 describe("calculateUtilityRent", () => {
     it("returns diceRoll * 4 when the owner has 1 utility", () => {

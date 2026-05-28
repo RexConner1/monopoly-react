@@ -1,4 +1,4 @@
-import { Player } from "../../../assets/player";
+import { Player } from "../../../../src/assets/player";
 
 const ONE_UTILITY_MULTIPLIER = 4;
 const TWO_UTILITIES_MULTIPLIER = 10;

@@ -1,9 +1,9 @@
-import { Player } from "../../assets/player";
-import { Property } from "../../../shared/types/property";
+import { Player } from "../../../src/assets/player";
+import { Property } from "../../types/property";
 import { calculateRent } from "../logic/rent/calculateRent";
 import { findPropertyOwner } from "../logic/rent/findPropertyOwner";
 import { applyRentPayment } from "./applyRentPayment";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { GameContext } from "../context/gameContext";
 
 export function payRent({
     payer,

@@ -1,8 +1,8 @@
-import { GameContext } from "../../../shared/game/context/gameContext";
-import { Player } from "../../assets/player";
-import { history } from "../../assets/types";
-import { playMoneyMinusSfx } from "../../ui/audio/audio";
-import { notifyMessage } from "../../ui/notifications/notificationFactory";
+import { GameContext } from "../context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { history } from "../../../src/assets/types";
+import { playMoneyMinusSfx } from "../../../src/ui/audio/audio";
+import { notifyMessage } from "../../../src/ui/notifications/notificationFactory";
 
 export function applyRentPayment({
     payer,

@@ -4,7 +4,7 @@ import { Property } from "../../../shared/types/property";
 
 import { buyProperty } from "../../../shared/game/actions/buyProperty";
 import { advanceProperty } from "../../../shared/game/actions/advanceProperty";
-import { payRent } from "../actions/payRent";
+import { payRent } from "../../../shared/game/actions/payRent";
 import { buySpecialProperty } from "../actions/buySpecialProperty";
 import { payIncomeTax } from "../actions/payIncomeTax";
 import { payLuxuryTax } from "../actions/payLuxuryTax";

@@ -21,8 +21,8 @@ import TradePlayerPanel from "../trade/tradePlayerPanel.tsx";
 import TradeBalanceSlider from "../trade/tradeBalanceSlider.tsx";
 import TradeRoleIndicator from "../trade/tradeRoleIndicator.tsx";
 import { ActionBar } from "./actionBar.tsx";
-import { calculateRailroadRent } from "../../game/logic/rent/calculateRailroadRent.ts";
-import { calculateUtilityMultiplier } from "../../game/logic/rent/calculateUtilityRent.ts";
+import { calculateRailroadRent } from "../../../shared/game/logic/rent/calculateRailroadRent.ts";
+import { calculateUtilityMultiplier } from "../../../shared/game/logic/rent/calculateUtilityRent.ts";
 import { createPlayerElement } from "./createPlayerElement.tsx";
 interface MonopolyGameProps {
     players: Array<Player>;

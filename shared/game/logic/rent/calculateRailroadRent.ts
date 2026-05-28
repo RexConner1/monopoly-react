@@ -1,4 +1,4 @@
-import { Player } from "../../../assets/player";
+import { Player } from "../../../../src/assets/player";
 
 const RAILROAD_RENTS = [0, 25, 50, 100, 200];
 
