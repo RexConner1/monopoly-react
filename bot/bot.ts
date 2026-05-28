@@ -3,11 +3,10 @@ import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial, StreetRe
 import { io } from "../src/assets/sockets.ts";
 import monopolyJSON from "../shared/data/classic/monopoly.json";
 import { PlayerJSON } from "../shared/types/player.ts";
-import { moveSteps } from "../shared/game/actions/moveSteps.ts";
-import { handlePassGo } from "./game/actions/handlePassGo.ts";
 import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { handleStreetResponse } from "../shared/game/handlers/handleStreetResponse.ts";
+import { movePlayer } from "./game/actions/movePlayer.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -288,46 +287,35 @@ export async function main(host: string, initials: botInitial) {
             }, Math.round(Math.random() * 1000));
         }
     };
-    
-    function movePlayer(
-        final_position: number,
-        _xplayer: Player,
-        get200whengo: boolean = true,
-        afterFinished?: () => void,
-        adding: boolean = true
-    ) {
-        const plan = moveSteps({
-            player: _xplayer,
-            finalPosition: final_position,
-            adding,
-            get200whengo,
-            onPassGo: () => {
-                handlePassGo({ player: _xplayer, ctx: botGameContext });
-            },
-            onFinish: afterFinished,
-        });
-
-        return {
-            func: plan.start,
-            time: plan.time,
-        };
-    }
 
     const socket_DiceRollResult = (args: { listOfNums: [number, number, number]; turnId: string }) => {
         // const sumTimes = args.listOfNums[0] + args.listOfNums[1];
         const localPlayer = clients.get(socket.id) as Player;
         const xplayer = clients.get(args.turnId) as Player;
-        const dice_generatorResults = movePlayer(args.listOfNums[2], xplayer, true, () => {
-            if (args.turnId != socket.id && args.listOfNums[2] === 30) {
-                setTimeout(() => {
-                    const generatorResults = movePlayer(10, xplayer, false, () => {
-                        xplayer.position = 10;
-                        xplayer.isInJail = true;
-                        xplayer.jailTurnsRemaining = 3;
-                    });
-                    generatorResults.func();
-                }, 800);
-            }
+        const dice_generatorResults = movePlayer({
+            finalPosition: args.listOfNums[2],
+            player: xplayer,
+            ctx: botGameContext,
+            get200whengo: true,
+            afterFinished: () => {
+                if (args.turnId !== socket.id && args.listOfNums[2] === 30) {
+                    setTimeout(() => {
+                        const generatorResults = movePlayer({
+                            finalPosition: 10,
+                            player: xplayer,
+                            ctx: botGameContext,
+                            get200whengo: false,
+                            afterFinished: () => {
+                                xplayer.position = 10;
+                                xplayer.isInJail = true;
+                                xplayer.jailTurnsRemaining = 3;
+                            },
+                        });
+
+                        generatorResults.start();
+                    }, 800);
+                }
+            },
         });
 
         engineRef.diceResults({
@@ -367,7 +355,7 @@ export async function main(host: string, initials: botInitial) {
                 if (args.listOfNums[0] == args.listOfNums[1]) {
                     xplayer.isInJail = false;
                     setTimeout(() => {
-                        dice_generatorResults.func();
+                        dice_generatorResults.start();
                     }, 2000);
                 } else if (xplayer.jailTurnsRemaining > 0) {
                     xplayer.jailTurnsRemaining -= 1;
@@ -379,7 +367,7 @@ export async function main(host: string, initials: botInitial) {
             }, 1500);
         } else {
             setTimeout(() => {
-                dice_generatorResults.func();
+                dice_generatorResults.start();
             }, 2000);
         }
     };
@@ -503,13 +491,20 @@ export async function main(host: string, initials: botInitial) {
                         const targetPos = p.get(c.tileid)?.position;
                         if (targetPos === undefined) break;
 
-                        const _generatorResults = movePlayer(targetPos, xplayer);
+                        const _generatorResults = movePlayer({ finalPosition: targetPos, player: xplayer, ctx: botGameContext });
                         time_till_finish = _generatorResults.time;
-                        _generatorResults.func();
+                        _generatorResults.start();
                     } else if (c.count) {
-                        const _generatorResults = movePlayer((xplayer.position + c.count) % 40, xplayer, true, () => {}, c.count >= 0);
+                        const _generatorResults = movePlayer({ 
+                            finalPosition: (xplayer.position + c.count) % 40, 
+                            player: xplayer, 
+                            ctx: botGameContext, 
+                            get200whengo: true, 
+                            afterFinished: () => {}, 
+                            adding: c.count >= 0 
+                        });
                         time_till_finish = _generatorResults.time;
-                        _generatorResults.func();
+                        _generatorResults.start();
                     }
                     break;
 
@@ -523,13 +518,19 @@ export async function main(host: string, initials: botInitial) {
                                 xplayer.getoutCards += 1;
                                 break;
                             case "goto":
-                                const _generatorResults = movePlayer(10, xplayer, false, () => {
-                                    xplayer.position = 10;
-                                    xplayer.isInJail = true;
-                                    xplayer.jailTurnsRemaining = 3;
+                                const _generatorResults = movePlayer({ 
+                                    finalPosition: 10, 
+                                    player: xplayer, 
+                                    ctx: botGameContext, 
+                                    get200whengo: false, 
+                                    afterFinished: () => {
+                                        xplayer.position = 10;
+                                        xplayer.isInJail = true;
+                                        xplayer.jailTurnsRemaining = 3;
+                                    } 
                                 });
                                 time_till_finish = _generatorResults.time;
-                                _generatorResults.func();
+                                _generatorResults.start();
                                 break;
                         }
                         clients.set(xplayer.id, xplayer);
@@ -577,9 +578,13 @@ export async function main(host: string, initials: botInitial) {
                     }
                     const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
                     const ongoingLocation = findNextValue(arr, xplayer.position);
-                    const _generatorResults = movePlayer(ongoingLocation, xplayer);
+                    const _generatorResults = movePlayer({ 
+                        finalPosition: ongoingLocation, 
+                        player: xplayer, 
+                        ctx: botGameContext
+                    });
                     time_till_finish = -1;
-                    _generatorResults.func();
+                    _generatorResults.start();
                     setTimeout(() => {
                         if (xplayer.id === socket.id) {
                             const location = xplayer?.position ?? -1;
