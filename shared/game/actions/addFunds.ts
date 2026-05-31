@@ -1,6 +1,6 @@
-import { Player } from "../../assets/player";
-import { playMoneyPlusSfx } from "../../ui/audio/audio";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { playMoneyPlusSfx } from "../../../src/ui/audio/audio";
+import { GameContext } from "../context/gameContext";
 
 
 export function addFunds({ player, amount, ctx }: {

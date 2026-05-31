@@ -5,7 +5,7 @@ import { moveToTile } from "../actions/moveToTile";
 import { moveBySpaces } from "../actions/moveBySpaces";
 // import { movePlayer } from "../actions/movePlayer";
 
-import { addFunds } from "../actions/addFunds";
+import { addFunds } from "../../../shared/game/actions/addFunds";
 import { removeFunds } from "../actions/removeFunds";
 import { goToJail } from "../../../shared/game/actions/goToJail";
 

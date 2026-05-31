@@ -7,6 +7,9 @@ import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { handleStreetResponse } from "../shared/game/handlers/handleStreetResponse.ts";
 import { movePlayer } from "./game/actions/movePlayer.ts";
+import { moveToTile } from "../src/game/actions/moveToTile.ts";
+import { moveBySpaces } from "../src/game/actions/moveBySpaces.ts";
+import { addFunds } from "../shared/game/actions/addFunds.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -483,34 +486,32 @@ export async function main(host: string, initials: botInitial) {
             switch (c.action) {
                 case "move":
                     if (c.tileid) {
-                        const p = new Map(
-                            monopolyJSON.properties.map((obj) => {
-                                return [obj.id, obj];
-                            })
-                        );
-                        const targetPos = p.get(c.tileid)?.position;
-                        if (targetPos === undefined) break;
-
-                        const _generatorResults = movePlayer({ finalPosition: targetPos, player: xplayer, ctx: botGameContext });
-                        time_till_finish = _generatorResults.time;
-                        _generatorResults.start();
-                    } else if (c.count) {
-                        const _generatorResults = movePlayer({ 
-                            finalPosition: (xplayer.position + c.count) % 40, 
-                            player: xplayer, 
-                            ctx: botGameContext, 
-                            get200whengo: true, 
-                            afterFinished: () => {}, 
-                            adding: c.count >= 0 
+                        time_till_finish = moveToTile({
+                            tileId: c.tileid,
+                            player: xplayer,
+                            ctx: botGameContext,
+                            movePlayer
                         });
-                        time_till_finish = _generatorResults.time;
-                        _generatorResults.start();
+                    } else if (c.count) {
+                        time_till_finish = moveBySpaces({
+                            spaces: c.count,
+                            player: xplayer,
+                            ctx: botGameContext,
+                            movePlayer,
+                            get200whengo: true,
+                            afterFinished: () => {},
+                        });
                     }
                     break;
 
                 case "addfunds":
-                    xplayer.balance += c.amount ?? 0;
+                    addFunds({
+                        player: xplayer,
+                        amount: c.amount ?? 0,
+                        ctx: botGameContext,
+                    });
                     break;
+
                 case "jail":
                     if (c.subaction !== undefined) {
                         switch (c.subaction) {
