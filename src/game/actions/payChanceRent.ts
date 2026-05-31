@@ -1,4 +1,3 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { Property } from "../../../shared/types/property";
 import { history } from "../../assets/types";
@@ -6,6 +5,7 @@ import { calculateRailroadRent } from "../../../shared/game/logic/rent/calculate
 import { findPropertyOwner } from "../../../shared/game/logic/rent/findPropertyOwner";
 import { applyRentPayment } from "../../../shared/game/actions/applyRentPayment";
 import { finishTurn } from "../../../shared/game/actions/finishTurn";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
 export function payChanceRent({
     payer,
@@ -18,7 +18,7 @@ export function payChanceRent({
     property: Property;
     location: number;
     rentMultiplier: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     const found = findPropertyOwner(ctx.clients, location);
     if (!found) {
@@ -46,7 +46,7 @@ export function payChanceRent({
             )
         );
 
-        ctx.engineRef.current?.diceResults({
+        ctx.engineRef.current?.diceResults?.({
             l: [l[0], l[1]],
             time: 2000,
             onDone: () => {

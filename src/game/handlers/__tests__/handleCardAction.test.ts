@@ -129,12 +129,14 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(moveToTile).toHaveBeenCalledWith({
             tileId: "go",
             player,
             ctx,
+            movePlayer
         });
 
         expect(ctx.SetClients).not.toHaveBeenCalled();
@@ -167,12 +169,14 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(moveBySpaces).toHaveBeenCalledWith({
             spaces: -3,
             player,
             ctx,
+            movePlayer,
             get200whengo: true,
             afterFinished: expect.any(Function),
         });
@@ -197,6 +201,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(addFunds).toHaveBeenCalledWith({
@@ -225,6 +230,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(removeFunds).toHaveBeenCalledWith({
@@ -253,6 +259,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(player.getoutCards).toBe(1);
@@ -278,6 +285,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(goToJail).toHaveBeenCalledWith({
@@ -306,6 +314,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(addBalanceToOtherPlayers).toHaveBeenCalledWith({
@@ -335,6 +344,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(addBalanceToOtherPlayers).toHaveBeenCalledWith({
@@ -363,6 +373,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         expect(applyPropertyCharges).toHaveBeenCalledWith({
@@ -400,6 +411,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 8,
             ctx,
+            movePlayer
         });
 
         expect(findNextGroupPosition).toHaveBeenCalledWith({
@@ -447,6 +459,7 @@ describe("handleCardAction", () => {
             player,
             rolls: 6,
             ctx,
+            movePlayer
         });
 
         expect(movePlayer).not.toHaveBeenCalled();
@@ -475,6 +488,7 @@ describe("handleCardAction", () => {
             player: remotePlayer,
             rolls: 0,
             ctx,
+            movePlayer
         });
 
         vi.runAllTimers();

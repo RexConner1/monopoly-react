@@ -1,4 +1,3 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { MoveNearestCard } from "../../assets/card";
 import { getPropertyByPosition } from "../../../shared/types/property";
@@ -6,6 +5,7 @@ import { buyProperty } from "../../../shared/game/actions/buyProperty";
 import { buySpecialProperty } from "../../../shared/game/actions/buySpecialProperty";
 import { payChanceRent } from "../actions/payChanceRent";
 import { finishTurn } from "../../../shared/game/actions/finishTurn";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
 export function handleChanceNearestLanding({
     player,
@@ -16,7 +16,7 @@ export function handleChanceNearestLanding({
     player: Player;
     rolls: number;
     card: MoveNearestCard;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 
@@ -24,7 +24,7 @@ export function handleChanceNearestLanding({
     const property = getPropertyByPosition(location);
     if (!property) return;
 
-    ctx.engineRef.current?.setStreet({
+    ctx.engineRef.current?.setStreet?.({
         location,
         rolls,
         onResponse: (response, info) => {

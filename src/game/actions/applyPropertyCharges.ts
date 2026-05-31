@@ -1,7 +1,7 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
 import { playMoneyMinusSfx } from "../../ui/audio/audio";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
 export function applyPropertyCharges({
     player,
@@ -12,7 +12,7 @@ export function applyPropertyCharges({
     player: Player;
     buildingsCost?: number;
     hotelsCost?: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     const { socket, settings, notifyRef, engineRef, clients, SetClients } = ctx;
 
@@ -26,7 +26,7 @@ export function applyPropertyCharges({
         buildingsCost * totalHouses +
         hotelsCost * totalHotels;
 
-    if (player.id === socket.id && paymentAmount > 0) {
+    if (ctx.effectsEnabled !== false && player.id === socket.id && paymentAmount > 0) {
         if (settings?.notifications) {
             notifyMessage(notifyRef, "MONEY_DEDUCTED", {
                 amount: paymentAmount,
@@ -34,7 +34,7 @@ export function applyPropertyCharges({
         }
 
         playMoneyMinusSfx(settings);
-        engineRef.current?.applyAnimation(1);
+        engineRef.current?.applyAnimation?.(1);
     }
 
     player.balance -= paymentAmount;

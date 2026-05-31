@@ -40,6 +40,7 @@ describe("moveToTile", () => {
             tileId: "missing-tile",
             player,
             ctx,
+            movePlayer
         });
 
         expect(result).toBe(0);
@@ -74,6 +75,7 @@ describe("moveToTile", () => {
             tileId: "boardwalk",
             player,
             ctx,
+            movePlayer
         });
 
         expect(getPropertyById).toHaveBeenCalledWith("boardwalk");

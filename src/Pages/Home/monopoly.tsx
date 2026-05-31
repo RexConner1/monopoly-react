@@ -397,6 +397,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     player: xplayer,
                     rolls: args.rolls,
                     ctx: reactGameContext,
+                    movePlayer
                 });
             }, numOfTime);
         };

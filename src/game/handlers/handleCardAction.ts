@@ -1,10 +1,9 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { ChanceCommunityChestCard } from "../../assets/card";
 
 import { moveToTile } from "../actions/moveToTile";
 import { moveBySpaces } from "../actions/moveBySpaces";
-import { movePlayer } from "../actions/movePlayer";
+// import { movePlayer } from "../actions/movePlayer";
 
 import { addFunds } from "../actions/addFunds";
 import { removeFunds } from "../actions/removeFunds";
@@ -16,17 +15,21 @@ import { applyPropertyCharges } from "../actions/applyPropertyCharges";
 import { findNextGroupPosition } from "../logic/board/findNextGroupPosition";
 import { handleChanceNearestLanding } from "./handleChanceNearestLanding";
 import { properties } from "../../../shared/types/property";
+import { MovePlayerFn } from "../../../shared/types/player";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
-export function handleCardAction({
+export function handleCardAction<TContext extends GameContext>({
     card,
     player,
     rolls,
     ctx,
+    movePlayer,
 }: {
     card: ChanceCommunityChestCard;
     player: Player;
     rolls: number;
-    ctx: ReactGameContext;
+    ctx: TContext;
+    movePlayer: MovePlayerFn<TContext>;
 }) {
     const { clients, SetClients, socket, engineRef } = ctx;
 
@@ -39,12 +42,14 @@ export function handleCardAction({
                     tileId: card.tileid,
                     player,
                     ctx,
+                    movePlayer
                 });
             } else if (card.count) {
                 time_till_finish = moveBySpaces({
                     spaces: card.count,
                     player,
                     ctx,
+                    movePlayer,
                     get200whengo: true,
                     afterFinished: () => {},
                 });
@@ -89,7 +94,7 @@ export function handleCardAction({
             });
 
             if (player.id === socket.id) {
-                engineRef.current?.applyAnimation(1);
+                engineRef.current?.applyAnimation?.(1);
             }
             break;
 
@@ -148,7 +153,7 @@ export function handleCardAction({
             SetClients(updated);
 
             if (player.id === socket.id) {
-                engineRef.current?.freeDice();
+                engineRef.current?.freeDice?.();
                 socket.emit("finish-turn", player.toJson());
             }
         }, time_till_finish);

@@ -1,8 +1,8 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
 import { Player } from "../../assets/player";
 import { history } from "../../assets/types";
 import { notifyMessage } from "../../ui/notifications/notificationFactory";
 import { playMoneyPlusSfx } from "../../ui/audio/audio";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
 export function addBalanceToOtherPlayers({
     player,
@@ -11,7 +11,7 @@ export function addBalanceToOtherPlayers({
 }: {
     player?: Player;
     amount: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     if (!player) return 0;
 
@@ -45,7 +45,7 @@ function emitTransferSummaryHistory({
     player: Player;
     amount: number;
     otherPlayers: Player[];
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 
@@ -70,14 +70,14 @@ function applyBalanceToOtherPlayers({
     player: Player;
     amount: number;
     otherPlayers: Player[];
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     const updatedClients = new Map(ctx.clients);
 
     for (const other of otherPlayers) {
         other.balance += amount;
 
-        if (other.id === ctx.socket.id && ctx.settings?.notifications) {
+        if (ctx.effectsEnabled !== false && other.id === ctx.socket.id && ctx.settings?.notifications) {
             notifyMessage(ctx.notifyRef, "MONEY_ADDED", { amount });
             playMoneyPlusSfx(ctx.settings);
         }
@@ -104,7 +104,7 @@ function emitOtherPlayerTransfer({
     player: Player;
     other: Player;
     amount: number;
-    ctx: ReactGameContext;
+    ctx: GameContext;
 }) {
     if (player.id !== ctx.socket.id) return;
 

@@ -1,15 +1,18 @@
 import { Player } from "../../assets/player";
 import { getPropertyById } from "../../../shared/types/property";
-import { movePlayer } from "./movePlayer";
+import { MovePlayerFn } from "../../../shared/types/player";
+import { GameContext } from "../../../shared/game/context/gameContext";
 
-export function moveToTile({
+export function moveToTile<TContext extends GameContext>({
     tileId,
     player,
     ctx,
+    movePlayer
 }: {
     tileId: string;
     player: Player;
-    ctx: any;
+    ctx: TContext;
+    movePlayer: MovePlayerFn<TContext>;
 }): number {
     const targetPos = getPropertyById(tileId)?.position;
 

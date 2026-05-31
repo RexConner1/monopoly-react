@@ -1,17 +1,19 @@
-import { ReactGameContext } from "../../assets/reactGameContext";
+import { GameContext } from "../../../shared/game/context/gameContext";
+import { MovePlayerFn } from "../../../shared/types/player";
 import { Player } from "../../assets/player";
-import { movePlayer } from "./movePlayer";
 
-export function moveBySpaces({
+export function moveBySpaces<TContext extends GameContext>({
     spaces,
     player,
     ctx,
+    movePlayer,
     get200whengo = true,
     afterFinished,
 }: {
     spaces: number;
     player: Player;
-    ctx: ReactGameContext;
+    ctx: TContext;
+    movePlayer: MovePlayerFn<TContext>;
     get200whengo?: boolean;
     afterFinished?: () => void;
 }) {

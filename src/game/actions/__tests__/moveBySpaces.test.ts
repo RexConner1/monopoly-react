@@ -37,6 +37,7 @@ describe("moveBySpaces", () => {
             spaces: 6,
             player,
             ctx,
+            movePlayer,
             get200whengo: true,
             afterFinished,
         });
@@ -75,6 +76,7 @@ describe("moveBySpaces", () => {
             spaces: 3,
             player,
             ctx,
+            movePlayer,
         });
 
         expect(movePlayer).toHaveBeenCalledWith({
@@ -110,6 +112,7 @@ describe("moveBySpaces", () => {
             spaces: -3,
             player,
             ctx,
+            movePlayer,
             get200whengo: false,
         });
 
