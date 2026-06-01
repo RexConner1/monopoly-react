@@ -11,6 +11,7 @@ import { moveToTile } from "../src/game/actions/moveToTile.ts";
 import { moveBySpaces } from "../src/game/actions/moveBySpaces.ts";
 import { addFunds } from "../shared/game/actions/addFunds.ts";
 import { removeFunds } from "../shared/game/actions/removeFunds.ts";
+import { goToJail } from "../shared/game/actions/goToJail.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -514,28 +515,16 @@ export async function main(host: string, initials: botInitial) {
                     break;
 
                 case "jail":
-                    if (c.subaction !== undefined) {
-                        switch (c.subaction) {
-                            case "getout":
-                                xplayer.getoutCards += 1;
-                                break;
-                            case "goto":
-                                const _generatorResults = movePlayer({ 
-                                    finalPosition: 10, 
-                                    player: xplayer, 
-                                    ctx: botGameContext, 
-                                    get200whengo: false, 
-                                    afterFinished: () => {
-                                        xplayer.position = 10;
-                                        xplayer.isInJail = true;
-                                        xplayer.jailTurnsRemaining = 3;
-                                    } 
-                                });
-                                time_till_finish = _generatorResults.time;
-                                _generatorResults.start();
-                                break;
+                    if (c.subaction) {
+                        if (c.subaction === "getout") {
+                            xplayer.getoutCards += 1;
+                        } else if (c.subaction === "goto") {
+                            goToJail({ player: xplayer, ctx: botGameContext });
                         }
-                        clients.set(xplayer.id, xplayer);
+        
+                        const updated = new Map(clients);
+                        updated.set(xplayer.id, xplayer);
+                        botGameContext.SetClients(updated);
                     }
                     break;
 
