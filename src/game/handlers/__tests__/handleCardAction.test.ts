@@ -20,7 +20,7 @@ vi.mock("../../../../shared/game/actions/addFunds", () => ({
     addFunds: vi.fn(),
 }));
 
-vi.mock("../../actions/removeFunds", () => ({
+vi.mock("../../../../shared/game/actions/removeFunds", () => ({
     removeFunds: vi.fn(),
 }));
 
@@ -48,7 +48,7 @@ import { moveToTile } from "../../actions/moveToTile";
 import { moveBySpaces } from "../../actions/moveBySpaces";
 import { movePlayer } from "../../actions/movePlayer";
 import { addFunds } from "../../../../shared/game/actions/addFunds";
-import { removeFunds } from "../../actions/removeFunds";
+import { removeFunds } from "../../../../shared/game/actions/removeFunds";
 import { goToJail } from "../../../../shared/game/actions/goToJail";
 import { addBalanceToOtherPlayers } from "../../actions/addBalanceToOtherPlayers";
 import { applyPropertyCharges } from "../../actions/applyPropertyCharges";

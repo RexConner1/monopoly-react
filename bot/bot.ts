@@ -10,6 +10,7 @@ import { movePlayer } from "./game/actions/movePlayer.ts";
 import { moveToTile } from "../src/game/actions/moveToTile.ts";
 import { moveBySpaces } from "../src/game/actions/moveBySpaces.ts";
 import { addFunds } from "../shared/game/actions/addFunds.ts";
+import { removeFunds } from "../shared/game/actions/removeFunds.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -539,9 +540,13 @@ export async function main(host: string, initials: botInitial) {
                     break;
 
                 case "removefunds":
-                    xplayer.balance -= c.amount ?? 0;
+                    removeFunds({
+                        player: xplayer,
+                        amount: c.amount ?? 0,
+                        ctx: botGameContext,
+                    });
                     break;
-                // amount
+                
                 case "removefundstoplayers":
                     addBalanceToOthers(c.amount ?? 0);
                     // xplayer.balance -= (c.amount ?? 0) * l;

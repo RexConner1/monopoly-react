@@ -1,6 +1,6 @@
 import { GameContext } from "../../../shared/game/context/gameContext";
-import { Player } from "../../assets/player";
-import { playMoneyMinusSfx } from "../../ui/audio/audio";
+import { Player } from "../../../src/assets/player";
+import { playMoneyMinusSfx } from "../../../src/ui/audio/audio";
 
 
 export function removeFunds({ player, amount, ctx }: {

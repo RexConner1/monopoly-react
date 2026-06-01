@@ -6,7 +6,7 @@ import { moveBySpaces } from "../actions/moveBySpaces";
 // import { movePlayer } from "../actions/movePlayer";
 
 import { addFunds } from "../../../shared/game/actions/addFunds";
-import { removeFunds } from "../actions/removeFunds";
+import { removeFunds } from "../../../shared/game/actions/removeFunds";
 import { goToJail } from "../../../shared/game/actions/goToJail";
 
 import { addBalanceToOtherPlayers } from "../actions/addBalanceToOtherPlayers";
