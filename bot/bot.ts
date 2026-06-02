@@ -12,6 +12,7 @@ import { moveBySpaces } from "../src/game/actions/moveBySpaces.ts";
 import { addFunds } from "../shared/game/actions/addFunds.ts";
 import { removeFunds } from "../shared/game/actions/removeFunds.ts";
 import { goToJail } from "../shared/game/actions/goToJail.ts";
+import { addBalanceToOtherPlayers } from "../shared/game/actions/addBalanceToOtherPlayers.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -424,65 +425,6 @@ export async function main(host: string, initials: botInitial) {
             const c = args.element;
             const xplayer = clients.get(args.turnId);
             if (xplayer === undefined) return;
-            function addBalanceToOthers(amnout: number) {
-                if (xplayer === undefined) return 0;
-
-                const other_players = Array.from(clients.values()).filter((v) => v.id !== xplayer.id);
-
-                if (xplayer.id === socket.id) {
-                    if (amnout > 0) {
-                        // give money
-                        socket.emit(
-                            "history",
-                            history(
-                                `${xplayer.username ?? "unknown user"} gave ${amnout} money to [${other_players.map((v) => v.username).join(", ")}]`
-                            )
-                        );
-                    } else {
-                        // get money!
-                        socket.emit(
-                            "history",
-                            history(
-                                `${xplayer.username ?? "unknown user"} recieve ${-amnout} money from [${other_players
-                                    .map((v) => v.username)
-                                    .join(", ")}]`
-                            )
-                        );
-                    }
-                }
-
-                for (const p of other_players) {
-                    p.balance += amnout;
-                    clients.set(p.id, p);
-
-                    if (xplayer.id === socket.id) {
-                        if (amnout > 0) {
-                            socket.emit("pay", {
-                                balance: amnout,
-                                from: socket.id,
-                                to: p.id,
-                            });
-                        } else {
-                            // recieve money
-                            socket.emit("pay", {
-                                balance: amnout,
-                                from: p.id,
-                                to: socket.id,
-                            });
-
-                            socket.emit(
-                                "history",
-                                history(`
-                            ${clients.get(socket.id)?.username ?? "unknown user"} pay ${payment_ammount} to ${
-                                    clients.get(xplayer.id)?.username ?? "unknown user"
-                                }
-                            `)
-                            );
-                        }
-                    }
-                }
-                return other_players.length;
-            }
 
             var time_till_finish = 0;
             switch (c.action) {
@@ -537,13 +479,19 @@ export async function main(host: string, initials: botInitial) {
                     break;
                 
                 case "removefundstoplayers":
-                    addBalanceToOthers(c.amount ?? 0);
-                    // xplayer.balance -= (c.amount ?? 0) * l;
+                    addBalanceToOtherPlayers({
+                        player: xplayer,
+                        amount: c.amount ?? 0,
+                        ctx: botGameContext,
+                    });
                     break;
 
                 case "addfundsfromplayers":
-                    addBalanceToOthers(-(c.amount ?? 0));
-                    // xplayer.balance += (c.amount ?? 0) * l;
+                    addBalanceToOtherPlayers({
+                        player: xplayer,
+                        amount: -(c.amount ?? 0),
+                        ctx: botGameContext,
+                    });
                     break;
 
                 case "movenearest":

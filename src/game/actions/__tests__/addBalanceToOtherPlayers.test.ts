@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { addBalanceToOtherPlayers } from "../addBalanceToOtherPlayers";
+import { addBalanceToOtherPlayers } from "../../../../shared/game/actions/addBalanceToOtherPlayers";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

@@ -1,8 +1,8 @@
-import { Player } from "../../assets/player";
-import { history } from "../../assets/types";
-import { notifyMessage } from "../../ui/notifications/notificationFactory";
-import { playMoneyPlusSfx } from "../../ui/audio/audio";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { history } from "../../../src/assets/types";
+import { notifyMessage } from "../../../src/ui/notifications/notificationFactory";
+import { playMoneyPlusSfx } from "../../../src/ui/audio/audio";
+import { GameContext } from "../context/gameContext";
 
 export function addBalanceToOtherPlayers({
     player,
@@ -73,6 +73,9 @@ function applyBalanceToOtherPlayers({
     ctx: GameContext;
 }) {
     const updatedClients = new Map(ctx.clients);
+
+    // player.balance -= amount * otherPlayers.length;
+    // updatedClients.set(player.id, player);
 
     for (const other of otherPlayers) {
         other.balance += amount;

@@ -28,7 +28,7 @@ vi.mock("../../../../shared/game/actions/goToJail", () => ({
     goToJail: vi.fn(),
 }));
 
-vi.mock("../../actions/addBalanceToOtherPlayers", () => ({
+vi.mock("../../../../shared/game/actions/addBalanceToOtherPlayers", () => ({
     addBalanceToOtherPlayers: vi.fn(),
 }));
 
@@ -50,7 +50,7 @@ import { movePlayer } from "../../actions/movePlayer";
 import { addFunds } from "../../../../shared/game/actions/addFunds";
 import { removeFunds } from "../../../../shared/game/actions/removeFunds";
 import { goToJail } from "../../../../shared/game/actions/goToJail";
-import { addBalanceToOtherPlayers } from "../../actions/addBalanceToOtherPlayers";
+import { addBalanceToOtherPlayers } from "../../../../shared/game/actions/addBalanceToOtherPlayers";
 import { applyPropertyCharges } from "../../actions/applyPropertyCharges";
 import { findNextGroupPosition } from "../../logic/board/findNextGroupPosition";
 import { handleChanceNearestLanding } from "../handleChanceNearestLanding";
