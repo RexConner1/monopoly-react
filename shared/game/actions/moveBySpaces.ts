@@ -1,6 +1,6 @@
-import { GameContext } from "../../../shared/game/context/gameContext";
-import { MovePlayerFn } from "../../../shared/types/player";
-import { Player } from "../../assets/player";
+import { GameContext } from "../context/gameContext";
+import { MovePlayerFn } from "../../types/player";
+import { Player } from "../../../src/assets/player";
 
 export function moveBySpaces<TContext extends GameContext>({
     spaces,

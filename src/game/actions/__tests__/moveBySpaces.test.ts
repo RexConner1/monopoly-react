@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { moveBySpaces } from "../moveBySpaces";
+import { moveBySpaces } from "../../../../shared/game/actions/moveBySpaces";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

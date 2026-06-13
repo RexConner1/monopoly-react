@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findNextGroupPosition } from "../findNextGroupPosition";
+import { findNextGroupPosition } from "../../../../../shared/game/logic/board/findNextGroupPosition";
 
 const mockProperties = [
     { group: "Utilities", position: 12 },

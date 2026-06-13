@@ -1,4 +1,4 @@
-import { Property } from "../../../../shared/types/property";
+import { Property } from "../../../types/property";
 
 export function findNextGroupPosition({
     properties,

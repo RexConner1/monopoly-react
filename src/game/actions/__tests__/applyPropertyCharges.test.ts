@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { applyPropertyCharges } from "../applyPropertyCharges";
+import { applyPropertyCharges } from "../../../../shared/game/actions/applyPropertyCharges";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

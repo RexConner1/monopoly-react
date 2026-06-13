@@ -1,5 +1,5 @@
 import { Player } from "../src/assets/player.ts";
-import { MonopolyModes, history, GameTrading, MonopolyMode, botInitial, StreetResponseType } from "../src/assets/types.ts";
+import { MonopolyModes, GameTrading, MonopolyMode, botInitial, StreetResponseType } from "../src/assets/types.ts";
 import { io } from "../src/assets/sockets.ts";
 import monopolyJSON from "../shared/data/classic/monopoly.json";
 import { PlayerJSON } from "../shared/types/player.ts";
@@ -7,12 +7,8 @@ import { GameContext } from "../shared/game/context/gameContext.ts";
 import { getPropertyByPosition } from "../shared/types/property.ts";
 import { handleStreetResponse } from "../shared/game/handlers/handleStreetResponse.ts";
 import { movePlayer } from "./game/actions/movePlayer.ts";
-import { moveToTile } from "../src/game/actions/moveToTile.ts";
-import { moveBySpaces } from "../src/game/actions/moveBySpaces.ts";
-import { addFunds } from "../shared/game/actions/addFunds.ts";
-import { removeFunds } from "../shared/game/actions/removeFunds.ts";
-import { goToJail } from "../shared/game/actions/goToJail.ts";
-import { addBalanceToOtherPlayers } from "../shared/game/actions/addBalanceToOtherPlayers.ts";
+import { ChanceCommunityChestCard } from "../src/assets/card.ts";
+import { handleCardAction } from "../shared/game/handlers/handleCardAction.ts";
 
 export async function main(host: string, initials: botInitial) {
     const socket = await io(host);
@@ -402,19 +398,9 @@ export async function main(host: string, initials: botInitial) {
             p?.recieveJson(x);
         }
     };
+
     const socket_ChorchResult = (args: {
-        element: {
-            title: string;
-            action: string;
-            tileid: string;
-            groupid?: undefined;
-            rentmultiplier?: undefined;
-            amount?: undefined;
-            subaction?: undefined;
-            count?: undefined;
-            buildings?: undefined;
-            hotels?: undefined;
-        };
+        element: ChanceCommunityChestCard;
         rolls: number;
         is_chance: boolean;
         turnId: string;
@@ -422,302 +408,19 @@ export async function main(host: string, initials: botInitial) {
         const numOfTime = 3000;
 
         setTimeout(() => {
-            const c = args.element;
             const xplayer = clients.get(args.turnId);
-            if (xplayer === undefined) return;
+            if (!xplayer) return;
 
-            var time_till_finish = 0;
-            switch (c.action) {
-                case "move":
-                    if (c.tileid) {
-                        time_till_finish = moveToTile({
-                            tileId: c.tileid,
-                            player: xplayer,
-                            ctx: botGameContext,
-                            movePlayer
-                        });
-                    } else if (c.count) {
-                        time_till_finish = moveBySpaces({
-                            spaces: c.count,
-                            player: xplayer,
-                            ctx: botGameContext,
-                            movePlayer,
-                            get200whengo: true,
-                            afterFinished: () => {},
-                        });
-                    }
-                    break;
-
-                case "addfunds":
-                    addFunds({
-                        player: xplayer,
-                        amount: c.amount ?? 0,
-                        ctx: botGameContext,
-                    });
-                    break;
-
-                case "jail":
-                    if (c.subaction) {
-                        if (c.subaction === "getout") {
-                            xplayer.getoutCards += 1;
-                        } else if (c.subaction === "goto") {
-                            goToJail({ player: xplayer, ctx: botGameContext });
-                        }
-        
-                        const updated = new Map(clients);
-                        updated.set(xplayer.id, xplayer);
-                        botGameContext.SetClients(updated);
-                    }
-                    break;
-
-                case "removefunds":
-                    removeFunds({
-                        player: xplayer,
-                        amount: c.amount ?? 0,
-                        ctx: botGameContext,
-                    });
-                    break;
-                
-                case "removefundstoplayers":
-                    addBalanceToOtherPlayers({
-                        player: xplayer,
-                        amount: c.amount ?? 0,
-                        ctx: botGameContext,
-                    });
-                    break;
-
-                case "addfundsfromplayers":
-                    addBalanceToOtherPlayers({
-                        player: xplayer,
-                        amount: -(c.amount ?? 0),
-                        ctx: botGameContext,
-                    });
-                    break;
-
-                case "movenearest":
-                    if (!c.groupid) return;
-
-                    function findNextValue(arr: number[], X: number) {
-                        // Sort the array in ascending order
-                        arr.sort((a, b) => a - b);
-
-                        // Loop through the array to find the next value
-                        for (let i = 0; i < arr.length; i++) {
-                            if (arr[i] > X) {
-                                return arr[i];
-                            }
-                        }
-
-                        // If no value greater than X is found, return the first element (wrap around)
-                        return arr[0];
-                    }
-
-                    var p = "";
-
-                    if (c.groupid === "utility") {
-                        p = "Utilities";
-                    } else {
-                        p = "Railroad";
-                    }
-                    const arr = monopolyJSON.properties.filter((v) => v.group === p).map((v) => v.position);
-                    const ongoingLocation = findNextValue(arr, xplayer.position);
-                    const _generatorResults = movePlayer({ 
-                        finalPosition: ongoingLocation, 
-                        player: xplayer, 
-                        ctx: botGameContext
-                    });
-                    time_till_finish = -1;
-                    _generatorResults.start();
-                    setTimeout(() => {
-                        if (xplayer.id === socket.id) {
-                            const location = xplayer?.position ?? -1;
-                            const proprety = propretyMap.get(location);
-                            if (proprety !== undefined) {
-                                engineRef.setStreet({
-                                    location,
-                                    rolls: args.rolls,
-                                    onResponse: (b, info) => {
-                                        if (b === "buy") {
-                                            xplayer.balance -= (proprety?.price ?? 0) * 1;
-
-                                            const prp = propretyMap.get(xplayer.position);
-                                            xplayer.properties.push({
-                                                position: xplayer.position,
-                                                count: 0,
-                                                group: prp?.group ?? "",
-                                            });
-
-                                            clients.set(socket.id, xplayer);
-                                            // engineRef.freeDice();
-                                            const json = (clients.get(socket.id) as Player).toJson();
-                                            socket.emit("finish-turn", json);
-
-                                            socket.emit(
-                                                "history",
-                                                history(
-                                                    `${clients.get(socket.id)?.username ?? "unknown player"} bought ${prp?.name ?? "unkown place"}`
-                                                )
-                                            );
-                                        } else if (b === "special_action") {
-                                            console.log(`${initials.name}`, info);
-                                            xplayer.balance -= (proprety?.price ?? 0) * 1;
-
-                                            const _info = info as {
-                                                rolls: number;
-                                            };
-
-                                            const calculateRent = _info.rolls;
-                                            const prp = propretyMap.get(xplayer.position);
-                                            xplayer.properties.push({
-                                                position: xplayer.position,
-                                                count: 0,
-                                                rent: calculateRent,
-                                                group: prp?.group ?? "",
-                                            });
-
-                                            clients.set(socket.id, xplayer);
-                                            // engineRef.freeDice();
-                                            const json = (clients.get(socket.id) as Player).toJson();
-                                            socket.emit("finish-turn", json);
-
-                                            socket.emit(
-                                                "history",
-                                                history(
-                                                    `${clients.get(socket.id)?.username ?? "unknown player"} bought ${
-                                                        prp?.name ?? "unkown place"
-                                                    } with rent of ${calculateRent}`
-                                                )
-                                            );
-                                        } else if (b === "someones") {
-                                            const players = Array.from(clients.values());
-
-                                            for (const p of players) {
-                                                for (const prp of p.properties) {
-                                                    if (prp.position === location) {
-                                                        var payment_ammount = 0;
-
-                                                        if (proprety.group === "Utilities" && prp.rent) {
-                                                            const l = [Math.floor(Math.random() * 6) + 1, Math.floor(Math.random() * 6) + 1];
-                                                            socket.emit(
-                                                                "history",
-                                                                history(
-                                                                    `${clients.get(socket.id)?.username ?? "unknown player"} rolled [${l[0]}, ${
-                                                                        l[1]
-                                                                    }]`
-                                                                )
-                                                            );
-
-                                                            engineRef.diceResults({
-                                                                l: [l[0], l[1]],
-                                                                time: 2000,
-                                                                onDone: () => {
-                                                                    payment_ammount = (l[0] + l[1]) * (c.rentmultiplier ?? 1);
-
-                                                                    xplayer.balance -= payment_ammount;
-                                                                    socket.emit("pay", {
-                                                                        balance: payment_ammount,
-                                                                        from: socket.id,
-                                                                        to: p.id,
-                                                                    });
-
-                                                                    socket.emit(
-                                                                        "history",
-                                                                        history(
-                                                                            `${
-                                                                                clients.get(socket.id)?.username ?? "unknown player"
-                                                                            } pay ${payment_ammount} to ${
-                                                                                clients.get(p.id)?.username ?? "unknown player"
-                                                                            }`
-                                                                        )
-                                                                    );
-
-                                                                    clients.set(socket.id, xplayer);
-                                                                    // engineRef.freeDice();
-                                                                    const json = (clients.get(socket.id) as Player).toJson();
-                                                                    socket.emit("finish-turn", json);
-                                                                },
-                                                            });
-                                                        } else if (proprety.group === "Railroad") {
-                                                            const count = p.properties
-                                                                .filter((v) => v.group === "Railroad")
-                                                                .filter(
-                                                                    (v) => v.mortgaged === undefined || (v.mortgaged !== undefined && v.mortgaged === false)
-                                                                ).length;
-                                                            const rents = [0, 25, 50, 100, 200];
-                                                            payment_ammount = rents[count] * (c.rentmultiplier ?? 1);
-
-                                                            if (prp.mortgaged === undefined || (prp.mortgaged !== undefined && prp.mortgaged === false))
-                                                                xplayer.balance -= payment_ammount;
-                                                            socket.emit("pay", {
-                                                                balance: payment_ammount,
-                                                                from: socket.id,
-                                                                to: p.id,
-                                                            });
-                                                            socket.emit(
-                                                                "history",
-                                                                history(
-                                                                    `${
-                                                                        clients.get(socket.id)?.username ?? "unknown player"
-                                                                    } pay ${payment_ammount} to ${clients.get(p.id)?.username ?? "unknown player"}`
-                                                                )
-                                                            );
-                                                            clients.set(socket.id, xplayer);
-                                                            // engineRef.freeDice();
-                                                            const json = (clients.get(socket.id) as Player).toJson();
-                                                            socket.emit("finish-turn", json);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            // engineRef.freeDice();
-                                            const json = (clients.get(socket.id) as Player).toJson();
-                                            socket.emit("finish-turn", json);
-                                        }
-                                    },
-                                });
-                            }
-                        }
-                    }, _generatorResults.time);
-                    break;
-
-                case "propertycharges":
-                    function sum(b: number[]) {
-                        var s = 0;
-                        for (const x of b) {
-                            s += x;
-                        }
-                        return 1;
-                    }
-                    var payment_ammount =
-                        (c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number)) +
-                        (c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length;
-                    console.log(
-                        `${initials.name}`,
-                        `
-${(c.buildings ?? 1) * sum(xplayer.properties.filter((v) => typeof v.count === "number").map((v) => v.count as number))} + 
-${(c.hotels ?? 1) * xplayer.properties.filter((v) => v.count === "h").length} 
-which is ${payment_ammount}
-                    `
-                    );
-                    xplayer.balance -= payment_ammount;
-                    clients.set(xplayer.id, xplayer);
-                    break;
-                default:
-                    break;
-            }
-
-            if (time_till_finish >= 0) {
-                setTimeout(() => {
-                    clients.set(xplayer.id, xplayer);
-                    if (xplayer.id === socket.id) {
-                        // engineRef.freeDice();
-                        socket.emit("finish-turn", (clients.get(socket.id) as Player).toJson());
-                    }
-                }, time_till_finish);
-            }
+            handleCardAction({
+                card: args.element,
+                player: xplayer,
+                rolls: args.rolls,
+                ctx: botGameContext,
+                movePlayer,
+            });
         }, numOfTime);
     };
+    
     function socket_Mouse(args: { id: string; x: number; y: number }) {
         const xplayer = clients.get(args.id);
         if (xplayer === undefined) return;

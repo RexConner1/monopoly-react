@@ -1,11 +1,11 @@
-import { Player } from "../../assets/player";
-import { MoveNearestCard } from "../../assets/card";
-import { getPropertyByPosition } from "../../../shared/types/property";
-import { buyProperty } from "../../../shared/game/actions/buyProperty";
-import { buySpecialProperty } from "../../../shared/game/actions/buySpecialProperty";
+import { Player } from "../../../src/assets/player";
+import { MoveNearestCard } from "../../../src/assets/card";
+import { getPropertyByPosition } from "../../types/property";
+import { buyProperty } from "../actions/buyProperty";
+import { buySpecialProperty } from "../actions/buySpecialProperty";
 import { payChanceRent } from "../actions/payChanceRent";
-import { finishTurn } from "../../../shared/game/actions/finishTurn";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { finishTurn } from "../actions/finishTurn";
+import { GameContext } from "../context/gameContext";
 
 export function handleChanceNearestLanding({
     player,

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { moveToTile } from "../moveToTile";
+import { moveToTile } from "../../../../shared/game/actions/moveToTile";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 

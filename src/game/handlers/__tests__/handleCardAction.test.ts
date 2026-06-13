@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { handleCardAction } from "../handleCardAction";
+import { handleCardAction } from "../../../../shared/game/handlers/handleCardAction";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import type { ChanceCommunityChestCard } from "../../../assets/card";
 
-vi.mock("../../actions/moveToTile", () => ({
+vi.mock("../../../../shared/game/actions/moveToTile", () => ({
     moveToTile: vi.fn(),
 }));
 
-vi.mock("../../actions/moveBySpaces", () => ({
+vi.mock("../../../../shared/game/actions/moveBySpaces", () => ({
     moveBySpaces: vi.fn(),
 }));
 
@@ -32,28 +32,28 @@ vi.mock("../../../../shared/game/actions/addBalanceToOtherPlayers", () => ({
     addBalanceToOtherPlayers: vi.fn(),
 }));
 
-vi.mock("../../actions/applyPropertyCharges", () => ({
+vi.mock("../../../../shared/game/actions/applyPropertyCharges", () => ({
     applyPropertyCharges: vi.fn(),
 }));
 
-vi.mock("../../logic/board/findNextGroupPosition", () => ({
+vi.mock("../../../../shared/game/logic/board/findNextGroupPosition", () => ({
     findNextGroupPosition: vi.fn(),
 }));
 
-vi.mock("../handleChanceNearestLanding", () => ({
+vi.mock("../../../../shared/game/handlers/handleChanceNearestLanding", () => ({
     handleChanceNearestLanding: vi.fn(),
 }));
 
-import { moveToTile } from "../../actions/moveToTile";
-import { moveBySpaces } from "../../actions/moveBySpaces";
+import { moveToTile } from "../../../../shared/game/actions/moveToTile";
+import { moveBySpaces } from "../../../../shared/game/actions/moveBySpaces";
 import { movePlayer } from "../../actions/movePlayer";
 import { addFunds } from "../../../../shared/game/actions/addFunds";
 import { removeFunds } from "../../../../shared/game/actions/removeFunds";
 import { goToJail } from "../../../../shared/game/actions/goToJail";
 import { addBalanceToOtherPlayers } from "../../../../shared/game/actions/addBalanceToOtherPlayers";
-import { applyPropertyCharges } from "../../actions/applyPropertyCharges";
-import { findNextGroupPosition } from "../../logic/board/findNextGroupPosition";
-import { handleChanceNearestLanding } from "../handleChanceNearestLanding";
+import { applyPropertyCharges } from "../../../../shared/game/actions/applyPropertyCharges";
+import { findNextGroupPosition } from "../../../../shared/game/logic/board/findNextGroupPosition";
+import { handleChanceNearestLanding } from "../../../../shared/game/handlers/handleChanceNearestLanding";
 import { properties } from "../../../../shared/types/property";
 
 describe("handleCardAction", () => {

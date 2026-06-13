@@ -1,7 +1,7 @@
-import { Player } from "../../assets/player";
-import { getPropertyById } from "../../../shared/types/property";
-import { MovePlayerFn } from "../../../shared/types/player";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { getPropertyById } from "../../types/property";
+import { MovePlayerFn } from "../../types/player";
+import { GameContext } from "../context/gameContext";
 
 export function moveToTile<TContext extends GameContext>({
     tileId,

@@ -1,11 +1,11 @@
-import { Player } from "../../assets/player";
-import { Property } from "../../../shared/types/property";
-import { history } from "../../assets/types";
-import { calculateRailroadRent } from "../../../shared/game/logic/rent/calculateRailroadRent";
-import { findPropertyOwner } from "../../../shared/game/logic/rent/findPropertyOwner";
-import { applyRentPayment } from "../../../shared/game/actions/applyRentPayment";
-import { finishTurn } from "../../../shared/game/actions/finishTurn";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { Property } from "../../types/property";
+import { history } from "../../../src/assets/types";
+import { calculateRailroadRent } from "../logic/rent/calculateRailroadRent";
+import { findPropertyOwner } from "../logic/rent/findPropertyOwner";
+import { applyRentPayment } from "./applyRentPayment";
+import { finishTurn } from "./finishTurn";
+import { GameContext } from "../context/gameContext";
 
 export function payChanceRent({
     payer,

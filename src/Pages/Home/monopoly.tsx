@@ -18,7 +18,7 @@ import { notifyMessage } from "../../ui/notifications/notificationFactory.ts";
 import { handlePlayerBankruptcy } from "../../game/handlers/handleBankruptcy.ts";
 import { handleMonopolsTrains } from "../../game/handlers/handleMonopolsTrains.ts";
 import { handleStreetResponse } from "../../../shared/game/handlers/handleStreetResponse.ts";
-import { handleCardAction } from "../../game/handlers/handleCardAction.ts";
+import { handleCardAction } from "../../../shared/game/handlers/handleCardAction.ts";
 import { SelectedModeSummary } from "../../components/menu/modes/selectedModeSummary.tsx";
 import { CustomModeButton } from "../../components/menu/modes/customModeButton.tsx";
 import { ModeList } from "../../components/menu/modes/modeList.tsx";

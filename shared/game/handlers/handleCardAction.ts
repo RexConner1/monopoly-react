@@ -1,22 +1,22 @@
-import { Player } from "../../assets/player";
-import { ChanceCommunityChestCard } from "../../assets/card";
+import { Player } from "../../../src/assets/player";
+import { ChanceCommunityChestCard } from "../../../src/assets/card";
 
 import { moveToTile } from "../actions/moveToTile";
 import { moveBySpaces } from "../actions/moveBySpaces";
 // import { movePlayer } from "../actions/movePlayer";
 
-import { addFunds } from "../../../shared/game/actions/addFunds";
-import { removeFunds } from "../../../shared/game/actions/removeFunds";
-import { goToJail } from "../../../shared/game/actions/goToJail";
+import { addFunds } from "../actions/addFunds";
+import { removeFunds } from "../actions/removeFunds";
+import { goToJail } from "../actions/goToJail";
 
-import { addBalanceToOtherPlayers } from "../../../shared/game/actions/addBalanceToOtherPlayers";
+import { addBalanceToOtherPlayers } from "../actions/addBalanceToOtherPlayers";
 import { applyPropertyCharges } from "../actions/applyPropertyCharges";
 
 import { findNextGroupPosition } from "../logic/board/findNextGroupPosition";
 import { handleChanceNearestLanding } from "./handleChanceNearestLanding";
-import { properties } from "../../../shared/types/property";
-import { MovePlayerFn } from "../../../shared/types/player";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { properties } from "../../types/property";
+import { MovePlayerFn } from "../../types/player";
+import { GameContext } from "../context/gameContext";
 
 export function handleCardAction<TContext extends GameContext>({
     card,

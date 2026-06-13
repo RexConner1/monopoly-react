@@ -1,7 +1,7 @@
-import { Player } from "../../assets/player";
-import { notifyMessage } from "../../ui/notifications/notificationFactory";
-import { playMoneyMinusSfx } from "../../ui/audio/audio";
-import { GameContext } from "../../../shared/game/context/gameContext";
+import { Player } from "../../../src/assets/player";
+import { notifyMessage } from "../../../src/ui/notifications/notificationFactory";
+import { playMoneyMinusSfx } from "../../../src/ui/audio/audio";
+import { GameContext } from "../context/gameContext";
 
 export function applyPropertyCharges({
     player,

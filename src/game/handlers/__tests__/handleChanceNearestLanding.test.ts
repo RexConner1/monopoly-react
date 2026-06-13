@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { handleChanceNearestLanding } from "../handleChanceNearestLanding";
+import { handleChanceNearestLanding } from "../../../../shared/game/handlers/handleChanceNearestLanding";
 import { makePlayer } from "../../../test/factories/playerFactory";
 import { makeGameContext } from "../../../test/factories/gameContextFactory";
 import type { MoveNearestCard } from "../../../assets/card";
@@ -23,7 +23,7 @@ vi.mock("../../../../shared/game/actions/buySpecialProperty", () => ({
     buySpecialProperty: vi.fn(),
 }));
 
-vi.mock("../../actions/payChanceRent", () => ({
+vi.mock("../../../../shared/game/actions/payChanceRent", () => ({
     payChanceRent: vi.fn(),
 }));
 
@@ -34,7 +34,7 @@ vi.mock("../../../../shared/game/actions/finishTurn", () => ({
 import { getPropertyByPosition } from "../../../../shared/types/property";
 import { buyProperty } from "../../../../shared/game/actions/buyProperty";
 import { buySpecialProperty } from "../../../../shared/game/actions/buySpecialProperty";
-import { payChanceRent } from "../../actions/payChanceRent";
+import { payChanceRent } from "../../../../shared/game/actions/payChanceRent";
 import { finishTurn } from "../../../../shared/game/actions/finishTurn";
 
 describe("handleChanceNearestLanding", () => {
